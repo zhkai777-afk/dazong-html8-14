@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="容量计重离线工作台登录页">
+  <title>登录 · 容量计重离线工作台</title>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-strong: #142b46;
+      --accent: #059669;
+      --accent-soft: #e7f5ef;
+      --surface: #ffffff;
+      --background: #f8fafc;
+      --text: #15202f;
+      --text-secondary: #526071;
+      --border: #d7dee7;
+      --border-strong: #b8c3d0;
+      --danger: #b42318;
+      --danger-soft: #fff0ee;
+      --focus: #2563eb;
+      --sidebar: #152438;
+      --sidebar-muted: #9eacbd;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--background); }
+    body { margin: 0; color: var(--text); background: var(--background); font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif; line-height: 1.5; }
+    button, input { font: inherit; }
+    button { cursor: pointer; touch-action: manipulation; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+    button:focus-visible, input:focus-visible { outline: 3px solid rgba(37, 99, 235, .28); outline-offset: 2px; }
+
+    .page { min-height: 100dvh; display: grid; grid-template-columns: minmax(480px, 1.16fr) minmax(460px, .84fr); }
+    .brand { position: relative; min-height: 100dvh; padding: 48px clamp(40px, 6vw, 88px) 30px; overflow: hidden; display: flex; flex-direction: column; color: #fff; background: var(--sidebar); isolation: isolate; }
+    .brand::before { content: ""; position: absolute; z-index: -1; width: 560px; height: 560px; right: -180px; bottom: -220px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; box-shadow: 0 0 0 72px rgba(255,255,255,.025), 0 0 0 144px rgba(255,255,255,.018); }
+    .brand::after { content: ""; position: absolute; z-index: -1; top: 0; right: 12%; width: 1px; height: 100%; background: linear-gradient(transparent, rgba(255,255,255,.12), transparent); transform: rotate(24deg); }
+    .brand-content { width: min(620px, 100%); flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .brand-mark { position: absolute; top: 45px; left: clamp(40px, 6vw, 88px); display: flex; align-items: center; gap: 12px; }
+    .mark-square { width: 46px; height: 46px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.66); border-radius: 5px; font: 700 15px ui-monospace, Consolas, monospace; letter-spacing: .08em; }
+    .brand-mark strong, .brand-mark small { display: block; }
+    .brand-mark strong { font-size: 17px; letter-spacing: .08em; }
+    .brand-mark small { color: var(--sidebar-muted); font-size: 9px; letter-spacing: .18em; }
+    .brand-copy { margin-top: 62px; }
+    .kicker { margin: 0 0 20px; color: #8cc9b5; font: 700 11px ui-monospace, Consolas, monospace; letter-spacing: .18em; }
+    .brand h1 { max-width: 580px; margin: 0; font-size: clamp(38px, 4.4vw, 62px); font-weight: 650; line-height: 1.18; letter-spacing: -.045em; }
+    .brand-copy > p:last-child { max-width: 510px; margin: 26px 0 0; color: #bdc8d5; font-size: 15px; line-height: 1.8; }
+    .capabilities { margin-top: 62px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid rgba(255,255,255,.13); }
+    .capabilities article { min-height: 104px; padding: 20px 16px 18px 0; display: flex; gap: 12px; border-right: 1px solid rgba(255,255,255,.13); }
+    .capabilities article:not(:first-child) { padding-left: 16px; }
+    .capabilities article:last-child { border-right: 0; }
+    .capabilities article > span { color: #77b9a5; font: 700 10px ui-monospace, Consolas, monospace; }
+    .capabilities strong, .capabilities small { display: block; }
+    .capabilities strong { margin-bottom: 7px; font-size: 13px; }
+    .capabilities small { color: var(--sidebar-muted); font-size: 10px; line-height: 1.5; }
+    .brand footer { display: flex; justify-content: space-between; gap: 24px; color: #7f8ea1; font: 600 9px ui-monospace, Consolas, monospace; letter-spacing: .08em; }
+
+    .form-panel { min-height: 100dvh; padding: 48px clamp(40px, 6vw, 96px); display: grid; place-items: center; background: var(--background); }
+    .form-wrap { width: min(410px, 100%); }
+    .form-heading { margin-bottom: 35px; }
+    .system-status { min-height: 28px; padding: 0 10px; display: inline-flex; align-items: center; gap: 7px; border: 1px solid #badfce; border-radius: 3px; color: #075d49; background: var(--accent-soft); font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+    .system-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgba(5,150,105,.12); }
+    .form-heading h2 { margin: 24px 0 7px; color: #102033; font-size: 32px; line-height: 1.2; letter-spacing: -.025em; }
+    .form-heading p { margin: 0; color: var(--text-secondary); font-size: 14px; }
+    form { display: grid; }
+    form > label { margin-bottom: 7px; color: #26374b; font-size: 12px; font-weight: 700; }
+    form > label:not(:first-child) { margin-top: 20px; }
+    .input-wrap { min-height: 50px; display: grid; grid-template-columns: 44px minmax(0,1fr) auto; align-items: center; border: 1px solid var(--border-strong); border-radius: 5px; background: var(--surface); transition: border-color 180ms ease, box-shadow 180ms ease; }
+    .input-wrap:focus-within { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(37,99,235,.14); }
+    .input-wrap.has-error { border-color: #c96a61; background: var(--danger-soft); }
+    .input-wrap > span { color: #728095; font: 700 10px ui-monospace, Consolas, monospace; text-align: center; }
+    .input-wrap input { width: 100%; min-width: 0; height: 48px; padding: 0 8px 0 0; border: 0; outline: 0; color: var(--text); background: transparent; font-size: 16px; }
+    .input-wrap input::placeholder { color: #8995a5; }
+    .password-toggle { min-width: 52px; height: 42px; margin-right: 4px; padding: 0 8px; border: 0; border-radius: 4px; color: var(--primary); background: transparent; font-size: 11px; font-weight: 700; }
+    .password-toggle:hover:not(:disabled) { background: #eaf0f7; }
+    .options { min-height: 44px; margin-top: 9px; display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--text-secondary); font-size: 11px; }
+    .options label { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .options input { width: 16px; height: 16px; accent-color: var(--primary); }
+    .error { min-height: 38px; margin: 0; padding: 0 1px 6px; display: flex; align-items: center; color: var(--danger); font-size: 11px; line-height: 1.4; opacity: 0; }
+    .error.visible { opacity: 1; }
+    .submit { min-height: 52px; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid var(--primary); border-radius: 5px; color: #fff; background: var(--primary); font-size: 14px; font-weight: 700; transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
+    .submit:hover:not(:disabled) { background: var(--primary-strong); box-shadow: 0 8px 20px rgba(20,43,70,.18); }
+    .submit:active:not(:disabled) { transform: translateY(1px); }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin 700ms linear infinite; }
+    .demo { min-height: 64px; margin-top: 24px; padding: 11px 16px; display: grid; grid-template-columns: 1fr 1px 1fr; gap: 18px; align-items: center; border: 1px solid var(--border); border-radius: 5px; background: var(--surface); }
+    .demo > i { width: 1px; height: 32px; background: var(--border); }
+    .demo span, .demo strong { display: block; }
+    .demo span { color: var(--text-secondary); font-size: 9px; }
+    .demo strong { margin-top: 2px; color: #26374b; font: 700 13px ui-monospace, Consolas, monospace; }
+    .support { margin: 17px 0 0; color: #728095; font-size: 10px; text-align: center; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1180px) {
+      .page { grid-template-columns: minmax(380px,.92fr) minmax(430px,1.08fr); }
+      .brand { padding-inline: 36px; }
+      .brand-mark { left: 36px; }
+      .capabilities { grid-template-columns: 1fr; }
+      .capabilities article, .capabilities article:not(:first-child) { min-height: 66px; padding: 12px 0; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+      .capabilities article:last-child { border-bottom: 0; }
+    }
+    @media (max-width: 860px) {
+      .page { display: block; }
+      .brand { min-height: auto; padding: 28px 24px 34px; }
+      .brand-mark { position: static; }
+      .brand-copy { margin-top: 55px; }
+      .brand h1 { font-size: clamp(34px,9vw,48px); }
+      .capabilities { margin-top: 38px; grid-template-columns: repeat(3,minmax(0,1fr)); }
+      .capabilities article, .capabilities article:not(:first-child) { min-height: 90px; padding: 15px 12px; border-right: 1px solid rgba(255,255,255,.1); border-bottom: 0; }
+      .capabilities article:first-child { padding-left: 0; }
+      .capabilities article:last-child { border-right: 0; }
+      .brand footer { margin-top: 28px; }
+      .form-panel { min-height: auto; padding: 56px 24px 64px; }
+    }
+    @media (max-width: 520px) {
+      .brand { padding: 24px 20px 30px; }
+      .brand-copy { margin-top: 46px; }
+      .brand h1 { font-size: 34px; }
+      .capabilities { grid-template-columns: 1fr; }
+      .capabilities article, .capabilities article:not(:first-child) { min-height: 62px; padding: 12px 0; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+      .form-panel { padding: 44px 20px 52px; }
+      .form-heading h2 { font-size: 28px; }
+      .options { align-items: flex-start; flex-direction: column; gap: 0; }
+      .demo { gap: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="brand" aria-labelledby="brand-title">
+      <div class="brand-content">
+        <div class="brand-mark" aria-label="容量计重离线工作台">
+          <span class="mark-square">CQ</span>
+          <span><strong>容量计重</strong><small>QUANTITY SURVEY</small></span>
+        </div>
+        <div class="brand-copy">
+          <p class="kicker">OFFLINE INSPECTION WORKSPACE</p>
+          <h1 id="brand-title">专业计量，<br>从每一笔数据开始。</h1>
+          <p>面向大宗液体石油产品的容量计重与检验报告工作台，支持无网络环境下稳定作业。</p>
+        </div>
+        <div class="capabilities" aria-label="系统能力">
+          <article><span>01</span><div><strong>现场可用</strong><small>离线作业，数据本机保存</small></div></article>
+          <article><span>02</span><div><strong>标准可溯</strong><small>计算口径与修正链路清晰可查</small></div></article>
+          <article><span>03</span><div><strong>报告可控</strong><small>项目、复核与报告统一管理</small></div></article>
+        </div>
+      </div>
+      <footer><span>数据安全保存于当前设备</span><span>V1.0 · OFFLINE</span></footer>
+    </section>
+
+    <section class="form-panel" aria-labelledby="login-title">
+      <div class="form-wrap">
+        <div class="form-heading">
+          <span class="system-status"><i aria-hidden="true"></i> 系统已就绪</span>
+          <h2 id="login-title">欢迎回来</h2>
+          <p>请使用工作台账号登录</p>
+        </div>
+
+        <form id="login-form" novalidate>
+          <label for="account">账号</label>
+          <div class="input-wrap" id="account-wrap">
+            <span aria-hidden="true">ID</span>
+            <input id="account" name="account" autocomplete="username" placeholder="请输入账号" autofocus>
+          </div>
+
+          <label for="password">密码</label>
+          <div class="input-wrap" id="password-wrap">
+            <span aria-hidden="true">**</span>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="请输入密码" aria-describedby="login-error demo-account">
+            <button class="password-toggle" id="password-toggle" type="button" aria-label="显示密码">显示</button>
+          </div>
+
+          <div class="options">
+            <label><input id="remember" type="checkbox" checked><span>记住账号</span></label>
+            <span>离线安全登录</span>
+          </div>
+          <p class="error" id="login-error" role="alert" aria-live="assertive">&nbsp;</p>
+          <button class="submit" id="submit-button" type="submit">登录工作台 <span aria-hidden="true">→</span></button>
+        </form>
+
+        <div class="demo" id="demo-account">
+          <div><span>演示账号</span><strong>admin</strong></div><i aria-hidden="true"></i><div><span>演示密码</span><strong>123456</strong></div>
+        </div>
+        <p class="support">登录遇到问题？请联系系统管理员</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var form = document.getElementById("login-form");
+      var account = document.getElementById("account");
+      var password = document.getElementById("password");
+      var remember = document.getElementById("remember");
+      var toggle = document.getElementById("password-toggle");
+      var submit = document.getElementById("submit-button");
+      var error = document.getElementById("login-error");
+      var accountWrap = document.getElementById("account-wrap");
+      var passwordWrap = document.getElementById("password-wrap");
+      var rememberedAccount = window.localStorage.getItem("cq-remembered-account");
+
+      if (rememberedAccount) account.value = rememberedAccount;
+
+      function clearError() {
+        error.innerHTML = "&nbsp;";
+        error.classList.remove("visible");
+        accountWrap.classList.remove("has-error");
+        passwordWrap.classList.remove("has-error");
+      }
+
+      function showError(message, target) {
+        error.textContent = message;
+        error.classList.add("visible");
+        accountWrap.classList.add("has-error");
+        passwordWrap.classList.add("has-error");
+        target.focus();
+      }
+
+      account.addEventListener("input", clearError);
+      password.addEventListener("input", clearError);
+
+      toggle.addEventListener("click", function () {
+        var willShow = password.type === "password";
+        password.type = willShow ? "text" : "password";
+        toggle.textContent = willShow ? "隐藏" : "显示";
+        toggle.setAttribute("aria-label", willShow ? "隐藏密码" : "显示密码");
+        password.focus();
+      });
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var accountValue = account.value.trim();
+        if (!accountValue) return showError("请输入账号。", account);
+        if (!password.value) return showError("请输入密码。", password);
+        if (accountValue !== "admin" || password.value !== "123456") {
+          return showError("账号或密码不正确，请使用下方的演示账号。", account);
+        }
+
+        clearError();
+        if (remember.checked) window.localStorage.setItem("cq-remembered-account", accountValue);
+        else window.localStorage.removeItem("cq-remembered-account");
+        window.sessionStorage.setItem("cq-authenticated", "true");
+        submit.disabled = true;
+        submit.innerHTML = '<span class="spinner" aria-hidden="true"></span> 正在进入工作台…';
+        window.setTimeout(function () {
+          window.location.replace("./系统框架.html");
+        }, 420);
+      });
+    }());
+  </script>
+</body>
+</html>

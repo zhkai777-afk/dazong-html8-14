@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>检验任务管理 · 容量计重离线系统</title>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-hover: #142b46;
+      --success: #047857;
+      --success-bg: #e7f5ef;
+      --warning: #8a5a05;
+      --warning-bg: #fff7d6;
+      --danger: #b42318;
+      --background: #f3f6f9;
+      --surface: #ffffff;
+      --surface-muted: #f7f9fb;
+      --text: #15202f;
+      --text-secondary: #526071;
+      --border: #d7dee7;
+      --border-strong: #b8c3d0;
+      --focus: rgba(37, 99, 235, .22);
+      --sidebar: #152438;
+      --sidebar-muted: #9eacbd;
+      --control-height: 32px;
+      --radius: 4px;
+      font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif;
+      color: var(--text);
+      background: var(--background);
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { min-width: 320px; background: var(--background); }
+    body { min-width: 320px; min-height: 100vh; margin: 0; font-size: 13px; line-height: 1.5; }
+    button, input, select { font: inherit; }
+    button, select { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .5; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    .app { min-height: 100vh; display: grid; grid-template-columns: 194px minmax(0, 1fr); }
+    .sidebar { position: sticky; top: 0; height: 100vh; padding: 18px 12px; display: flex; flex-direction: column; color: white; background: var(--sidebar); }
+    .brand { min-height: 62px; padding: 0 6px 18px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .brand-mark { width: 38px; height: 38px; display: grid; flex: none; place-items: center; border: 1px solid rgba(255,255,255,.55); border-radius: 4px; font: 700 13px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .brand strong, .brand small { display: block; }
+    .brand strong { font-size: 16px; }
+    .brand small { color: var(--sidebar-muted); font-size: 10px; }
+    .nav { margin-top: 12px; display: grid; gap: 3px; }
+    .nav button { width: 100%; min-height: 46px; padding: 5px 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid transparent; border-radius: 4px; color: #d8e0ea; background: transparent; text-align: left; transition: background 180ms ease, border-color 180ms ease; }
+    .nav button:hover { background: rgba(255,255,255,.07); }
+    .nav button.active { border-color: #405873; color: white; background: #243951; }
+    .nav strong, .nav small { display: block; }
+    .nav strong { font-size: 14px; }
+    .nav small { color: var(--sidebar-muted); font-size: 9px; }
+    .nav em { color: var(--sidebar-muted); font-size: 10px; font-style: normal; }
+    .offline { margin-top: auto; padding: 10px; display: flex; gap: 8px; align-items: center; border: 1px solid rgba(255,255,255,.14); border-radius: 4px; background: rgba(255,255,255,.04); }
+    .offline-dot { width: 8px; height: 8px; flex: none; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 3px rgba(52,211,153,.15); }
+    .offline strong, .offline small { display: block; }
+    .offline strong { font-size: 12px; }
+    .offline small { color: var(--sidebar-muted); font-size: 9px; }
+
+    .main { min-width: 0; }
+    .topbar { min-height: 64px; padding: 9px 20px; display: flex; gap: 20px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: white; }
+    .breadcrumb { color: var(--text-secondary); font-size: 11px; }
+    .topbar h1 { margin: 2px 0 0; font-size: 18px; line-height: 1.25; }
+    .topbar-meta { display: flex; gap: 18px; align-items: center; color: var(--text-secondary); font-size: 11px; }
+    .count-tag { padding: 3px 8px; border: 1px solid #8cc9b5; border-radius: 3px; color: #075d49; background: var(--success-bg); font-weight: 650; }
+
+    .content { min-width: 0; padding: 16px 20px 24px; }
+    .card { border: 1px solid var(--border); border-radius: var(--radius); background: white; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .filter-card { min-height: 72px; padding: 14px 18px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 18px; align-items: start; }
+    .filter-grid { display: grid; grid-template-columns: repeat(3, minmax(190px,1fr)); gap: 10px 18px; }
+    .filter-grid label { min-width: 0; display: grid; grid-template-columns: 84px minmax(0,1fr); gap: 8px; align-items: center; }
+    .filter-grid label > span { color: #263548; font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .filter-grid input, .filter-grid select, .modal input, .modal select {
+      width: 100%; height: var(--control-height); min-width: 0; padding: 0 8px; border: 1px solid #cfd7e3; border-radius: var(--radius); color: var(--text); background: white; outline: none; transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+    .filter-grid input:hover, .filter-grid select:hover, .modal input:hover, .modal select:hover { border-color: #8da0b6; }
+    .filter-grid input:focus, .filter-grid select:focus, .modal input:focus, .modal select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,58,95,.12); }
+    input::placeholder { color: #98a3b2; }
+    .extra-filter { display: none !important; }
+    .filter-card.expanded .extra-filter { display: grid !important; }
+    .filter-card.expanded .filter-grid { grid-template-columns: repeat(4, minmax(180px,1fr)); }
+    .filter-actions { display: flex; gap: 8px; align-items: center; }
+    .button { height: var(--control-height); padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-strong); border-radius: var(--radius); color: #415065; background: white; font-weight: 650; text-decoration: none; white-space: nowrap; transition: background 180ms ease, border-color 180ms ease, color 180ms ease; }
+    .button:hover { border-color: #8494a8; background: var(--surface-muted); }
+    .button.primary { display: inline-flex; gap: 6px; align-items: center; border-color: var(--primary); color: white; background: var(--primary); }
+    .button.primary:hover { border-color: var(--primary-hover); background: var(--primary-hover); }
+    .button.text { border-color: transparent; color: #245a91; background: transparent; }
+    .button.text:hover { background: #eef4fa; }
+    .button svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .chevron { display: inline-block; width: 7px; height: 7px; margin-left: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 180ms ease; }
+    [aria-expanded="true"] .chevron { transform: translateY(2px) rotate(225deg); }
+
+    .list-card { min-height: 420px; margin-top: 12px; overflow: hidden; }
+    .list-toolbar { min-height: 52px; padding: 8px 14px; display: flex; gap: 14px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+    .list-title { display: flex; gap: 9px; align-items: baseline; }
+    .list-title h2 { margin: 0; font-size: 16px; }
+    .list-title span { color: var(--text-secondary); font-size: 11px; }
+    .toolbar-actions { display: flex; gap: 8px; align-items: center; }
+    .selection-meta { margin-left: 4px; color: var(--text-secondary); font-size: 11px; }
+    .selection-meta b { color: var(--primary); }
+    .notice { display: none; padding: 7px 14px; border-bottom: 1px solid #bdd6cc; color: #075d49; background: var(--success-bg); font-size: 11px; }
+    .notice.show { display: block; }
+    .table-scroll { min-height: 360px; overflow-x: auto; }
+    table { width: 100%; min-width: 1600px; border-collapse: separate; border-spacing: 0; }
+    th, td { height: 42px; padding: 5px 9px; border-right: 1px solid #e5e9ef; border-bottom: 1px solid #e5e9ef; text-align: left; white-space: nowrap; }
+    th:last-child, td:last-child { border-right: 0; }
+    thead th { height: 36px; padding: 0; color: #293546; background: #f8f9fb; font-size: 11px; font-weight: 700; }
+    thead th > button { width: 100%; height: 36px; padding: 0 9px; display: inline-flex; gap: 7px; align-items: center; border: 0; color: inherit; background: transparent; font-weight: inherit; text-align: left; }
+    thead th > button:hover { color: var(--primary); background: #f1f4f8; }
+    tbody tr { transition: background 160ms ease, box-shadow 160ms ease; }
+    tbody tr:hover { background: #f5f8fb; box-shadow: inset 3px 0 #7e9cbb; }
+    tbody td { color: #4b5869; font-size: 12px; }
+    tbody td strong { color: #243347; }
+    .center { text-align: center; }
+    .number { color: #2e536f; font: 650 11px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .action-link { min-width: 44px; height: 28px; border: 0; border-radius: 3px; color: #245a91; background: transparent; font-weight: 700; }
+    .action-link:hover { background: #eaf1f8; }
+    .tag { min-width: 54px; padding: 2px 6px; display: inline-flex; justify-content: center; border: 1px solid; border-radius: 3px; font-size: 10px; font-weight: 700; }
+    .tag.active { color: #075d49; border-color: #8cc9b5; background: var(--success-bg); }
+    .tag.pending { color: #744602; border-color: #e1c57d; background: var(--warning-bg); }
+    .tag.done { color: #536174; border-color: #bdc7d2; background: #f1f3f6; }
+    .sync-tag { min-width: 64px; gap: 5px; align-items: center; }
+    .sync-tag::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: currentColor; }
+    .sync-tag.synced { color: #075d49; border-color: #8cc9b5; background: var(--success-bg); }
+    .sync-tag.waiting { color: #744602; border-color: #e1c57d; background: var(--warning-bg); }
+    .sync-tag.uploading { color: #245a91; border-color: #9cb7d2; background: #eaf1f8; }
+    .sort { position: relative; width: 9px; height: 14px; }
+    .sort::before, .sort::after { content: ""; position: absolute; left: 1px; border-right: 3.5px solid transparent; border-left: 3.5px solid transparent; }
+    .sort::before { top: 1px; border-bottom: 4px solid #b7c0ca; }
+    .sort::after { bottom: 1px; border-top: 4px solid #b7c0ca; }
+    .check-cell { width: 42px; text-align: center; }
+    .task-check, #selectAll { width: 15px; height: 15px; margin: 0; vertical-align: middle; accent-color: var(--primary); cursor: pointer; }
+    th[aria-sort="ascending"] .sort::before { border-bottom-color: #315d87; }
+    th[aria-sort="descending"] .sort::after { border-top-color: #315d87; }
+    .empty { min-height: 300px; padding: 40px 20px; display: none; flex-direction: column; align-items: center; justify-content: center; color: #768395; text-align: center; }
+    .empty.show { display: flex; }
+    .empty svg { width: 66px; height: 66px; margin-bottom: 8px; fill: none; stroke: #c5ccd5; stroke-width: 2; stroke-linejoin: round; }
+    .empty strong { color: #647184; font-size: 15px; }
+    .empty p { margin: 5px 0 12px; color: #8a96a5; font-size: 12px; }
+
+    .modal-backdrop { position: fixed; z-index: 100; inset: 0; padding: 20px; display: none; place-items: center; background: rgba(16,28,43,.52); }
+    .modal-backdrop.show { display: grid; }
+    .modal { width: min(600px,100%); overflow: hidden; border-radius: 6px; background: white; box-shadow: 0 24px 60px rgba(11,24,40,.28); }
+    .modal header { padding: 14px 16px; display: flex; gap: 20px; justify-content: space-between; border-bottom: 1px solid var(--border); background: #f8fafc; }
+    .modal header span { color: #647286; font: 700 9px ui-monospace, Consolas, monospace; letter-spacing: .08em; }
+    .modal h2 { margin: 3px 0 0; font-size: 18px; }
+    .modal header p { margin: 3px 0 0; color: var(--text-secondary); font-size: 11px; }
+    .close { width: 32px; height: 32px; border: 0; border-radius: 4px; color: #58677a; background: transparent; font-size: 22px; }
+    .close:hover { background: #e9eef4; }
+    .modal-fields { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+    .modal-fields label { display: grid; gap: 4px; }
+    .modal-fields label.wide { grid-column: 1 / -1; }
+    .modal-fields label > span { color: #3c4a5c; font-size: 11px; font-weight: 650; }
+    .required { color: var(--danger); }
+    .modal footer { padding: 9px 16px; display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--border); background: #f8fafc; }
+    .toast { position: fixed; z-index: 120; top: 18px; left: 50%; padding: 8px 14px; border: 1px solid #a5cabb; border-radius: 4px; color: #075d49; background: white; box-shadow: 0 8px 24px rgba(21,36,56,.16); opacity: 0; pointer-events: none; transform: translate(-50%,-12px); transition: opacity 180ms ease, transform 180ms ease; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    .transfer-modal { width: min(480px,100%); }
+    .transfer-body { padding: 18px 18px 16px; }
+    .transfer-state { display: flex; gap: 12px; align-items: flex-start; }
+    .transfer-icon { width: 36px; height: 36px; display: grid; flex: none; place-items: center; border-radius: 50%; color: var(--primary); background: #eaf1f8; }
+    .transfer-icon.success { color: var(--success); background: var(--success-bg); }
+    .transfer-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .transfer-copy { min-width: 0; flex: 1; }
+    .transfer-copy h3 { margin: 0; font-size: 15px; }
+    .transfer-copy p { margin: 3px 0 0; color: var(--text-secondary); font-size: 11px; }
+    .progress-meta { margin: 15px 0 6px; display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 11px; }
+    .progress-meta b { color: var(--text); font-variant-numeric: tabular-nums; }
+    .progress-track { height: 7px; overflow: hidden; border-radius: 4px; background: #e7ebf0; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: var(--primary); transition: width 220ms ease; }
+    .transfer-detail { min-height: 19px; margin-top: 8px; color: #667487; font: 11px ui-monospace, SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    @media (max-width: 1180px) {
+      .filter-card { grid-template-columns: 1fr; }
+      .filter-grid, .filter-card.expanded .filter-grid { grid-template-columns: repeat(2,minmax(220px,1fr)); }
+      .filter-actions { justify-content: flex-end; }
+    }
+    @media (max-width: 780px) {
+      :root { --control-height: 40px; }
+      .app { grid-template-columns: 64px minmax(0,1fr); }
+      .sidebar { padding: 12px 8px; }
+      .brand { justify-content: center; padding: 0 0 14px; }
+      .brand > div, .nav button span, .nav em, .offline { display: none; }
+      .brand-mark { width: 36px; height: 36px; }
+      .nav button { justify-content: center; padding: 0; }
+      .nav button::before { content: "•"; color: #c8d3e0; font-size: 21px; }
+      .nav button.active::before { color: white; }
+      .topbar { padding: 8px 14px; }
+      .topbar-meta > span:last-child { display: none; }
+      .content { padding: 12px; }
+      .filter-card { padding: 12px; }
+      .filter-grid, .filter-card.expanded .filter-grid { grid-template-columns: 1fr; }
+      .filter-grid label { grid-template-columns: 1fr; gap: 4px; }
+      .filter-actions { display: grid; grid-template-columns: 1fr 1fr auto; }
+      .list-toolbar { align-items: flex-start; flex-direction: column; }
+      .toolbar-actions { width: 100%; }
+      .selection-meta { display: block; margin: 3px 0 0; }
+      .toolbar-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .toolbar-actions .button { flex: 1; justify-content: center; }
+      .table-scroll { overflow: visible; }
+      table { min-width: 0; display: block; }
+      thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+      tbody { display: grid; gap: 10px; padding: 12px; }
+      tbody tr { padding: 12px; display: grid; grid-template-columns: 1fr auto; gap: 7px 12px; border: 1px solid var(--border); border-radius: 4px; }
+      tbody td { height: auto; padding: 0; border: 0; white-space: normal; }
+      tbody td::before { content: attr(data-label); margin-right: 8px; color: #798697; font-size: 10px; }
+      tbody td:nth-child(2) { display: none; }
+      tbody td:nth-child(1) { grid-column: 2; grid-row: 1; justify-self: end; }
+      tbody td:nth-child(3) { grid-column: 2; grid-row: 2; justify-self: end; }
+      tbody td:nth-child(1)::before, tbody td:nth-child(3)::before, tbody td:nth-child(4)::before, tbody td:nth-child(5)::before, tbody td:nth-child(8)::before, tbody td:nth-child(9)::before { display: none; }
+      tbody td:nth-child(4) { grid-column: 1; grid-row: 1; align-self: center; }
+      tbody td:nth-child(5) { grid-column: 1 / -1; font-size: 14px; }
+      tbody td:nth-child(8) { grid-column: 1; grid-row: 3; }
+      tbody td:nth-child(9) { grid-column: 2; grid-row: 3; justify-self: end; }
+      .modal-fields { grid-template-columns: 1fr; }
+      .modal-fields label.wide { grid-column: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="content">
+        <form class="card filter-card" id="filterForm">
+          <div class="filter-grid">
+            <label><span>任务单编号</span><input id="taskNo" placeholder="请输入任务单编号"></label>
+            <label><span>任务单名称</span><input id="taskName" placeholder="请输入任务单名称"></label>
+            <label><span>任务单类型</span><select id="taskType"><option value="">全部类型</option><option>卸货检验</option><option>装货检验</option><option>岸罐计量</option><option>船对船 STS</option></select></label>
+            <label class="extra-filter"><span>任务状态</span><select id="status"><option value="">全部状态</option><option>待开始</option><option>进行中</option><option>已完成</option></select></label>
+            <label class="extra-filter"><span>工单编号</span><input id="workOrderNo" placeholder="请输入工单编号"></label>
+            <label class="extra-filter"><span>服务技术</span><input id="engineer" placeholder="请输入人员姓名"></label>
+            <label class="extra-filter"><span>货物</span><input id="cargo" placeholder="请输入货物名称"></label>
+            <label class="extra-filter"><span>检验场所</span><input id="location" placeholder="请输入检验场所"></label>
+          </div>
+          <div class="filter-actions">
+            <button class="button primary" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>查询</button>
+            <button class="button" type="button" id="reset">重置</button>
+            <button class="button text" type="button" id="expand" aria-expanded="false">展开<span class="chevron" aria-hidden="true"></span></button>
+          </div>
+        </form>
+
+        <section class="card list-card" aria-labelledby="listTitle">
+          <div class="list-toolbar">
+            <div><div class="list-title"><h2 id="listTitle">检验任务列表</h2><span>共 <b id="resultCount">4</b> 条任务</span></div><span class="selection-meta">已选择 <b id="selectedCount">0</b> 条 · 已上传 <b id="syncCount">0</b>/<span id="syncTotal">4</span> · 未选择时下载当前结果</span></div>
+            <div class="toolbar-actions">
+              <a class="button primary" href="./临时任务单.html" id="create">创建临时任务单</a>
+              <button class="button" type="button" id="downloadTasks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"></path></svg>下载任务</button>
+              <button class="button" type="button" id="uploadTasks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V9m0 0 4 4m-4-4-4 4M5 5h14"></path></svg>上传任务</button>
+              <button class="button text" type="button" id="export"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"></path></svg>导出</button>
+            </div>
+          </div>
+          <div class="notice" id="notice" role="status"></div>
+          <div class="table-scroll">
+            <table aria-label="检验任务列表">
+              <thead><tr>
+                <th class="check-cell"><input id="selectAll" type="checkbox" aria-label="选择当前全部任务"></th><th class="center">序号</th><th class="center">操作</th>
+                <th data-key="taskNo"><button type="button">任务单编号<i class="sort"></i></button></th>
+                <th data-key="taskName"><button type="button">任务单名称<i class="sort"></i></button></th>
+                <th data-key="taskType"><button type="button">任务单类型<i class="sort"></i></button></th>
+                <th data-key="businessType"><button type="button">业务类型<i class="sort"></i></button></th>
+                <th data-key="status"><button type="button">状态<i class="sort"></i></button></th>
+                <th data-key="syncStatus"><button type="button">同步状态<i class="sort"></i></button></th>
+                <th data-key="workOrderNo"><button type="button">工单编号<i class="sort"></i></button></th>
+                <th data-key="workOrderName"><button type="button">工单名称<i class="sort"></i></button></th>
+                <th data-key="engineer"><button type="button">服务技术<i class="sort"></i></button></th>
+                <th data-key="cargo"><button type="button">货物<i class="sort"></i></button></th>
+                <th data-key="location"><button type="button">检验场所<i class="sort"></i></button></th>
+                <th data-key="createdAt" aria-sort="descending"><button type="button">创建时间<i class="sort"></i></button></th>
+              </tr></thead>
+              <tbody id="taskRows"></tbody>
+            </table>
+            <div class="empty" id="empty"><svg viewBox="0 0 80 80" aria-hidden="true"><path d="m16 30 24-15 24 15-24 15zM16 30v24l24 15 24-15V30M40 45v24M16 54l16-10M64 54 48 44"></path></svg><strong>没有找到匹配的记录</strong><p>请调整筛选条件后重新查询，或创建一个临时任务单。</p><button class="button" type="button" id="clearEmpty">清除筛选条件</button></div>
+          </div>
+        </section>
+      </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="presentation">
+    <form class="modal" id="createForm" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header><div><span>LOCAL TASK · 离线任务</span><h2 id="modalTitle">创建临时任务单</h2><p>临时任务仅保存在当前页面，可稍后补充工单信息。</p></div><button class="close" type="button" id="closeModal" aria-label="关闭">×</button></header>
+      <div class="modal-fields">
+        <label><span>任务单名称 <b class="required">*</b></span><input id="newName" required placeholder="例如：MT SAIQ 卸货检验"></label>
+        <label><span>任务单类型 <b class="required">*</b></span><select id="newType" required><option>卸货检验</option><option>装货检验</option><option>岸罐计量</option><option>船对船 STS</option></select></label>
+        <label><span>服务技术</span><input id="newEngineer" placeholder="可稍后分配"></label>
+        <label><span>货物</span><input id="newCargo" placeholder="请输入货物名称"></label>
+        <label class="wide"><span>检验场所</span><input id="newLocation" placeholder="请输入港口、码头或锚地"></label>
+      </div>
+      <footer><button class="button" type="button" id="cancelModal">取消</button><button class="button primary" type="submit">确认创建</button></footer>
+    </form>
+  </div>
+
+  <div class="modal-backdrop" id="transferBackdrop">
+    <section class="modal transfer-modal" role="dialog" aria-modal="true" aria-labelledby="transferTitle" aria-describedby="transferDescription">
+      <header><div><span id="transferEyebrow">TASK SYNC · 任务同步</span><h2 id="transferTitle">正在下载更新检验任务</h2><p id="transferDescription">请保持当前页面打开，任务数据正在写入本机。</p></div></header>
+      <div class="transfer-body">
+        <div class="transfer-state"><div class="transfer-icon" id="transferIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="transferArrow" d="M12 4v12m0 0 4-4m-4 4-4-4M5 20h14"></path></svg></div><div class="transfer-copy"><h3 id="transferStatus">正在准备任务数据</h3><p id="transferSummary">共 0 条任务</p></div></div>
+        <div class="progress-meta"><span id="transferStep">正在建立本机连接…</span><b id="transferPercent">0%</b></div>
+        <div class="progress-track" role="progressbar" aria-label="任务传输进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="transfer-detail" id="transferDetail">准备中…</div>
+      </div>
+      <footer><button class="button" type="button" id="cancelTransfer">取消</button><button class="button primary" type="button" id="finishTransfer" hidden>完成</button></footer>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const tasks = [
+      { id: 1, taskNo: 'RW-202505-0087', taskName: 'MT SAIQ 卸货检验', taskType: '卸货检验', businessType: '正式任务单', status: '进行中', syncStatus: '待上传', workOrderNo: '210225050087', workOrderName: '营口港原油卸货计量', engineer: '陈海峰', cargo: '阿曼出口混合原油', location: '仙人岛原油码头', createdAt: '2025-05-23 09:42' },
+      { id: 2, taskNo: 'RW-202505-0084', taskName: 'PACIFIC HORIZON 装货检验', taskType: '装货检验', businessType: '正式任务单', status: '待开始', syncStatus: '待上传', workOrderNo: '210225050084', workOrderName: '大连港成品油装货', engineer: '李文博', cargo: '航空煤油', location: '大连新港', createdAt: '2025-05-22 15:18' },
+      { id: 3, taskNo: 'RW-202505-0079', taskName: 'OCEAN CREST 岸罐计量', taskType: '岸罐计量', businessType: '正式任务单', status: '已完成', syncStatus: '已同步', workOrderNo: '210225050079', workOrderName: '青岛港岸罐交接', engineer: '王志远', cargo: '低硫燃料油', location: '青岛董家口码头', createdAt: '2025-05-20 11:06' },
+      { id: 4, taskNo: 'RW-202505-0071', taskName: 'EASTERN STAR 船对船检验', taskType: '船对船 STS', businessType: '正式任务单', status: '已完成', syncStatus: '已同步', workOrderNo: '210225050071', workOrderName: '宁波锚地过驳作业', engineer: '周宇', cargo: '轻质原油', location: '宁波舟山港', createdAt: '2025-05-18 08:31' }
+    ];
+    const filterIds = ['taskNo','taskName','taskType','status','workOrderNo','engineer','cargo','location'];
+    const state = { filters: {}, sortKey: 'createdAt', sortDirection: 'desc' };
+    const selectedIds = new Set();
+    const rows = document.querySelector('#taskRows');
+    const empty = document.querySelector('#empty');
+    const resultCount = document.querySelector('#resultCount');
+    const notice = document.querySelector('#notice');
+    const backdrop = document.querySelector('#modalBackdrop');
+    const toast = document.querySelector('#toast');
+    const transferBackdrop = document.querySelector('#transferBackdrop');
+    let transferTimer = null;
+    let activeTransfer = null;
+
+    const escapeHtml = value => String(value).replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+    const statusClass = value => value === '进行中' ? 'active' : value === '已完成' ? 'done' : 'pending';
+    const syncClass = value => value === '已同步' ? 'synced' : value === '上传中' ? 'uploading' : 'waiting';
+    const getVisibleTasks = () => tasks.filter(task => Object.entries(state.filters).every(([key,value]) => !value || String(task[key]).toLowerCase().includes(value.toLowerCase()))).sort((a,b) => {
+      const result = String(a[state.sortKey]).localeCompare(String(b[state.sortKey]), 'zh-CN', { numeric: true });
+      return state.sortDirection === 'asc' ? result : -result;
+    });
+    const cell = (label, value, className = '') => `<td data-label="${label}" class="${className}">${value}</td>`;
+
+    function render() {
+      const visible = getVisibleTasks();
+      rows.innerHTML = visible.map((task,index) => `<tr>
+        ${cell('选择', `<input class="task-check" type="checkbox" data-id="${task.id}" aria-label="选择任务 ${escapeHtml(task.taskNo)}" ${selectedIds.has(task.id) ? 'checked' : ''}>`, 'check-cell')}
+        ${cell('序号', index + 1, 'center')}
+        ${cell('操作', `<button class="action-link open-task" type="button" data-id="${task.id}">${task.status === '已完成' ? '查看' : '进入'}</button>`, 'center')}
+        ${cell('任务单编号', escapeHtml(task.taskNo), 'number')}
+        ${cell('任务单名称', `<strong>${escapeHtml(task.taskName)}</strong>`)}
+        ${cell('任务单类型', escapeHtml(task.taskType))}
+        ${cell('业务类型', escapeHtml(task.businessType))}
+        ${cell('状态', `<span class="tag ${statusClass(task.status)}">${escapeHtml(task.status)}</span>`)}
+        ${cell('同步状态', `<span class="tag sync-tag ${syncClass(task.syncStatus)}" aria-label="同步状态：${escapeHtml(task.syncStatus)}">${escapeHtml(task.syncStatus)}</span>`)}
+        ${cell('工单编号', escapeHtml(task.workOrderNo))}
+        ${cell('工单名称', escapeHtml(task.workOrderName))}
+        ${cell('服务技术', escapeHtml(task.engineer))}
+        ${cell('货物', escapeHtml(task.cargo))}
+        ${cell('检验场所', escapeHtml(task.location))}
+        ${cell('创建时间', escapeHtml(task.createdAt))}
+      </tr>`).join('');
+      rows.parentElement.style.display = visible.length ? '' : 'none';
+      empty.classList.toggle('show', visible.length === 0);
+      resultCount.textContent = visible.length;
+      document.querySelector('#syncCount').textContent = tasks.filter(task => task.syncStatus === '已同步').length;
+      document.querySelector('#syncTotal').textContent = tasks.length;
+      document.querySelector('#export').disabled = visible.length === 0;
+      document.querySelector('#downloadTasks').disabled = visible.length === 0;
+      document.querySelectorAll('thead th[data-key]').forEach(th => th.setAttribute('aria-sort', th.dataset.key === state.sortKey ? (state.sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'));
+      document.querySelectorAll('.open-task').forEach(button => button.addEventListener('click', () => {
+        const task = tasks.find(item => item.id === Number(button.dataset.id));
+        const qs = '?taskNo=' + encodeURIComponent(task.taskNo);
+        // 通知框架顶栏切换为「检验任务详情」，并导航当前 iframe 到详情页
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'navigate', title: '检验任务详情', crumb: '项目管理 / 检验任务 / 任务详情' }, '*');
+        }
+        window.location.href = './检验任务详情.html' + qs;
+      }));
+      document.querySelectorAll('.task-check').forEach(checkbox => checkbox.addEventListener('change', () => {
+        const id = Number(checkbox.dataset.id);
+        checkbox.checked ? selectedIds.add(id) : selectedIds.delete(id);
+        updateSelection();
+      }));
+      updateSelection();
+    }
+
+    function updateSelection() {
+      const visible = getVisibleTasks();
+      const selectedVisible = visible.filter(task => selectedIds.has(task.id)).length;
+      const selectAll = document.querySelector('#selectAll');
+      selectAll.checked = visible.length > 0 && selectedVisible === visible.length;
+      selectAll.indeterminate = selectedVisible > 0 && selectedVisible < visible.length;
+      document.querySelector('#selectedCount').textContent = selectedIds.size;
+    }
+
+    function startTransfer(type) {
+      const isDownload = type === 'download';
+      const selected = tasks.filter(task => selectedIds.has(task.id));
+      const pendingTasks = tasks.filter(task => task.syncStatus !== '已同步');
+      const transferTasks = isDownload ? (selected.length ? selected : getVisibleTasks()) : (selected.length ? selected : pendingTasks);
+      if (!isDownload && transferTasks.length === 0) {
+        showToast('当前任务均已完成数据上传');
+        return;
+      }
+      activeTransfer = { type, tasks: transferTasks, previous: new Map(transferTasks.map(task => [task.id, task.syncStatus])), completed: false };
+      if (!isDownload) {
+        transferTasks.forEach(task => task.syncStatus = '上传中');
+        render();
+      }
+      const title = isDownload ? '正在下载更新检验任务' : '正在上传检验任务';
+      const description = isDownload ? '请保持当前页面打开，任务数据正在写入本机。' : '请保持当前页面打开，本机任务正在同步至任务中心。';
+      document.querySelector('#transferTitle').textContent = title;
+      document.querySelector('#transferDescription').textContent = description;
+      document.querySelector('#transferStatus').textContent = isDownload ? '正在准备任务数据' : '正在校验本机任务';
+      document.querySelector('#transferSummary').textContent = `本次批量处理 ${transferTasks.length} 条任务`;
+      document.querySelector('#transferArrow').setAttribute('d', isDownload ? 'M12 4v12m0 0 4-4m-4 4-4-4M5 20h14' : 'M12 20V8m0 0 4 4m-4-4-4 4M5 4h14');
+      document.querySelector('#transferIcon').classList.remove('success');
+      document.querySelector('#cancelTransfer').hidden = false;
+      document.querySelector('#finishTransfer').hidden = true;
+      transferBackdrop.classList.add('show');
+      document.querySelector('#downloadTasks').disabled = true;
+      document.querySelector('#uploadTasks').disabled = true;
+      let progress = 0;
+      updateTransferProgress(0, '正在建立本机连接…', '准备中…');
+      window.clearInterval(transferTimer);
+      transferTimer = window.setInterval(() => {
+        progress = Math.min(100, progress + Math.floor(Math.random() * 13) + 6);
+        const itemIndex = Math.min(transferTasks.length - 1, Math.floor(progress / Math.max(1, 100 / transferTasks.length)));
+        const current = transferTasks[itemIndex];
+        const step = progress < 25 ? '正在校验任务清单…' : progress < 80 ? (isDownload ? '正在下载任务数据…' : '正在上传任务数据…') : '正在保存任务状态…';
+        updateTransferProgress(progress, step, `${current.taskNo} · ${current.taskName}`);
+        if (progress >= 100) completeTransfer(type, transferTasks);
+      }, 260);
+    }
+
+    function updateTransferProgress(value, step, detail) {
+      const progress = Math.min(100, value);
+      document.querySelector('#progressBar').style.width = `${progress}%`;
+      document.querySelector('#transferPercent').textContent = `${progress}%`;
+      document.querySelector('#transferStep').textContent = step;
+      document.querySelector('#transferDetail').textContent = detail;
+      document.querySelector('.progress-track').setAttribute('aria-valuenow', progress);
+    }
+
+    function completeTransfer(type, transferTasks) {
+      window.clearInterval(transferTimer);
+      const isDownload = type === 'download';
+      document.querySelector('#transferTitle').textContent = isDownload ? '检验任务下载完成' : '检验任务上传完成';
+      document.querySelector('#transferDescription').textContent = isDownload ? '最新任务数据已保存至当前离线设备。' : '本机检验任务已成功上传至任务中心。';
+      document.querySelector('#transferStatus').textContent = `已完成 ${transferTasks.length} 条任务`;
+      document.querySelector('#transferStep').textContent = '处理完成';
+      document.querySelector('#transferDetail').textContent = isDownload ? '任务清单与附件索引已更新' : '任务数据与状态已同步';
+      document.querySelector('#transferIcon').classList.add('success');
+      document.querySelector('#transferArrow').setAttribute('d', 'm5 12 4 4L19 6');
+      document.querySelector('#cancelTransfer').hidden = true;
+      document.querySelector('#finishTransfer').hidden = false;
+      document.querySelector('#finishTransfer').focus();
+      document.querySelector('#downloadTasks').disabled = false;
+      document.querySelector('#uploadTasks').disabled = false;
+      if (!isDownload) {
+        transferTasks.forEach(task => task.syncStatus = '已同步');
+        if (activeTransfer) activeTransfer.completed = true;
+        render();
+      }
+    }
+
+    function closeTransfer() {
+      window.clearInterval(transferTimer);
+      if (activeTransfer && activeTransfer.type === 'upload' && !activeTransfer.completed) {
+        activeTransfer.tasks.forEach(task => task.syncStatus = activeTransfer.previous.get(task.id) || '待上传');
+        render();
+      }
+      activeTransfer = null;
+      transferBackdrop.classList.remove('show');
+      document.querySelector('#downloadTasks').disabled = getVisibleTasks().length === 0;
+      document.querySelector('#uploadTasks').disabled = false;
+    }
+
+    function resetFilters(message = '筛选条件已重置') {
+      filterIds.forEach(id => document.querySelector(`#${id}`).value = '');
+      state.filters = {};
+      showNotice(message);
+      render();
+    }
+    function showNotice(message) {
+      notice.textContent = message;
+      notice.classList.add('show');
+      window.clearTimeout(showNotice.timer);
+      showNotice.timer = window.setTimeout(() => notice.classList.remove('show'), 3500);
+    }
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+    function closeModal() { backdrop.classList.remove('show'); document.querySelector('#create').focus(); }
+
+    document.querySelector('#create').addEventListener('click', () => {
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'navigate', title: '创建临时任务单', crumb: '项目管理 / 检验任务' }, '*');
+      }
+    });
+
+    document.querySelector('#filterForm').addEventListener('submit', event => {
+      event.preventDefault();
+      state.filters = Object.fromEntries(filterIds.map(id => [id, document.querySelector(`#${id}`).value.trim()]));
+      render();
+      showNotice(`筛选完成，共找到 ${getVisibleTasks().length} 条记录`);
+    });
+    document.querySelector('#reset').addEventListener('click', () => resetFilters());
+    document.querySelector('#clearEmpty').addEventListener('click', () => resetFilters('已清除全部筛选条件'));
+    document.querySelector('#expand').addEventListener('click', event => {
+      const expanded = event.currentTarget.getAttribute('aria-expanded') !== 'true';
+      event.currentTarget.setAttribute('aria-expanded', expanded);
+      event.currentTarget.firstChild.textContent = expanded ? '收起' : '展开';
+      document.querySelector('#filterForm').classList.toggle('expanded', expanded);
+    });
+    document.querySelectorAll('thead th[data-key] button').forEach(button => button.addEventListener('click', () => {
+      const key = button.parentElement.dataset.key;
+      state.sortDirection = state.sortKey === key && state.sortDirection === 'asc' ? 'desc' : 'asc';
+      state.sortKey = key;
+      render();
+    }));
+    document.querySelector('#selectAll').addEventListener('change', event => {
+      getVisibleTasks().forEach(task => event.currentTarget.checked ? selectedIds.add(task.id) : selectedIds.delete(task.id));
+      render();
+    });
+    document.querySelector('#downloadTasks').addEventListener('click', () => startTransfer('download'));
+    document.querySelector('#uploadTasks').addEventListener('click', () => startTransfer('upload'));
+    document.querySelector('#cancelTransfer').addEventListener('click', closeTransfer);
+    document.querySelector('#finishTransfer').addEventListener('click', closeTransfer);
+    document.querySelector('#closeModal').addEventListener('click', closeModal);
+    document.querySelector('#cancelModal').addEventListener('click', closeModal);
+    backdrop.addEventListener('mousedown', event => { if (event.target === backdrop) closeModal(); });
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      if (transferBackdrop.classList.contains('show')) closeTransfer();
+      else if (backdrop.classList.contains('show')) closeModal();
+    });
+    document.querySelector('#createForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const now = new Date();
+      const id = Math.max(...tasks.map(task => task.id)) + 1;
+      tasks.unshift({ id, taskNo: `LS-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}-${String(id).padStart(4,'0')}`, taskName: document.querySelector('#newName').value.trim(), taskType: document.querySelector('#newType').value, businessType: '临时任务单', status: '待开始', syncStatus: '待上传', workOrderNo: '—', workOrderName: '临时任务单', engineer: document.querySelector('#newEngineer').value.trim() || '待分配', cargo: document.querySelector('#newCargo').value.trim() || '待补充', location: document.querySelector('#newLocation').value.trim() || '待补充', createdAt: now.toLocaleString('zh-CN',{hour12:false}).replaceAll('/','-').slice(0,16) });
+      event.currentTarget.reset(); closeModal(); state.filters = {}; filterIds.forEach(id => document.querySelector(`#${id}`).value = ''); render(); showNotice('临时任务已创建并加入当前列表');
+    });
+    document.querySelector('#export').addEventListener('click', () => {
+      const header = ['任务单编号','任务单名称','任务单类型','业务类型','状态','同步状态','工单编号','工单名称','服务技术','货物','检验场所','创建时间'];
+      const keys = ['taskNo','taskName','taskType','businessType','status','syncStatus','workOrderNo','workOrderName','engineer','cargo','location','createdAt'];
+      const csv = [header, ...getVisibleTasks().map(task => keys.map(key => task[key]))].map(row => row.map(value => `"${String(value).replaceAll('"','""')}"`).join(',')).join('\n');
+      const url = URL.createObjectURL(new Blob(['\ufeff',csv], {type:'text/csv;charset=utf-8'}));
+      const link = document.createElement('a'); link.href = url; link.download = `检验任务_${new Date().toISOString().slice(0,10)}.csv`; link.click(); URL.revokeObjectURL(url); showToast('任务列表已导出');
+    });
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>基础数据管理</title>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-hover: #162f4f;
+      --text: #17243a;
+      --text-secondary: #657387;
+      --background: #f3f6fa;
+      --surface: #fff;
+      --surface-muted: #f7f9fb;
+      --border: #d7e0eb;
+      --border-strong: #b8c4d2;
+      --focus: #2e78c7;
+      --success: #075d49;
+      --success-bg: #eaf7f2;
+      font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif;
+      color: var(--text);
+      background: var(--background);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; font-size: 13px; line-height: 1.5; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .content { padding: 16px 20px 24px; }
+    .card { border: 1px solid var(--border); border-radius: 5px; background: var(--surface); box-shadow: 0 1px 2px rgba(24, 47, 76, .04); }
+    .intro { position: relative; padding: 18px 20px 20px; display: flex; align-items: center; justify-content: space-between; gap: 24px; overflow: hidden; }
+    .intro h1 { margin: 0; font-size: 18px; }
+    .intro p { max-width: 720px; margin: 4px 0 0; color: var(--text-secondary); font-size: 12px; }
+    .offline-note { flex: none; padding: 5px 9px; border: 1px solid #a5cabb; border-radius: 4px; color: var(--success); background: var(--success-bg); font-size: 11px; font-weight: 650; }
+    .intro-actions { display: flex; flex: none; align-items: center; gap: 14px; }
+    .sync-meta { display: grid; gap: 4px; justify-items: end; color: var(--text-secondary); font-size: 11px; white-space: nowrap; }
+    .sync-meta time { color: #334155; font-variant-numeric: tabular-nums; font-weight: 650; }
+    .sync-button { min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--primary); border-radius: 4px; color: #fff; background: var(--primary); font-weight: 650; white-space: nowrap; transition: background 180ms ease, border-color 180ms ease, opacity 180ms ease; }
+    .sync-button:hover { border-color: var(--primary-hover); background: var(--primary-hover); }
+    .sync-button:disabled { cursor: wait; opacity: .72; }
+    .sync-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .sync-button.syncing svg { animation: spin 900ms linear infinite; }
+    .sync-progress { position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: #dfe6ee; }
+    .sync-progress-bar { width: 100%; height: 100%; background: #2e78c7; transform: scaleX(0); transform-origin: left center; transition: transform 220ms ease-out; }
+    .sync-feedback { position: fixed; z-index: 50; top: 18px; left: 50%; padding: 9px 14px; border: 1px solid #8cc9b5; border-radius: 4px; color: var(--success); background: #fff; box-shadow: 0 8px 24px rgba(21,36,56,.16); opacity: 0; pointer-events: none; transform: translate(-50%, -12px); transition: opacity 180ms ease, transform 180ms ease; }
+    .sync-feedback.show { opacity: 1; transform: translate(-50%, 0); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .workspace { min-height: 500px; margin-top: 12px; display: grid; grid-template-columns: 184px minmax(0, 1fr); overflow: hidden; }
+    .tabs { display: flex; min-width: 0; padding: 12px 10px; gap: 4px; flex-direction: column; align-items: stretch; border-right: 1px solid var(--border); background: var(--surface-muted); }
+    .tab { position: relative; width: 100%; min-height: 44px; padding: 0 14px 0 18px; border: 0; border-radius: 4px; color: #59687b; background: transparent; font-weight: 650; text-align: left; white-space: nowrap; transition: color 180ms ease, background 180ms ease; }
+    .tab::after { position: absolute; top: 9px; bottom: 9px; left: 0; width: 3px; border-radius: 0 3px 3px 0; background: transparent; content: ""; }
+    .tab:hover { color: var(--primary); background: #edf2f7; }
+    .tab[aria-selected="true"] { color: var(--primary); background: var(--surface); }
+    .tab[aria-selected="true"]::after { background: var(--primary); }
+    .data-panel { min-width: 0; background: var(--surface); }
+    .toolbar { min-height: 58px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--border); }
+    .toolbar h2 { margin: 0; font-size: 16px; }
+    .toolbar p { margin: 2px 0 0; color: var(--text-secondary); font-size: 11px; }
+    .search { position: relative; width: min(320px, 38vw); }
+    .search svg { position: absolute; top: 50%; left: 10px; width: 16px; height: 16px; fill: none; stroke: #7d8998; stroke-width: 1.8; transform: translateY(-50%); pointer-events: none; }
+    .search input { width: 100%; min-height: 36px; padding: 0 12px 0 34px; border: 1px solid #cbd5e1; border-radius: 4px; color: var(--text); background: #fff; }
+    .search input:hover { border-color: #8da0b6; }
+    .search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30, 58, 95, .12); outline: none; }
+    .table-scroll { min-height: 390px; overflow-x: auto; }
+    table { width: 100%; min-width: 860px; border-collapse: separate; border-spacing: 0; }
+    th, td { height: 42px; padding: 6px 12px; border-right: 1px solid #e5e9ef; border-bottom: 1px solid #e5e9ef; text-align: left; white-space: nowrap; }
+    th:last-child, td:last-child { border-right: 0; }
+    thead th { height: 38px; color: #293546; background: #f8f9fb; font-size: 11px; font-weight: 700; }
+    tbody tr { transition: background 160ms ease, box-shadow 160ms ease; }
+    tbody tr:hover { background: #f5f8fb; box-shadow: inset 3px 0 #7e9cbb; }
+    tbody td { color: #4b5869; font-size: 12px; }
+    tbody td:first-child { color: #2e536f; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-weight: 650; }
+    .status { min-width: 50px; padding: 2px 7px; display: inline-flex; justify-content: center; border: 1px solid #8cc9b5; border-radius: 3px; color: var(--success); background: var(--success-bg); font-size: 10px; font-weight: 700; }
+    .empty { min-height: 300px; padding: 48px 20px; display: none; place-items: center; color: #7a8797; text-align: center; }
+    .empty.show { display: grid; }
+    .empty svg { width: 48px; height: 48px; margin-bottom: 8px; fill: none; stroke: #aeb9c6; stroke-width: 1.6; }
+    .empty strong { display: block; color: #536174; font-size: 14px; }
+    .empty p { margin: 4px 0 0; font-size: 12px; }
+    @media (max-width: 700px) {
+      .content { padding: 10px; }
+      .intro { padding: 14px; align-items: flex-start; flex-direction: column; gap: 10px; }
+      .intro-actions { width: 100%; align-items: stretch; flex-direction: column; gap: 8px; }
+      .sync-meta { justify-items: start; }
+      .sync-button { min-height: 44px; }
+      .workspace { grid-template-columns: 122px minmax(0, 1fr); }
+      .tabs { padding: 8px 6px; }
+      .tab { min-width: 0; padding: 8px 8px 8px 13px; white-space: normal; }
+      .toolbar { padding: 10px; align-items: flex-start; flex-direction: column; }
+      .search { width: 100%; }
+      .search input { min-height: 44px; font-size: 16px; }
+      .table-scroll { min-height: 320px; padding: 10px; overflow: visible; }
+      table { min-width: 0; display: block; }
+      thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+      tbody { display: grid; gap: 10px; }
+      tbody tr { padding: 12px; display: grid; grid-template-columns: 1fr; gap: 7px; border: 1px solid var(--border); border-radius: 4px; }
+      tbody td { height: auto; padding: 0; border: 0; white-space: normal; }
+      tbody td::before { display: block; margin-bottom: 1px; color: #7a8797; content: attr(data-label); font-size: 10px; font-weight: 400; }
+      tbody td:last-child { justify-self: start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+      .sync-button.syncing svg { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="content">
+    <section class="card intro" aria-labelledby="masterTitle">
+      <div><h1 id="masterTitle">基础数据管理</h1><p>统一维护检验任务使用的客户、船舶、岸罐、港口码头及货物资料。任务建立后将保存所选数据的本地快照。</p></div>
+      <div class="intro-actions">
+        <div class="sync-meta"><span class="offline-note">本机数据</span><span>最近同步：<time id="lastSyncTime" datetime="2026-08-10T09:30">2026-08-10 09:30</time></span></div>
+        <button class="sync-button" id="syncButton" type="button" aria-describedby="lastSyncTime">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"/><path d="M19 15a8 8 0 1 1-1.9-8.2L20 9"/></svg>
+          <span id="syncButtonText">从主业务平台同步</span>
+        </button>
+      </div>
+      <div class="sync-progress" id="syncProgress" role="progressbar" aria-label="基础数据同步进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><div class="sync-progress-bar" id="syncProgressBar"></div></div>
+    </section>
+
+    <section class="card workspace" aria-label="基础数据列表">
+      <div class="tabs" role="tablist" aria-label="基础数据类型" aria-orientation="vertical">
+        <button class="tab" type="button" role="tab" aria-selected="true" data-key="clients">客户</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-key="vessels">船舶与舱容</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-key="tanks">岸罐</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-key="ports">港口码头</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-key="cargoes">货物</button>
+      </div>
+
+      <div class="data-panel">
+        <div class="toolbar">
+          <div><h2 id="listTitle">客户资料</h2><p id="listDescription">维护委托方名称、简称及业务联系人。</p></div>
+          <label class="search">
+            <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">搜索当前基础数据</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+            <input id="searchInput" type="search" placeholder="搜索名称、编号或关键字">
+          </label>
+        </div>
+
+        <div class="table-scroll" id="tableWrap">
+          <table>
+            <thead><tr id="tableHead"></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="emptyState">
+          <div><svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="16" rx="22" ry="8"/><path d="M10 16v17c0 4.4 9.8 8 22 8s22-3.6 22-8V16M10 33v15c0 4.4 9.8 8 22 8s22-3.6 22-8V33"/></svg><strong>没有找到匹配数据</strong><p>请调整搜索关键字后重试。</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div class="sync-feedback" id="syncFeedback" role="status" aria-live="polite">同步完成，基础数据已更新。</div>
+
+  <script>
+    const sources = {
+      clients: {
+        title: '客户资料', description: '维护委托方名称、简称及业务联系人。',
+        columns: ['客户编号', '客户名称', '英文名称', '联系人', '状态', '更新时间'],
+        rows: [
+          ['CUS-001', '中国石油国际事业有限公司', 'PETROCHINA INTERNATIONAL CO., LTD.', '张经理', '有效', '2026-07-18'],
+          ['CUS-002', '中国联合石油有限责任公司', 'CHINA NATIONAL UNITED OIL CORPORATION', '李经理', '有效', '2026-06-26'],
+          ['CUS-003', '中国石化燃料油销售有限公司', 'SINOPEC FUEL OIL SALES CO., LTD.', '王经理', '有效', '2026-05-09']
+        ]
+      },
+      vessels: {
+        title: '船舶与舱容资料', description: '维护船舶基本信息及关联舱容表。',
+        columns: ['IMO 编号', '船舶名称', '船型', '载重吨', '状态', '更新时间'],
+        rows: [
+          ['IMO 9384721', 'MT SAIQ', '原油船', '309,164 MT', '有效', '2026-07-22'],
+          ['IMO 9457810', 'MT OCEAN CREST', '成品油船', '114,800 MT', '有效', '2026-06-14'],
+          ['IMO 9321458', 'MT EASTERN STAR', '原油船', '156,420 MT', '有效', '2026-04-30']
+        ]
+      },
+      tanks: {
+        title: '岸罐资料', description: '维护岸罐参数、参考高度及罐容表关联。',
+        columns: ['岸罐编号', '岸罐名称', '所属码头', '公称容量', '状态', '更新时间'],
+        rows: [
+          ['TK-A01', 'A01 原油罐', '仙人岛原油码头', '100,000 m³', '有效', '2026-07-11'],
+          ['TK-A02', 'A02 原油罐', '仙人岛原油码头', '100,000 m³', '有效', '2026-07-11'],
+          ['TK-D08', 'D08 储油罐', '董家口原油码头', '80,000 m³', '有效', '2026-05-20']
+        ]
+      },
+      ports: {
+        title: '港口码头资料', description: '维护检验地点、港口及码头名称。',
+        columns: ['地点编号', '港口名称', '码头名称', '国家/地区', '状态', '更新时间'],
+        rows: [
+          ['LOC-001', '营口港', '仙人岛原油码头', '中国', '有效', '2026-07-03'],
+          ['LOC-002', '青岛港', '董家口原油码头', '中国', '有效', '2026-06-12'],
+          ['LOC-003', '大连港', '新港油库', '中国', '有效', '2026-05-28']
+        ]
+      },
+      cargoes: {
+        title: '货物资料', description: '维护货物中英文名称及货物分类。',
+        columns: ['货物编号', '货物名称', '英文名称', '分类', '状态', '更新时间'],
+        rows: [
+          ['CRG-001', '阿曼出口混合原油', 'OMAN EXPORT BLEND CRUDE OIL', '原油', '有效', '2026-07-16'],
+          ['CRG-002', '上扎库姆原油', 'UPPER ZAKUM CRUDE OIL', '原油', '有效', '2026-06-08'],
+          ['CRG-003', '0# 车用柴油', 'NO. 0 AUTOMOTIVE DIESEL', '成品油', '有效', '2026-05-15']
+        ]
+      }
+    };
+
+    const tabs = [...document.querySelectorAll('.tab')];
+    const searchInput = document.querySelector('#searchInput');
+    const tableHead = document.querySelector('#tableHead');
+    const tableBody = document.querySelector('#tableBody');
+    const tableWrap = document.querySelector('#tableWrap');
+    const emptyState = document.querySelector('#emptyState');
+    const listTitle = document.querySelector('#listTitle');
+    const listDescription = document.querySelector('#listDescription');
+    const syncButton = document.querySelector('#syncButton');
+    const syncButtonText = document.querySelector('#syncButtonText');
+    const syncProgress = document.querySelector('#syncProgress');
+    const syncProgressBar = document.querySelector('#syncProgressBar');
+    const syncFeedback = document.querySelector('#syncFeedback');
+    const lastSyncTime = document.querySelector('#lastSyncTime');
+    let currentKey = 'clients';
+    let feedbackTimer;
+
+    function formatDateTime(date) {
+      const pad = value => String(value).padStart(2, '0');
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    try {
+      const savedSyncTime = localStorage.getItem('masterDataLastSync');
+      if (savedSyncTime) {
+        lastSyncTime.textContent = savedSyncTime;
+        lastSyncTime.dateTime = savedSyncTime.replace(' ', 'T');
+      }
+    } catch (error) {
+      // file:// 环境可能限制本地存储；不影响本次模拟同步。
+    }
+
+    function render() {
+      const source = sources[currentKey];
+      const query = searchInput.value.trim().toLowerCase();
+      const rows = source.rows.filter(row => row.some(value => value.toLowerCase().includes(query)));
+      listTitle.textContent = source.title;
+      listDescription.textContent = source.description;
+      tableHead.innerHTML = source.columns.map(column => `<th scope="col">${column}</th>`).join('');
+      tableBody.innerHTML = rows.map(row => `<tr>${row.map((value, index) => `<td data-label="${source.columns[index]}">${index === 4 ? `<span class="status">${value}</span>` : value}</td>`).join('')}</tr>`).join('');
+      tableWrap.hidden = rows.length === 0;
+      emptyState.classList.toggle('show', rows.length === 0);
+    }
+
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      currentKey = tab.dataset.key;
+      tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
+      searchInput.value = '';
+      render();
+    }));
+    tabs.forEach((tab, index) => tab.addEventListener('keydown', event => {
+      if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+      event.preventDefault();
+      const nextIndex = event.key === 'ArrowDown' ? (index + 1) % tabs.length : (index - 1 + tabs.length) % tabs.length;
+      tabs[nextIndex].focus();
+      tabs[nextIndex].click();
+    }));
+    syncButton.addEventListener('click', () => {
+      if (syncButton.disabled) return;
+      const stages = [18, 42, 68, 88, 100];
+      let stageIndex = 0;
+      syncButton.disabled = true;
+      syncButton.classList.add('syncing');
+      syncButton.setAttribute('aria-busy', 'true');
+      syncProgress.hidden = false;
+      syncProgress.setAttribute('aria-valuenow', '0');
+      syncProgressBar.style.transform = 'scaleX(0)';
+      syncButtonText.textContent = '正在连接主业务平台';
+
+      const syncTimer = window.setInterval(() => {
+        const progress = stages[stageIndex];
+        syncProgress.setAttribute('aria-valuenow', String(progress));
+        syncProgressBar.style.transform = `scaleX(${progress / 100})`;
+        syncButtonText.textContent = progress < 100 ? `正在同步 ${progress}%` : '同步完成';
+        stageIndex += 1;
+        if (progress < 100) return;
+
+        window.clearInterval(syncTimer);
+        const completedAt = new Date();
+        const completedText = formatDateTime(completedAt);
+        const completedDate = completedText.slice(0, 10);
+        lastSyncTime.textContent = completedText;
+        lastSyncTime.dateTime = completedText.replace(' ', 'T');
+        Object.values(sources).forEach(source => source.rows.forEach(row => { row[row.length - 1] = completedDate; }));
+        render();
+        try { localStorage.setItem('masterDataLastSync', completedText); } catch (error) {}
+        syncFeedback.textContent = `同步完成：5 类基础数据已更新 · ${completedText}`;
+        syncFeedback.classList.add('show');
+        window.clearTimeout(feedbackTimer);
+        feedbackTimer = window.setTimeout(() => syncFeedback.classList.remove('show'), 3500);
+
+        window.setTimeout(() => {
+          syncButton.disabled = false;
+          syncButton.classList.remove('syncing');
+          syncButton.removeAttribute('aria-busy');
+          syncButtonText.textContent = '从主业务平台同步';
+          syncProgress.hidden = true;
+        }, 700);
+      }, 260);
+    });
+    searchInput.addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

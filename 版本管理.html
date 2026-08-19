@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>版本管理</title>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-hover: #162f4f;
+      --text: #17243a;
+      --muted: #657387;
+      --background: #f3f6fa;
+      --surface: #fff;
+      --surface-muted: #f7f9fb;
+      --border: #d7e0eb;
+      --focus: #2e78c7;
+      --success: #075d49;
+      --success-bg: #eaf7f2;
+      --warning: #744602;
+      --warning-bg: #fff8e7;
+      font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif;
+      color: var(--text);
+      background: var(--background);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; font-size: 13px; line-height: 1.5; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, label:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .content { width: 100%; margin: 0; padding: 16px 0 28px; }
+    .card { border: 1px solid var(--border); border-radius: 5px; background: var(--surface); box-shadow: 0 1px 2px rgba(24,47,76,.04); }
+    .overview { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 12px; }
+    .version-card { min-height: 262px; padding: 20px; }
+    .card-kicker { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+    .badge { padding: 3px 8px; border: 1px solid #aebdcd; border-radius: 3px; color: #536174; background: #f4f6f8; font-size: 10px; letter-spacing: 0; }
+    .badge.new { border-color: #8cc9b5; color: var(--success); background: var(--success-bg); }
+    .version-heading { margin-top: 18px; display: flex; align-items: center; gap: 14px; }
+    .version-mark { width: 46px; height: 46px; display: grid; flex: none; place-items: center; border: 1px solid #7690aa; border-radius: 6px; color: #fff; background: var(--primary); font: 700 13px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .version-heading h1, .version-heading h2 { margin: 0; font-size: 24px; line-height: 1.2; }
+    .version-heading p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .version-meta { margin: 20px 0 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); border-top: 1px solid var(--border); }
+    .version-meta div { padding: 11px 10px 0 0; }
+    .version-meta dt { color: var(--muted); font-size: 10px; }
+    .version-meta dd { margin: 2px 0 0; color: #334155; font-weight: 650; font-variant-numeric: tabular-nums; }
+    .latest { border-color: #afc7df; background: linear-gradient(135deg,#fff 0%,#f6faff 100%); }
+    .latest-summary { margin: 16px 0 0; color: #4d5d70; font-size: 12px; }
+    .actions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .button { min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #aebdcd; border-radius: 4px; color: #405066; background: #fff; font-weight: 650; text-decoration: none; transition: color 180ms ease, background 180ms ease, border-color 180ms ease, opacity 180ms ease; }
+    .button:hover { border-color: #8295aa; background: #f4f7fa; }
+    .button.primary { border-color: var(--primary); color: #fff; background: var(--primary); }
+    .button.primary:hover { border-color: var(--primary-hover); background: var(--primary-hover); }
+    .button:disabled { cursor: wait; opacity: .65; }
+    .button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .button.loading svg { animation: spin 900ms linear infinite; }
+    .file-button input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .progress { margin-top: 14px; padding: 11px 12px; border: 1px solid #c5d6e7; border-radius: 4px; background: #f6faff; }
+    .progress-copy { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #46576b; font-size: 11px; }
+    .progress-copy b { color: var(--primary); font-variant-numeric: tabular-nums; }
+    .progress-track { height: 6px; margin-top: 7px; overflow: hidden; border-radius: 4px; background: #dfe6ee; }
+    .progress-bar { width: 100%; height: 100%; background: #2e78c7; transform: scaleX(0); transform-origin: left center; transition: transform 220ms ease-out; }
+    .grid { margin-top: 12px; display: grid; grid-template-columns: minmax(0,1.25fr) minmax(300px,.75fr); gap: 12px; }
+    .section { overflow: hidden; }
+    .section-header { min-height: 50px; padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--border); background: var(--surface-muted); }
+    .section-header h2 { margin: 0; font-size: 15px; }
+    .section-header span { color: var(--muted); font-size: 10px; }
+    .release-notes { padding: 14px 18px 16px; }
+    .release-notes h3 { margin: 0 0 7px; font-size: 13px; }
+    .release-notes ul { margin: 0; padding-left: 20px; color: #4d5d70; }
+    .release-notes li { margin: 6px 0; }
+    .release-notes li::marker { color: #2e78c7; }
+    .notice { margin: 0 16px 16px; padding: 10px 12px; display: flex; gap: 9px; align-items: flex-start; border: 1px solid #e1c57d; border-radius: 4px; color: var(--warning); background: var(--warning-bg); font-size: 11px; }
+    .notice svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; }
+    .system-list { margin: 0; }
+    .system-list div { min-height: 46px; padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid #e8ecf1; }
+    .system-list div:last-child { border-bottom: 0; }
+    .system-list dt { color: var(--muted); }
+    .system-list dd { margin: 0; color: #334155; font-weight: 650; text-align: right; }
+    .history { margin-top: 12px; overflow: hidden; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    th, td { height: 42px; padding: 6px 12px; border-bottom: 1px solid #e5e9ef; text-align: left; white-space: nowrap; }
+    th { height: 36px; color: #334155; background: #f8f9fb; font-size: 11px; }
+    td { color: #526174; font-size: 12px; }
+    td:first-child { color: var(--primary); font-family: ui-monospace,SFMono-Regular,Consolas,monospace; font-weight: 700; }
+    .modal-backdrop { position: fixed; z-index: 100; inset: 0; padding: 20px; display: none; place-items: center; background: rgba(15,30,48,.52); }
+    .modal-backdrop.show { display: grid; }
+    .modal { width: min(480px,100%); overflow: hidden; border-radius: 6px; background: #fff; box-shadow: 0 24px 60px rgba(11,24,40,.28); }
+    .modal header { padding: 15px 18px; border-bottom: 1px solid var(--border); background: #f8fafc; }
+    .modal h2 { margin: 0; font-size: 17px; }
+    .modal header p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .modal-body { padding: 16px 18px; }
+    .check-row { padding: 10px 12px; display: flex; gap: 9px; align-items: flex-start; border: 1px solid #bcd6cc; border-radius: 4px; color: var(--success); background: var(--success-bg); }
+    .check-row input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--success); }
+    .modal-body ul { margin: 14px 0 0; padding-left: 20px; color: #536174; font-size: 12px; }
+    .modal footer { padding: 10px 18px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); background: #f8fafc; }
+    .toast { position: fixed; z-index: 120; top: 18px; left: 50%; padding: 9px 14px; border: 1px solid #8cc9b5; border-radius: 4px; color: var(--success); background: #fff; box-shadow: 0 8px 24px rgba(21,36,56,.16); opacity: 0; pointer-events: none; transform: translate(-50%,-12px); transition: opacity 180ms ease, transform 180ms ease; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 820px) {
+      .content { padding: 10px 0; }
+      .overview, .grid { grid-template-columns: 1fr; }
+      .version-card { min-height: auto; }
+    }
+    @media (max-width: 520px) {
+      .version-meta { grid-template-columns: 1fr; }
+      .actions { display: grid; }
+      .button { min-height: 44px; }
+      .section-header { align-items: flex-start; flex-direction: column; gap: 2px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { transition-duration: .01ms !important; }
+      .button.loading svg { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="content">
+    <section class="overview" aria-label="版本概览">
+      <article class="card version-card">
+        <div class="card-kicker"><span>当前安装版本</span><span class="badge" id="currentBadge">运行中</span></div>
+        <div class="version-heading"><span class="version-mark">CQ</span><div><h1 id="currentVersion">v1.8.2</h1><p id="currentEdition">容量计重离线版 · 稳定通道</p></div></div>
+        <dl class="version-meta">
+          <div><dt>构建编号</dt><dd id="currentBuild">2026.0718.1820</dd></div>
+          <div><dt>安装日期</dt><dd id="installDate">2026-07-20</dd></div>
+          <div><dt>数据结构</dt><dd id="schemaVersion">Schema 12</dd></div>
+          <div><dt>运行环境</dt><dd>Offline Desktop</dd></div>
+        </dl>
+      </article>
+
+      <article class="card version-card latest">
+        <div class="card-kicker"><span>最新可用版本</span><span class="badge new" id="latestBadge">发现新版本</span></div>
+        <div class="version-heading"><div><h2 id="latestVersion">v1.9.0</h2><p>发布于 2026-08-08 · 更新包 86.4 MB</p></div></div>
+        <p class="latest-summary">本次更新增强基础数据同步、版本校验和离线备份能力，并优化大批量岸罐数据的加载性能。</p>
+        <div class="actions">
+          <button class="button primary" id="updateButton" type="button" data-mode="download"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg><span id="updateButtonText">下载更新包</span></button>
+          <label class="button file-button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 20h14"/></svg><span>导入离线更新包</span><input id="packageInput" type="file" accept=".zip,.pkg,.cq-update"></label>
+        </div>
+        <div class="progress" id="updateProgress" role="progressbar" aria-label="更新进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+          <div class="progress-copy"><span id="progressLabel">准备下载更新包</span><b id="progressValue">0%</b></div>
+          <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card section">
+        <header class="section-header"><h2>v1.9.0 更新说明</h2><span>稳定版 · 推荐更新</span></header>
+        <div class="release-notes"><h3>主要改进</h3><ul><li>新增主业务平台基础数据同步状态与更新时间记录。</li><li>增加更新包完整性校验，支持断点续传与离线包导入。</li><li>优化检验任务、岸罐及船舱数据的本地查询速度。</li><li>安装更新前自动创建数据库备份，并保留最近三个备份版本。</li></ul></div>
+        <div class="notice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg><div><strong>更新提示</strong><br>安装过程预计需要 2–3 分钟。请先保存正在编辑的检验任务，安装期间不要关闭程序。</div></div>
+      </article>
+
+      <aside class="card section" aria-label="更新兼容性">
+        <header class="section-header"><h2>环境与兼容性</h2><span>校验通过</span></header>
+        <dl class="system-list">
+          <div><dt>更新通道</dt><dd>稳定版</dd></div>
+          <div><dt>系统兼容性</dt><dd>macOS / Windows</dd></div>
+          <div><dt>数据迁移</dt><dd>Schema 12 → 13</dd></div>
+          <div><dt>安装前备份</dt><dd>自动执行</dd></div>
+          <div><dt>包校验</dt><dd>SHA-256</dd></div>
+          <div><dt>上次检查</dt><dd>2026-08-11 10:20</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="card history">
+      <header class="section-header"><h2>版本历史</h2><span>最近发布记录</span></header>
+      <div class="table-scroll"><table><thead><tr><th>版本</th><th>发布日期</th><th>类型</th><th>主要内容</th><th>状态</th></tr></thead><tbody>
+        <tr><td>v1.9.0</td><td>2026-08-08</td><td>功能更新</td><td>基础数据同步、离线包校验、性能优化</td><td><span class="badge new">可更新</span></td></tr>
+        <tr><td>v1.8.2</td><td>2026-07-18</td><td>维护更新</td><td>修复任务详情关闭与本地快照恢复问题</td><td><span class="badge">当前版本</span></td></tr>
+        <tr><td>v1.8.0</td><td>2026-06-26</td><td>功能更新</td><td>检验任务管理、基础数据和报告快照</td><td><span class="badge">历史版本</span></td></tr>
+      </tbody></table></div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="installModal" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+    <div class="modal">
+      <header><h2 id="installTitle">安装 v1.9.0 更新</h2><p>确认后将模拟执行备份、校验和安装流程。</p></header>
+      <div class="modal-body"><label class="check-row"><input id="backupCheck" type="checkbox" checked><span><strong>安装前备份业务数据</strong><br>建议保留此选项，以便发生异常时恢复当前版本。</span></label><ul><li>请保存当前正在编辑的数据。</li><li>安装完成后程序将模拟重新启动。</li><li>现有检验任务与基础数据不会被删除。</li></ul></div>
+      <footer><button class="button" id="cancelInstall" type="button">取消</button><button class="button primary" id="confirmInstall" type="button">确认安装</button></footer>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const updateButton = document.querySelector('#updateButton');
+    const updateButtonText = document.querySelector('#updateButtonText');
+    const updateProgress = document.querySelector('#updateProgress');
+    const progressLabel = document.querySelector('#progressLabel');
+    const progressValue = document.querySelector('#progressValue');
+    const progressBar = document.querySelector('#progressBar');
+    const packageInput = document.querySelector('#packageInput');
+    const installModal = document.querySelector('#installModal');
+    const cancelInstall = document.querySelector('#cancelInstall');
+    const confirmInstall = document.querySelector('#confirmInstall');
+    const currentVersion = document.querySelector('#currentVersion');
+    const currentBuild = document.querySelector('#currentBuild');
+    const installDate = document.querySelector('#installDate');
+    const schemaVersion = document.querySelector('#schemaVersion');
+    const currentBadge = document.querySelector('#currentBadge');
+    const latestBadge = document.querySelector('#latestBadge');
+    const toast = document.querySelector('#toast');
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    function setProgress(value, label) {
+      updateProgress.hidden = false;
+      updateProgress.setAttribute('aria-valuenow', String(value));
+      progressBar.style.transform = `scaleX(${value / 100})`;
+      progressValue.textContent = `${value}%`;
+      progressLabel.textContent = label;
+    }
+
+    function runProgress(stages, labels, done) {
+      let index = 0;
+      updateButton.disabled = true;
+      updateButton.classList.add('loading');
+      const timer = window.setInterval(() => {
+        setProgress(stages[index], labels[index]);
+        index += 1;
+        if (index < stages.length) return;
+        window.clearInterval(timer);
+        window.setTimeout(() => {
+          updateButton.disabled = false;
+          updateButton.classList.remove('loading');
+          done();
+        }, 280);
+      }, 320);
+    }
+
+    updateButton.addEventListener('click', () => {
+      if (updateButton.dataset.mode === 'download') {
+        updateButtonText.textContent = '正在下载';
+        runProgress([12, 34, 61, 84, 100], ['连接更新服务器', '下载更新包', '下载更新包', '校验文件完整性', '更新包已就绪'], () => {
+          updateButton.dataset.mode = 'install';
+          updateButtonText.textContent = '安装更新';
+          showToast('v1.9.0 更新包下载并校验完成。');
+        });
+      } else if (updateButton.dataset.mode === 'install') {
+        installModal.classList.add('show');
+        confirmInstall.focus();
+      }
+    });
+
+    packageInput.addEventListener('change', () => {
+      const file = packageInput.files[0];
+      if (!file) return;
+      setProgress(100, `离线更新包已识别：${file.name}`);
+      updateButton.dataset.mode = 'install';
+      updateButtonText.textContent = '安装更新';
+      showToast('离线更新包校验通过，可以开始安装。');
+    });
+
+    cancelInstall.addEventListener('click', () => {
+      installModal.classList.remove('show');
+      updateButton.focus();
+    });
+    installModal.addEventListener('click', event => {
+      if (event.target === installModal) cancelInstall.click();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && installModal.classList.contains('show')) cancelInstall.click();
+    });
+
+    confirmInstall.addEventListener('click', () => {
+      installModal.classList.remove('show');
+      updateButtonText.textContent = '正在安装';
+      runProgress([18, 45, 72, 92, 100], ['备份当前业务数据', '解压更新文件', '迁移本地数据结构', '验证安装结果', '安装完成'], () => {
+        const today = new Date();
+        const pad = value => String(value).padStart(2, '0');
+        currentVersion.textContent = 'v1.9.0';
+        currentBuild.textContent = '2026.0808.1900';
+        installDate.textContent = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+        schemaVersion.textContent = 'Schema 13';
+        currentBadge.textContent = '已是最新版本';
+        latestBadge.textContent = '已安装';
+        updateButton.dataset.mode = 'complete';
+        updateButton.disabled = true;
+        updateButtonText.textContent = '已更新至 v1.9.0';
+        progressLabel.textContent = '更新安装完成，系统状态正常';
+        showToast('更新完成：当前版本已升级至 v1.9.0。');
+      });
+    });
+  </script>
+</body>
+</html>

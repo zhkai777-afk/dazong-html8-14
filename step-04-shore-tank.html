@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步骤 04 · 岸罐接收计量 | 卸货检验作业台</title>
+  <link rel="stylesheet" href="step-common.css">
+  <style>
+    .shore-heading .context-actions { align-self: center; }
+    .shore-context-card header { display: none; }
+    .tank-tabs { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-muted); }
+    .tank-tabs [role="tab"] { min-height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); font-weight: 650; white-space: nowrap; cursor: pointer; }
+    .tank-tabs [role="tab"][aria-selected="true"] { color: #fff; background: var(--primary); border-color: var(--primary); }
+    .tank-tabs .add-tank { min-height: 44px; padding: 0 14px; border: 1px dashed var(--primary); border-radius: 6px; color: var(--primary); background: transparent; font-weight: 700; white-space: nowrap; cursor: pointer; }
+    .tank-entry-toolbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-top: 12px; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
+    .tank-entry-toolbar strong, .tank-entry-toolbar span { display: block; }
+    .tank-entry-toolbar span { margin-top: 2px; font-size: 11px; color: var(--text-secondary); }
+    .tank-entry-toolbar .asset-label { font: 700 11px ui-monospace, monospace; color: var(--primary); }
+    /* Desktop data-entry scale: 14px values, 12px supporting labels. */
+    .shore-excel-card .table-toolbar { padding: 12px 16px; font-size: 13px; }
+    .shore-excel-card .table-toolbar strong { font-size: 14px; }
+    .shore-matrix-table { min-width: 820px; }
+    .shore-matrix-table th, .shore-matrix-table td { padding: 9px 12px; font-size: 14px; }
+    .shore-matrix-table th strong { font-size: 14px; line-height: 1.45; }
+    .shore-matrix-table th small, .shore-matrix-table td small, .shore-matrix-table .shore-section-row th { font-size: 12px; line-height: 1.45; }
+    .shore-matrix-table th.open-column, .shore-matrix-table th.close-column { font-size: 14px; }
+    .shore-matrix-table input, .shore-matrix-table select { min-height: 38px; padding: 6px 8px; font-size: 14px; }
+    .shore-matrix-table .field-kind { margin-top: 3px; padding: 2px 6px; font-size: 10px; }
+    .measurement-datetime { display: flex; justify-content: center; gap: 8px; }
+    .measurement-datetime input { width: min(145px, 100%); }
+    .shore-formula-cell strong { font-size: 14px; font-variant-numeric: tabular-nums; }
+    .shore-excel-card .shore-excel-notes { padding: 12px 16px; gap: 6px; font-size: 13px; line-height: 1.55; }
+    .shore-receipt-summary { margin-top: 12px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
+    .shore-receipt-summary header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--surface-muted); border-bottom: 1px solid var(--border); }
+    .shore-receipt-summary header strong { font-size: 14px; }
+    .shore-receipt-summary header span { font-size: 12px; color: var(--text-secondary); }
+    .shore-receipt-summary table { width: 100%; border-collapse: collapse; }
+    .shore-receipt-summary th, .shore-receipt-summary td { padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+    .shore-receipt-summary th { text-align: left; }
+    .shore-receipt-summary tr:last-child th, .shore-receipt-summary tr:last-child td { border-bottom: 0; }
+    .shore-actions { align-items: center; padding: 0 14px; margin-bottom: 14px; }
+    .tank-edit-btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 5px; background: #fff; color: var(--primary); font-size: 12px; font-weight: 650; cursor: pointer; }
+    dialog.tank-dialog { width: min(480px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 18px 50px rgba(15, 35, 60, .22); }
+    dialog.tank-dialog::backdrop { background: rgba(20, 34, 52, .36); }
+    .tank-dialog header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); }
+    .tank-dialog h3 { margin: 0; font-size: 16px; }
+    .tank-dialog header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+    .tank-dialog form { padding: 18px 20px 20px; }
+    .tank-source-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .tank-source-choice label { display: flex; gap: 8px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; cursor: pointer; }
+    .tank-dialog label.field-label { display: grid; gap: 6px; margin-top: 12px; font-size: 13px; font-weight: 650; }
+    .tank-dialog input, .tank-dialog select { min-height: 40px; padding: 0 10px; border: 1px solid var(--border); border-radius: 5px; font: inherit; }
+    .tank-dialog footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+    .tank-dialog button { min-height: 40px; padding: 0 14px; border: 1px solid var(--border); border-radius: 5px; background: #fff; font-weight: 650; cursor: pointer; }
+    .tank-dialog button.primary { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .calculation-status { color: var(--text-secondary); font-size: 11px; }
+    @media (max-width: 700px) { .tank-entry-toolbar { align-items: flex-start; flex-direction: column; } }
+  </style>
+</head>
+<body class="embedded-content">
+  <main class="app-shell">
+    <a class="skip-link" href="#workspace">跳到主要工作区</a>
+
+    <aside class="global-sidebar" aria-label="主导航">
+      <div class="product-mark" aria-label="容量计重离线工作台">
+        <span class="mark-square">CQ</span>
+        <span><strong>容量计重</strong><small>Quantity Survey · Offline</small></span>
+      </div>
+      <nav class="global-nav">
+        <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
+        <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
+        <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
+        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+      </nav>
+      <div class="offline-card"><span class="status-dot" aria-hidden="true"></span><div><strong>离线模式</strong><small>数据仅保存在本机</small></div></div>
+    </aside>
+
+    <section class="main-stage">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">项目 / 卸货检验 / 210225050087</div>
+          <h1>MT SAIQ · 卸货检验</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="project-state">现场作业中</span>
+          <span class="save-state" id="saveState">草稿已保存</span>
+          <button type="button" class="button secondary" id="saveDraftBtn">保存草稿</button>
+          <button type="button" class="button primary" id="reportBtn">报告预览</button>
+        </div>
+      </header>
+
+      <div class="project-strip">
+        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+        <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
+        <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
+      </div>
+
+      <div class="workbench-grid">
+        <aside class="workflow-panel" aria-label="卸货检验步骤">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Workflow · 流程进度</p><h2>Discharge Survey <small>卸货检验</small></h2></div>
+            <strong id="progressLabel">60%</strong>
+          </div>
+          <div class="progress-track" aria-label="整体完成度 60%"><span id="progressBar" style="width: 60%"></span></div>
+          <ol class="workflow-list">
+            <li class="done"><a href="step-01-project-setup.html"><span class="step-index">01</span><span class="step-copy"><strong>项目与报告设置</strong><em>Project &amp; Report Setup</em><small>已完成</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-02-timeline.html"><span class="step-index">02</span><span class="step-copy"><strong>作业时间线</strong><em>Operation Timeline</em><small>14 / 17 项</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-03-arrival-ullage.html"><span class="step-index">03</span><span class="step-copy"><strong>抵港船舱计量</strong><em>Arrival Tank Measurement</em><small>17 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="active"><a href="step-04-shore-tank.html" aria-current="step"><span class="step-index">04</span><span class="step-copy"><strong>岸罐接收计量</strong><em>Shore Tank Measurement</em><small>6 组 Open / Close</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-05-rob.html"><span class="step-index">05</span><span class="step-copy"><strong>卸货后 ROB</strong><em>ROB After Discharge</em><small>8 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-06-vef.html"><span class="step-index">06</span><span class="step-copy"><strong>VEF 经验系数</strong><em>Vessel Experience Factor</em><small>5 个有效航次</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-07-comparison.html"><span class="step-index">07</span><span class="step-copy"><strong>数量对比</strong><em>Quantity Comparison</em><small>动态计算</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="idle"><a href="step-08-reports.html"><span class="step-index">08</span><span class="step-copy"><strong>报告包</strong><em>Report Package</em><small>0 / 8 份</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+          </ol>
+        </aside>
+
+        <section class="workspace" id="workspace">
+          <div class="workspace-heading shore-heading">
+            <div><h2>Shore Tank Measurement <small>岸罐接收计量</small></h2><p>逐罐录入期初、期末测量数据，运行计算后同步更新计量汇总。</p></div>
+            <div class="context-actions"><button type="button" class="button tertiary" id="masterBtn">岸罐基础资料</button><button type="button" class="button tertiary" id="tableBtn">罐容表版本</button></div>
+          </div>
+
+          <section class="shore-context-card">
+            <div class="shore-context-grid" id="shoreContext"><!-- rendered by JS --></div>
+          </section>
+
+          <div class="metric-row shore-metrics" aria-label="岸罐计量汇总" id="shoreMetrics"><!-- rendered by JS --></div>
+
+          <div class="tabbar shore-actions">
+            <span class="calculation-status" id="calculationStatus">填写完成后运行计算</span>
+            <button type="button" class="validate-action" id="validateBtn">运行计算 <small>更新计量汇总</small></button>
+          </div>
+
+          <div id="panel-entry"><!-- rendered by JS --></div>
+
+          <footer class="workspace-footer">
+            <div><strong>下一步：卸货后 ROB</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
+            <a class="button primary" href="step-05-rob.html">保存并进入下一步</a>
+          </footer>
+        </section>
+      </div>
+    </section>
+
+    <dialog class="tank-dialog" id="addTankDialog" aria-labelledby="addTankTitle">
+      <header><h3 id="addTankTitle">添加岸罐</h3><p>可从已维护的岸罐资料中选择，或手动新建岸罐。</p></header>
+      <form id="addTankForm">
+        <div class="tank-source-choice" role="radiogroup" aria-label="添加方式">
+          <label><input type="radio" name="tankSource" value="master" checked>选择已有岸罐</label>
+          <label><input type="radio" name="tankSource" value="manual">手动添加</label>
+        </div>
+        <label class="field-label" id="masterTankField">岸罐资料<select id="masterTankSelect"></select></label>
+        <label class="field-label" id="manualTankField" hidden>岸罐编号<input id="manualTankName" maxlength="40" placeholder="例如：01TK-202"></label>
+        <label class="field-label">记录类型<select id="newTankType"><option value="TANK">岸罐</option><option value="PIPELINE">管线记录</option></select></label>
+        <footer><button type="button" id="cancelAddTank">取消</button><button type="submit" class="primary">添加</button></footer>
+      </form>
+    </dialog>
+
+    <dialog class="tank-dialog" id="editTankDialog" aria-labelledby="editTankTitle">
+      <header><h3 id="editTankTitle">编辑岸罐信息</h3><p>修改后的名称会同步显示在页签和录入区。</p></header>
+      <form id="editTankForm">
+        <label class="field-label">岸罐编号<input id="editTankName" maxlength="40" required></label>
+        <label class="field-label">记录类型<select id="editTankType"><option value="TANK">岸罐</option><option value="PIPELINE">管线记录</option></select></label>
+        <footer><button type="button" id="cancelEditTank">取消</button><button type="submit" class="primary">保存信息</button></footer>
+      </form>
+    </dialog>
+  </main>
+
+  <script>
+    const fmt = (value, digits = 3) => new Intl.NumberFormat("zh-CN", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+    const round3 = (v) => Math.round((v + Number.EPSILON) * 1000) / 1000;
+    const project = { cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL", vcfVersion: "2004", wcfStandard: "API MPMS 11.5 (2013)" };
+
+    function makeShoreMeasurement(changes) {
+      return Object.assign({
+        date: "2025-05-24", time: "16:00", density: 0.8575, thermalExpansionCoefficient60F: 0, sandWaterPct: 0.025,
+        shellMaterial: "INSULATED", calibrationTemp: 20, linearExpansionCoeff: 0.000012, referenceHeight: 0, observedReferenceHeight: 0,
+        floatingRoofWeight: 0, nonMeasLower: 0, nonMeasUpper: 0, gaugeMethod: "INNAGE", gaugeResult: 0, waterHeight: 0, oilTemp: 20, ambientTemp: 20,
+        hydrostaticVolume: 0, v1: 0, v2: 0, v3: 0, freeWaterVolume: 0, shellCorrection: 1, pipelineVolume: 0, floatingRoofCorrection: 0,
+        vcf: 0.99582, standardDensity: 857.5, wcf: 0.856429154,
+      }, changes);
+    }
+
+    const shoreReadings = [
+      { id: 1, sourceSheet: "Shore Tk", tank: "01TK-201", assetType: "TANK",
+        open: makeShoreMeasurement({ referenceHeight: 23.8, observedReferenceHeight: 23.8, floatingRoofWeight: 495, nonMeasLower: 1.906, nonMeasUpper: 2.136, thermalExpansionCoefficient60F: 0.00046 }),
+        close: makeShoreMeasurement({ date: "2025-05-26", time: "11:00", referenceHeight: 23.8, observedReferenceHeight: 23.8, floatingRoofWeight: 495, nonMeasLower: 1.906, nonMeasUpper: 2.136, gaugeResult: 19.581, oilTemp: 35.8, v1: 98033.554, shellCorrection: 1.00033, floatingRoofCorrection: 588.252, vcf: 0.98254, thermalExpansionCoefficient60F: 0.05 }) },
+      { id: 2, sourceSheet: "Shore Tk", tank: "01TK-206", assetType: "TANK",
+        open: makeShoreMeasurement({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.825, observedReferenceHeight: 23.825, floatingRoofWeight: 495, nonMeasLower: 1.983, nonMeasUpper: 2.133, thermalExpansionCoefficient60F: 0.231 }),
+        close: makeShoreMeasurement({ date: "2025-05-26", time: "11:00", density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.825, observedReferenceHeight: 23.825, floatingRoofWeight: 495, nonMeasLower: 1.983, nonMeasUpper: 2.133, gaugeResult: 19.331, oilTemp: 35.6, v1: 96979.093, shellCorrection: 1.00033, floatingRoofCorrection: 588.225, vcf: 0.98270, thermalExpansionCoefficient60F: 0.231, sandWaterPct: 0.05 }) },
+      { id: 3, sourceSheet: "Shore Tk", tank: "04TK-706", assetType: "TANK",
+        open: makeShoreMeasurement({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.757, observedReferenceHeight: 23.757, floatingRoofWeight: 516.034, nonMeasLower: 1.684, nonMeasUpper: 1.838, thermalExpansionCoefficient60F: 0 }),
+        close: makeShoreMeasurement({ date: "2025-05-26", time: "19:00", density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.757, observedReferenceHeight: 23.757, floatingRoofWeight: 516.034, nonMeasLower: 1.684, nonMeasUpper: 1.838, gaugeResult: 18.474, oilTemp: 36.2, v1: 93340.358, shellCorrection: 1.00034, floatingRoofCorrection: 613.533, vcf: 0.98220, thermalExpansionCoefficient60F: 0 }) },
+      { id: 4, sourceSheet: "Shore Tk (2)", tank: "04TK-708", assetType: "TANK",
+        open: makeShoreMeasurement({ referenceHeight: 23.655, observedReferenceHeight: 23.655, floatingRoofWeight: 515.776, nonMeasLower: 1.757, nonMeasUpper: 1.911, thermalExpansionCoefficient60F: 0.00046, sandWaterPct: 0 }),
+        close: makeShoreMeasurement({ date: "2025-05-30", time: "14:30", referenceHeight: 23.655, observedReferenceHeight: 23.655, floatingRoofWeight: 515.776, nonMeasLower: 1.757, nonMeasUpper: 1.911, gaugeResult: 3.2, oilTemp: 31.2, v1: 16306.693, freeWaterVolume: 354.591, shellCorrection: 1.00024, floatingRoofCorrection: 610.537, vcf: 0.98641, thermalExpansionCoefficient60F: 0.00051, sandWaterPct: 0.2 }) },
+      { id: 5, sourceSheet: "Shore Tk (2)", tank: "管线记录 1", assetType: "PIPELINE",
+        open: makeShoreMeasurement({ referenceHeight: 0, observedReferenceHeight: 0, nonMeasLower: 1.67, nonMeasUpper: 1.824, oilTemp: 0, ambientTemp: 15, vcf: 1.01248, sandWaterPct: 0.025 }),
+        close: makeShoreMeasurement({ date: "2025-05-27", time: "10:30", referenceHeight: 0, observedReferenceHeight: 0, nonMeasLower: 1.67, nonMeasUpper: 1.824, oilTemp: 36.8, shellCorrection: 1.00035, vcf: 0.98169, sandWaterPct: 0.025 }) },
+      { id: 6, sourceSheet: "Shore Tk (2)", tank: "管线记录 2", assetType: "PIPELINE",
+        open: makeShoreMeasurement({ date: "2021-12-31", time: "12:00", density: 0.8484, standardDensity: 848.4, wcf: 0.847327789, referenceHeight: 0, observedReferenceHeight: 0, nonMeasLower: 2.03, nonMeasUpper: 2.183, oilTemp: 0, ambientTemp: 0, vcf: 1.01275, sandWaterPct: 0.05 }),
+        close: makeShoreMeasurement({ date: "", time: "12:00", density: 0.8484, standardDensity: 848.4, wcf: 0.847327789, referenceHeight: 0, observedReferenceHeight: 0, nonMeasLower: 2.03, nonMeasUpper: 2.183, oilTemp: 0, ambientTemp: 0, shellCorrection: 0.99952, vcf: 1.01275, sandWaterPct: 0.05 }) },
+    ];
+
+    const shoreComputed = (m) => {
+      const liquidLevel = m.gaugeMethod === "ULLAGE" ? Math.max(m.referenceHeight - m.gaugeResult, 0) : m.gaugeResult;
+      const vSum = m.v1 + m.v2 + m.v3;
+      const tov = round3(vSum + m.hydrostaticVolume);
+      const shellTemperature = m.shellMaterial === "INSULATED" ? m.oilTemp : (7 * m.oilTemp + m.ambientTemp) / 8;
+      const correctedVolume = round3(Math.max(tov - m.freeWaterVolume, 0) * m.shellCorrection + m.pipelineVolume);
+      const gov = round3(Math.max(correctedVolume - m.floatingRoofCorrection, 0));
+      const gsv = round3(gov * m.vcf);
+      const nsv = round3(gsv * (1 - m.sandWaterPct / 100));
+      const grossWeight = round3(gsv * m.wcf);
+      const netWeight = round3(nsv * m.wcf);
+      const bbl = 6.289812;
+      const grossObservedBbl = round3(gov * bbl);
+      const grossStandardBbl = round3(gsv * bbl);
+      const netStandardBbl = round3(nsv * bbl);
+      const floatingRoofCorrectionBbl = round3(m.floatingRoofCorrection * bbl);
+      const api60 = m.density > 0 ? round3(141.5 / m.density - 131.5) : 0;
+      return { liquidLevel, vSum, tov, shellTemperature, correctedVolume, gov, gsv, nsv, grossWeight, netWeight, grossObservedBbl, grossStandardBbl, netStandardBbl, floatingRoofCorrectionBbl, api60 };
+    };
+
+    const fieldSections = [
+      { title: "基础测量数据", fields: [["measurementDateTime", "测量日期与时间", "作业日期 / 测量时间", "", "input"], ["density", "密度（15℃）", "克/立方厘米", "g/cm³", "input"], ["sandWaterPct", "水分和杂质", "体积百分比", "% (V/V)", "input"], ["referenceHeight", "参考高度", "米", "m", "input"], ["observedReferenceHeight", "实测参考高度", "米", "m", "input"], ["floatingRoofWeight", "浮顶重量（空气中）", "公吨", "MT", "input"], ["gaugeResult", "货物高度", "检尺结果", "m", "input"], ["waterHeight", "游离水高度", "米", "m", "input"], ["oilTemp", "货物温度（平均温度）", "摄氏度", "℃", "input"], ["ambientTemp", "环境温度（平均温度）", "摄氏度", "℃", "input"]] },
+      { title: "体积计算", fields: [["tov", "总观测体积", "立方米", "m³", "formula"], ["freeWaterVolume", "游离水体积", "立方米", "m³", "input"], ["shellCorrection", "罐壁温度修正", "修正系数", "", "input"], ["pipelineVolume", "管线体积", "立方米", "m³", "input"], ["floatingRoofCorrectionBbl", "浮顶修正", "美制桶", "bbl", "formula"], ["grossObservedBbl", "净观测量", "美制桶", "bbl", "formula"], ["grossObservedBbl", "净收量－净观测体积", "美制桶", "bbl", "formula"]] },
+      { title: "标准体积与重量", fields: [["vcf", "体积修正系数表", "T-6A（2004版）", "", "input"], ["grossStandardBbl", "总标准体积", "美制桶", "bbl", "formula"], ["netStandardBbl", "净收量＝总标准体积", "美制桶", "bbl", "formula"], ["api60", "API（60℉）", "°API", "°API", "formula"], ["wcf", "重量转换系数（空气中）", "T-11", "", "input"], ["grossWeight", "总标准重量（空气中）", "长吨", "LT", "formula"], ["netWeight", "净标准重量（空气中）", "长吨", "LT", "formula"]] },
+    ];
+
+    const masterTankOptions = ["01TK-201", "01TK-202", "01TK-206", "02TK-101", "04TK-706", "04TK-708", "04TK-709"];
+    let selectedTankId = 1;
+    let calculationMode = "RECEIVED";
+    let publishedTotals = null;
+    const $ = (id) => document.getElementById(id);
+
+    const difference = (open, close) => calculationMode === "DELIVERY" ? open - close : calculationMode === "INVENTORY" ? close : close - open;
+    function totalsFor(rows) {
+      return rows.reduce((sum, row) => {
+        const open = shoreComputed(row.open), close = shoreComputed(row.close);
+        return {
+          beforeGsv: sum.beforeGsv + open.gsv, afterGsv: sum.afterGsv + close.gsv,
+          receivedGsv: sum.receivedGsv + close.gsv - open.gsv, receivedNsv: sum.receivedNsv + close.nsv - open.nsv,
+          receivedGrossWeight: sum.receivedGrossWeight + close.grossWeight - open.grossWeight, receivedNetWeight: sum.receivedNetWeight + close.netWeight - open.netWeight,
+        };
+      }, { beforeGsv: 0, afterGsv: 0, receivedGsv: 0, receivedNsv: 0, receivedGrossWeight: 0, receivedNetWeight: 0 });
+    }
+
+    function renderContext() {
+      $("shoreContext").innerHTML = `
+        <dl><dt>CALCULATION METHOD<small>计算方向</small></dt><dd>Received · 接收</dd></dl>
+        <dl><dt>COMMODITY<small>货物</small></dt><dd>${project.cargoNameEn}</dd></dl>
+        <dl><dt>VCF TABLE / VERSION<small>VCF 标准与版本</small></dt><dd>T-54A · ${project.vcfVersion}</dd></dl>
+        <dl><dt>WCF STANDARD<small>WCF 标准</small></dt><dd>${project.wcfStandard}</dd></dl>`;
+    }
+
+    function renderMetrics() {
+      const t = publishedTotals || totalsFor(shoreReadings);
+      const tankCount = shoreReadings.filter((row) => row.assetType === "TANK").length;
+      $("shoreMetrics").innerHTML = `
+        <article><span>Shore Tanks · 岸罐数量</span><strong>${tankCount}</strong><small>可继续新增岸罐</small></article>
+        <article><span>Open GSV · 期初标准毛体积</span><strong>${fmt(t.beforeGsv, 3)}</strong><small>m³ @15℃</small></article>
+        <article><span>Close GSV · 期末标准毛体积</span><strong>${fmt(t.afterGsv, 3)}</strong><small>m³ @15℃</small></article>
+        <article class="metric-accent"><span>Direction Result · 方向计算毛量</span><strong>${fmt(t.receivedGsv, 3)}</strong><small>${calculationMode === "RECEIVED" ? "Close − Open" : calculationMode === "DELIVERY" ? "Open − Close" : "Close inventory"}</small></article>`;
+    }
+
+    function renderCell(row, phase, key, kind) {
+      const m = row[phase];
+      if (kind === "formula") return `<td class="shore-formula-cell"><strong>${fmt(shoreComputed(m)[key], 3)}</strong></td>`;
+      if (key === "measurementDateTime") return `<td><div class="measurement-datetime"><input type="date" value="${m.date}" data-field="date" data-phase="${phase}" data-id="${row.id}" aria-label="${phase === "open" ? "期初" : "期末"}测量日期"><input type="time" value="${m.time}" data-field="time" data-phase="${phase}" data-id="${row.id}" aria-label="${phase === "open" ? "期初" : "期末"}测量时间"></div></td>`;
+      const value = m[key];
+      if (key === "shellMaterial") return `<td><select data-field="${key}" data-phase="${phase}" data-id="${row.id}"><option${value === "INSULATED" ? " selected" : ""}>INSULATED</option><option${value === "NON_INSULATED" ? " selected" : ""}>NON_INSULATED</option></select></td>`;
+      if (key === "gaugeMethod") return `<td><select data-field="${key}" data-phase="${phase}" data-id="${row.id}"><option${value === "INNAGE" ? " selected" : ""}>INNAGE</option><option${value === "ULLAGE" ? " selected" : ""}>ULLAGE</option></select></td>`;
+      if (key === "date" || key === "time") return `<td><input type="${key}" value="${value}" data-field="${key}" data-phase="${phase}" data-id="${row.id}" /></td>`;
+      const step = ["density", "linearExpansionCoeff", "thermalExpansionCoefficient60F", "vcf", "wcf"].includes(key) ? "0.000001" : "0.001";
+      return `<td><input type="number" step="${step}" value="${value}" data-field="${key}" data-phase="${phase}" data-id="${row.id}" /></td>`;
+    }
+
+    function createTank(tank, assetType) {
+      const id = Math.max(...shoreReadings.map((row) => row.id)) + 1;
+      shoreReadings.push({
+        id,
+        sourceSheet: "本次录入",
+        tank,
+        assetType,
+        open: makeShoreMeasurement({ referenceHeight: 0, observedReferenceHeight: 0 }),
+        close: makeShoreMeasurement({ date: "2025-05-26", time: "11:00", referenceHeight: 0, observedReferenceHeight: 0 }),
+      });
+      selectedTankId = id;
+      renderEntry();
+      flash(`已添加 ${tank}，请填写期初和期末测量数据`);
+    }
+
+    function openAddTankDialog() {
+      const assigned = new Set(shoreReadings.map((row) => row.tank));
+      const options = masterTankOptions.filter((tank) => !assigned.has(tank));
+      $("masterTankSelect").innerHTML = options.length ? options.map((tank) => `<option value="${tank}">${tank}</option>`).join("") : '<option value="">没有可添加的岸罐</option>';
+      $("addTankForm").reset();
+      $("masterTankField").hidden = false;
+      $("manualTankField").hidden = true;
+      $("addTankDialog").showModal();
+    }
+
+    function renderEntry() {
+      const row = shoreReadings.find((item) => item.id === selectedTankId) || shoreReadings[0];
+      selectedTankId = row.id;
+      const body = fieldSections.map((section) => {
+        const fieldRows = section.fields.map(([key, en, zh, unit, kind]) => {
+          const cells = renderCell(row, "open", key, kind) + renderCell(row, "close", key, kind);
+          return `<tr><th scope="row"><strong>${en}</strong><small>${zh}${unit ? ` · ${unit}` : ""}</small></th>${cells}</tr>`;
+        }).join("");
+        return `<tr class="shore-section-row"><th colSpan="3">${section.title}</th></tr>${fieldRows}`;
+      }).join("");
+      const tabs = shoreReadings.map((item) => `<button type="button" role="tab" data-tank-id="${item.id}" aria-selected="${item.id === selectedTankId}">${item.tank}</button>`).join("");
+      const open = shoreComputed(row.open), close = shoreComputed(row.close);
+      const summaryRows = [
+        ["美制桶（60℉）", "bbl", close.grossStandardBbl - open.grossStandardBbl, close.netStandardBbl - open.netStandardBbl],
+        ["立方米（15℃）", "m³", close.gsv - open.gsv, close.nsv - open.nsv],
+        ["公吨（空气中）", "MT", close.grossWeight - open.grossWeight, close.netWeight - open.netWeight],
+        ["长吨（空气中）", "LT", (close.grossWeight - open.grossWeight) * 0.9842065276, (close.netWeight - open.netWeight) * 0.9842065276],
+      ].map(([name, unit, gross, net]) => `<tr><th>${name}</th><td>${unit}</td><td>${fmt(gross, 3)}</td><td>${fmt(net, 3)}</td></tr>`).join("");
+      $("panel-entry").innerHTML = `
+        <div class="tank-tabs" role="tablist" aria-label="岸罐数据录入页签">
+          ${tabs}<button type="button" class="add-tank" id="addTankBtn">＋ 新增岸罐</button>
+        </div>
+        <div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>按照原表顺序录入期初、期末数据；绿色项目由系统自动计算。</span></div><div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span><button type="button" class="tank-edit-btn" id="editTankBtn">编辑岸罐信息</button></div></div>
+        <div class="shore-excel-notes"><p><strong>填写顺序：</strong>先填写基础测量数据，再核对体积计算和标准体积与重量。每一行的单位均与原表一致。</p><p><strong>接收量：</strong>以期末减期初计算；点击“运行计算”后，结果会同步到上方的接收量汇总。</p></div>
+        <section class="table-card shore-excel-card">
+          <div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>期初 / 期末</span></div>
+          <div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table">
+            <thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">期初<small>卸货前</small></th><th class="close-column">期末<small>卸货后</small></th></tr></thead>
+            <tbody>${body}</tbody>
+          </table></div>
+        </section>
+        <section class="shore-receipt-summary"><header><strong>${row.tank} 接收数量</strong><span>期末 − 期初</span></header><table><thead><tr><th>数量单位</th><th>单位</th><th>毛量</th><th>净量</th></tr></thead><tbody>${summaryRows}</tbody></table></section>`;
+      $("panel-entry").querySelectorAll("[data-tank-id]").forEach((b) => b.addEventListener("click", () => { selectedTankId = Number(b.dataset.tankId); renderEntry(); }));
+      $("addTankBtn").addEventListener("click", openAddTankDialog);
+      $("editTankBtn").addEventListener("click", () => {
+        $("editTankName").value = row.tank;
+        $("editTankType").value = row.assetType;
+        $("editTankDialog").showModal();
+      });
+    }
+
+    function renderCalculation() {
+      const t = totalsFor(shoreReadings);
+      const rows = shoreReadings.map((row) => {
+        const open = shoreComputed(row.open), close = shoreComputed(row.close);
+        return `<tr><th>${row.tank}<small>${row.sourceSheet}</small></th><td>${fmt(open.gov, 3)}</td><td>${fmt(close.gov, 3)}</td><td>${fmt(difference(open.gov, close.gov), 3)}</td><td>${fmt(open.gsv, 3)}</td><td>${fmt(close.gsv, 3)}</td><td class="formula-value">${fmt(difference(open.gsv, close.gsv), 3)}</td><td class="formula-value">${fmt(difference(open.nsv, close.nsv), 3)}</td><td>${fmt(difference(open.grossWeight, close.grossWeight), 3)}</td><td>${fmt(difference(open.netWeight, close.netWeight), 3)}</td></tr>`;
+      }).join("");
+      $("panel-calculation").innerHTML = `
+        <section class="shore-formula-lineage"><div><span>01</span><p><strong>Gauge → Liquid Level</strong><small>空距/液深结合参考高度</small></p></div><b>→</b><div><span>02</span><p><strong>Tank Table → TOV</strong><small>V1 + V2 + V3 + 静压力体积</small></p></div><b>→</b><div><span>03</span><p><strong>Shell / PL / Roof</strong><small>扣水、罐壁、管线、浮顶修正</small></p></div><b>→</b><div><span>04</span><p><strong>GOV × VCF → GSV</strong><small>标准毛体积</small></p></div><b>→</b><div><span>05</span><p><strong>S&W / WCF</strong><small>净量与空气中重量</small></p></div></section>
+        <section class="table-card shore-result-card"><div class="table-toolbar"><strong>逐罐 Open / Close 结果与方向差量</strong><span>计算方向：${calculationMode}</span></div><div class="table-scroll"><table class="shore-result-table"><thead><tr><th>Source / Tank<small>来源页 / 岸罐</small></th><th>Open GOV</th><th>Close GOV</th><th>Difference GOV</th><th>Open GSV</th><th>Close GSV</th><th>Gross Difference</th><th>Net Difference</th><th>Gross MT</th><th>Net MT</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><th colSpan="6">DIRECTION RESULT · 两页签合计</th><td>${fmt(t.receivedGsv, 3)}</td><td>${fmt(t.receivedNsv, 3)}</td><td>${fmt(t.receivedGrossWeight, 3)}</td><td>${fmt(t.receivedNetWeight, 3)}</td></tr></tfoot></table></div></section>
+        <div class="formula-notice"><strong>Excel 公式待确认</strong><span>Shore Tk 的罐壁温度修正中存在 ABS(温差) &lt; 0 的条件，该条件数学上永远不成立。原型保留 Excel 当前修正结果，不擅自改写业务规则。</span></div>`;
+    }
+
+    function renderOutput() {
+      const t = totalsFor(shoreReadings);
+      const outputRows = [
+        ["US Barrels (Obsd. Temp.)", "观测温度美制桶", "bbls", t.receivedGsv * 6.289812, t.receivedNsv * 6.289812],
+        ["Cubic Meters (Obsd. Temp.)", "观测温度立方米", "m³", t.receivedGsv, t.receivedNsv],
+        ["US Barrels (60℉)", "60℉美制桶", "bbls", t.receivedGsv * 6.289812, t.receivedNsv * 6.289812],
+        ["US Gallon (60℉)", "60℉美制加仑", "US gal", t.receivedGsv * 6.289812 * 42, t.receivedNsv * 6.289812 * 42],
+        ["Cubic Meters (15℃)", "15℃立方米", "m³", t.receivedGsv, t.receivedNsv],
+        ["Cubic Meters (20℃)", "20℃立方米", "m³", 0, 0],
+        ["Cubic Meters (30℃)", "30℃立方米", "m³", 0, 0],
+        ["Metric Tons (in vacuo)", "真空中公吨", "MT", 0, 0],
+        ["Metric Tons (in air)", "空气中公吨", "MT", t.receivedGrossWeight, t.receivedNetWeight],
+        ["Long Tons (in vacuo)", "真空中长吨", "LT", 0, 0],
+        ["Long Tons (in air)", "空气中长吨", "LT", t.receivedGrossWeight * 0.9842065276, t.receivedNetWeight * 0.9842065276],
+      ];
+      const rows = outputRows.map(([en, zh, unit, gross, net]) => {
+        const zero = gross === 0 && !en.includes("Observed");
+        return `<tr><th>${en}</th><td>${zh}</td><td>${unit}</td><td class="number strong">${fmt(gross, (unit.includes("gal") || unit === "bbls") ? 2 : 3)}</td><td class="number">${fmt(net, (unit.includes("gal") || unit === "bbls") ? 2 : 3)}</td><td><span class="status-pill ${zero ? "warning" : "success"}">${zero ? "Excel 当前为 0" : "已计算"}</span></td></tr>`;
+      }).join("");
+      $("panel-output").innerHTML = `
+        <section class="quantity-summary-strip"><dl><dt>GROSS RESULT<small>方向计算标准毛体积</small></dt><dd>${fmt(t.receivedGsv, 3)} m³</dd></dl><b>→</b><dl><dt>NET RESULT<small>扣除 S&amp;W 后标准净体积</small></dt><dd>${fmt(t.receivedNsv, 3)} m³</dd></dl><b>→</b><dl><dt>DISCHARGE SUMMARY<small>Received 模式进入卸货摘要</small></dt><dd>Shore Tanks Received Quantity</dd></dl></section>
+        <section class="table-card shore-output-card"><div class="table-toolbar"><strong>Inventory / Received Quantity Units · Excel 多单位输出</strong><span>对应 Shore Tk 第 162–207 行及 Discharge Summary 第 56 行</span></div><div class="table-scroll"><table><thead><tr><th>Quantity Unit<small>数量单位</small></th><th>Chinese<small>中文</small></th><th>Unit</th><th>Gross Quantity<small>毛量</small></th><th>Net Quantity<small>净量</small></th><th>Source Status<small>来源状态</small></th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    }
+
+    function renderIssues() {
+      $("panel-issues").innerHTML = `
+        <div class="issues-list" aria-live="polite">
+          <article><span class="issue-code">S-001</span><div><h3>罐壁温度修正公式包含不可能成立的条件</h3><p>Excel 使用 ABS(温差) &lt; 0；绝对值不可能小于 0。需要确认原意是 &lt; 10、≤ 0，还是其他阈值。</p></div><button type="button" data-goto="calculation">查看公式链</button></article>
+          <article><span class="issue-code">S-002</span><div><h3>Shore Tk (2) 的第六组 Close 日期无有效日期</h3><p>原单元格显示异常的“2022/1/0”形态，原型保留为空值，不能代替业务人员推断日期。</p></div><button type="button" data-goto="entry">定位记录位</button></article>
+          <article><span class="issue-code">S-003</span><div><h3>后两组名称均为“管线”，适用场景不明确</h3><p>需要确认它们是管线体积占位、独立岸罐，还是 ITT/管输模板遗留数据。</p></div><button type="button" id="masterBtn2">查看岸罐资料</button></article>
+          <article><span class="issue-code">S-004</span><div><h3>Thermal expansion coefficient α60℉ 数值口径异常</h3><p>同一行同时出现 0.00046、0.05、0.231 和 0，需要确认部分单元格是否实际承载其他参数或单位。</p></div><button type="button" data-goto="entry">查看原字段</button></article>
+        </div>`;
+    }
+
+    $("workspace").addEventListener("change", (e) => {
+      const t = e.target;
+      if (t.dataset.field && t.dataset.phase && t.dataset.id) {
+        const row = shoreReadings.find(r => r.id === Number(t.dataset.id));
+        if (!row) return;
+        let v = t.value;
+        if (t.type === "number") v = v === "" ? 0 : Number(v);
+        row[t.dataset.phase][t.dataset.field] = v;
+        publishedTotals = null;
+        $("calculationStatus").textContent = "数据已修改，请运行计算更新汇总";
+        renderEntry();
+      }
+    });
+
+    const saveState = $("saveState");
+    function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+    document.querySelectorAll('input[name="tankSource"]').forEach((input) => input.addEventListener("change", () => {
+      const manual = document.querySelector('input[name="tankSource"]:checked').value === "manual";
+      $("masterTankField").hidden = manual;
+      $("manualTankField").hidden = !manual;
+      if (manual) $("manualTankName").focus();
+    }));
+    $("cancelAddTank").addEventListener("click", () => $("addTankDialog").close());
+    $("addTankForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const manual = document.querySelector('input[name="tankSource"]:checked').value === "manual";
+      const tank = (manual ? $("manualTankName").value : $("masterTankSelect").value).trim();
+      if (!tank) return flash("请输入岸罐编号");
+      if (shoreReadings.some((row) => row.tank === tank)) return flash("该岸罐已在当前录入列表中");
+      $("addTankDialog").close();
+      createTank(tank, $("newTankType").value);
+    });
+    $("cancelEditTank").addEventListener("click", () => $("editTankDialog").close());
+    $("editTankForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const row = shoreReadings.find((item) => item.id === selectedTankId);
+      const tank = $("editTankName").value.trim();
+      if (!row || !tank) return;
+      if (shoreReadings.some((item) => item.id !== row.id && item.tank === tank)) return flash("该岸罐已在当前录入列表中");
+      row.tank = tank;
+      row.assetType = $("editTankType").value;
+      $("editTankDialog").close();
+      renderMetrics();
+      renderEntry();
+      flash("岸罐信息已更新");
+    });
+    $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
+    $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
+    $("masterBtn").addEventListener("click", () => flash("（演示）岸罐基础资料在「基础资料」模块"));
+    $("tableBtn").addEventListener("click", () => flash("（演示）罐容表版本在「基础资料」模块"));
+    $("validateBtn").addEventListener("click", () => {
+      publishedTotals = totalsFor(shoreReadings);
+      renderMetrics();
+      $("calculationStatus").textContent = "计算完成：计量汇总已更新";
+      flash("计算完成，结果已同步至计量汇总");
+    });
+
+    renderContext();
+    renderMetrics();
+    renderEntry();
+  </script>
+</body>
+</html>

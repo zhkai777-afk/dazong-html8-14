@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步骤 05 · 卸货后 ROB | 卸货检验作业台</title>
+  <link rel="stylesheet" href="step-common.css">
+</head>
+<body class="embedded-content">
+  <main class="app-shell">
+    <a class="skip-link" href="#workspace">跳到主要工作区</a>
+
+    <aside class="global-sidebar" aria-label="主导航">
+      <div class="product-mark" aria-label="容量计重离线工作台">
+        <span class="mark-square">CQ</span>
+        <span><strong>容量计重</strong><small>Quantity Survey · Offline</small></span>
+      </div>
+      <nav class="global-nav">
+        <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
+        <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
+        <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
+        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+      </nav>
+      <div class="offline-card"><span class="status-dot" aria-hidden="true"></span><div><strong>离线模式</strong><small>数据仅保存在本机</small></div></div>
+    </aside>
+
+    <section class="main-stage">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">项目 / 卸货检验 / 210225050087</div>
+          <h1>MT SAIQ · 卸货检验</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="project-state">现场作业中</span>
+          <span class="save-state" id="saveState">草稿已保存</span>
+          <button type="button" class="button secondary" id="saveDraftBtn">保存草稿</button>
+          <button type="button" class="button primary" id="reportBtn">报告预览</button>
+        </div>
+      </header>
+
+      <div class="project-strip">
+        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+        <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
+        <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
+      </div>
+
+      <div class="workbench-grid">
+        <aside class="workflow-panel" aria-label="卸货检验步骤">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Workflow · 流程进度</p><h2>Discharge Survey <small>卸货检验</small></h2></div>
+            <strong id="progressLabel">69%</strong>
+          </div>
+          <div class="progress-track" aria-label="整体完成度 69%"><span id="progressBar" style="width: 69%"></span></div>
+          <ol class="workflow-list">
+            <li class="done"><a href="step-01-project-setup.html"><span class="step-index">01</span><span class="step-copy"><strong>项目与报告设置</strong><em>Project &amp; Report Setup</em><small>已完成</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-02-timeline.html"><span class="step-index">02</span><span class="step-copy"><strong>作业时间线</strong><em>Operation Timeline</em><small>14 / 17 项</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-03-arrival-ullage.html"><span class="step-index">03</span><span class="step-copy"><strong>抵港船舱计量</strong><em>Arrival Tank Measurement</em><small>17 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-04-shore-tank.html"><span class="step-index">04</span><span class="step-copy"><strong>岸罐接收计量</strong><em>Shore Tank Measurement</em><small>6 组 Open / Close</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="active"><a href="step-05-rob.html" aria-current="step"><span class="step-index">05</span><span class="step-copy"><strong>卸货后 ROB</strong><em>ROB After Discharge</em><small>8 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-06-vef.html"><span class="step-index">06</span><span class="step-copy"><strong>VEF 经验系数</strong><em>Vessel Experience Factor</em><small>5 个有效航次</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-07-comparison.html"><span class="step-index">07</span><span class="step-copy"><strong>数量对比</strong><em>Quantity Comparison</em><small>动态计算</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="idle"><a href="step-08-reports.html"><span class="step-index">08</span><span class="step-copy"><strong>报告包</strong><em>Report Package</em><small>0 / 8 份</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+          </ol>
+        </aside>
+
+        <section class="workspace" id="workspace">
+          <div class="metric-row" aria-label="ROB 汇总" id="robMetrics"><!-- rendered by JS --></div>
+
+          <div id="panel-entry"><!-- rendered by JS --></div>
+
+          <footer class="workspace-footer">
+            <div><strong>下一步：VEF 经验系数</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
+            <a class="button primary" href="step-06-vef.html">保存并进入下一步</a>
+          </footer>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const fmt = (value, digits = 3) => new Intl.NumberFormat("zh-CN", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+
+    const robReadings = [
+      "1C", "2C", "3C", "4C", "5C", "1P", "1S", "2P", "2S", "3P", "3S", "4P", "4S", "5P", "5S", "Slop P", "Slop S"
+    ].map((tank, id) => ({ id: id + 1, tank, measurementPosition: "A", liquidIU: "I", liquidGauge: 0, correctedGauge: 0, liquidTable: 0, liquidCalculated: "n/a", nonLiquid: 0, waterIU: "I", waterGauge: 0, waterTable: 0, waterCalculated: "n/a", net: 0, temperature: "n/a", vcf: 1, gsv: 0 }));
+
+    const $ = (id) => document.getElementById(id);
+
+    function renderMetrics() {
+      $("robMetrics").innerHTML = `
+        <article><span>计量舱柜</span><strong>17 / 17</strong><small>全部舱柜已记录</small></article>
+        <article><span>总液态体积</span><strong>0.00</strong><small>美制桶 @60°F</small></article>
+        <article><span>总含水体积</span><strong>0.00</strong><small>美制桶 @60°F</small></article>
+        <article class="metric-accent"><span>总标准体积</span><strong>0.00</strong><small>美制桶 @60°F</small></article>`;
+    }
+
+    function renderEntry() {
+      const rows = robReadings.map((r) => {
+        const input = (field, value, label) => `<input class="rob-cell-input" type="text" value="${value}" aria-label="${r.tank} ${label}" data-field="${field}" data-id="${r.id}">`;
+        const positionSelect = `<select class="rob-cell-input rob-position-select" aria-label="${r.tank} 计量口位置" data-field="measurementPosition" data-id="${r.id}"><option value="F"${r.measurementPosition === "F" ? " selected" : ""}>F</option><option value="C"${r.measurementPosition === "C" ? " selected" : ""}>C</option><option value="A"${r.measurementPosition === "A" ? " selected" : ""}>A</option><option value="M"${r.measurementPosition === "M" ? " selected" : ""}>M</option></select>`;
+        const iuSelect = (field, value, label) => `<select class="rob-cell-input rob-iu-select" aria-label="${r.tank} ${label}" data-field="${field}" data-id="${r.id}"><option value="I"${value === "I" ? " selected" : ""}>I</option><option value="U"${value === "U" ? " selected" : ""}>U</option></select>`;
+        return `<tr>
+          <th scope="row">${input("tank", r.tank, "舱号")}</th>
+          <td>${positionSelect}</td><td>${iuSelect("liquidIU", r.liquidIU, "液位 I/U")}</td><td class="number">${input("liquidGauge", fmt(r.liquidGauge), "液位读数")}</td><td class="number">${input("correctedGauge", fmt(r.correctedGauge), "修正后液位")}</td>
+          <td class="number">${input("liquidTable", fmt(r.liquidTable, 2), "液体表体积")}</td><td class="number">${input("liquidCalculated", r.liquidCalculated, "液体楔形计算")}</td><td class="number">${input("nonLiquid", fmt(r.nonLiquid, 2), "非液体体积")}</td>
+          <td>${iuSelect("waterIU", r.waterIU, "游离水 I/U")}</td><td class="number">${input("waterGauge", fmt(r.waterGauge), "游离水读数")}</td><td class="number">${input("waterTable", fmt(r.waterTable, 2), "游离水表体积")}</td><td class="number">${input("waterCalculated", r.waterCalculated, "游离水楔形计算")}</td>
+          <td class="number strong">${input("net", fmt(r.net, 2), "净表观体积")}</td><td class="number">${input("temperature", r.temperature, "温度")}</td><td class="number">${input("vcf", r.vcf.toFixed(4), "体积修正系数")}</td><td class="number strong">${input("gsv", fmt(r.gsv, 2), "总标准体积")}</td>
+        </tr>`;
+      }).join("");
+      $("panel-entry").innerHTML = `
+        <div class="table-card rob-table"><div class="table-scroll"><table>
+          <thead><tr><th rowspan="3" scope="col">舱号</th><th rowspan="3" scope="col">计量口<br>位置<br>(1)</th><th colspan="3" scope="colgroup">液位</th><th colspan="3" scope="colgroup">总表观体积</th><th colspan="4" scope="colgroup">游离水</th><th rowspan="3" scope="col">净表观体积<br>美制桶</th><th rowspan="3" scope="col">温度<br>°F</th><th rowspan="3" scope="col">体积修正系数<br>T-6A<br>2004版</th><th rowspan="3" scope="col">总标准体积<br>美制桶<br>@60°F</th></tr><tr><th rowspan="2">I/U<br>(2)</th><th rowspan="2">读数<br>米</th><th rowspan="2">修正后<br>米</th><th colspan="2">液体</th><th rowspan="2">非液体<br>美制桶</th><th colspan="2">液位</th><th colspan="2">体积</th></tr><tr><th>表体积<br>美制桶</th><th>楔形计算<br>美制桶</th><th>I/U<br>(2)</th><th>读数<br>米</th><th>表体积<br>美制桶</th><th>楔形计算<br>美制桶</th></tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot><tr><th scope="row" colSpan="12">卸货后船舱余量合计</th><td>0.00</td><td>—</td><td>—</td><td>0.00</td></tr></tfoot>
+        </table></div></div>
+        <section class="rob-bottom-area" aria-label="卸货后船舱底量与作业记录">
+          <div class="rob-summary-block">
+            <label class="api-field">API(60°F)<input class="rob-summary-input" type="text" value="35.65" aria-label="API 60 华氏度"></label><span>°</span>
+            <h3>卸货后船舱底量合计</h3>
+            <dl>
+              <div><dt>总标准体积</dt><dd><input class="rob-summary-input" type="text" value="0.00" aria-label="总标准体积"> <span>美制桶@60°F</span></dd></div>
+              <div><dt>游离水</dt><dd><input class="rob-summary-input" type="text" value="0.00" aria-label="游离水"> <span>美制桶@60°F</span></dd></div>
+              <div><dt>总计净体积</dt><dd><input class="rob-summary-input" type="text" value="0.00" aria-label="总计净体积"> <span>美制桶@60°F</span></dd></div>
+              <div><dt>液体</dt><dd><input class="rob-summary-input" type="text" value="0.00" aria-label="液体"> <span>美制桶@60°F</span></dd></div>
+              <div><dt>非液体</dt><dd><input class="rob-summary-input" type="text" value="0.00" aria-label="非液体"> <span>美制桶@60°F</span></dd></div>
+            </dl>
+          </div>
+          <div class="rob-operation-block">
+            <table aria-label="扫线排空及海底阀记录"><thead><tr><th></th><th>扫线</th><th>排空</th><th>至船舶</th></tr></thead><tbody>
+              <tr><th>甲板管线</th><td><select class="rob-operation-select" aria-label="甲板管线扫线"><option selected>否</option><option>是</option></select></td><td><select class="rob-operation-select" aria-label="甲板管线排空"><option>否</option><option selected>是</option></select></td><td contenteditable="true">3S</td></tr>
+              <tr><th>船底管线</th><td><select class="rob-operation-select" aria-label="船底管线扫线"><option>否</option><option selected>是</option></select></td><td><select class="rob-operation-select" aria-label="船底管线排空"><option selected>否</option><option>是</option></select></td><td contenteditable="true">3S</td></tr>
+              <tr><th>输油软管/输油臂</th><td><select class="rob-operation-select" aria-label="输油软管或输油臂扫线"><option selected>否</option><option>是</option></select></td><td><select class="rob-operation-select" aria-label="输油软管或输油臂排空"><option>否</option><option selected>是</option></select></td><td contenteditable="true">3S</td></tr>
+              <tr><th colspan="3">卸货过程中使用的压载水舱</th><td contenteditable="true">3S</td></tr>
+              <tr><th rowspan="3">海底阀封号</th><td><input class="rob-operation-input" type="text" value="左舷" aria-label="海底阀封号位置一"></td><td colspan="2" contenteditable="true">--</td></tr>
+              <tr><td><input class="rob-operation-input" type="text" value="右舷" aria-label="海底阀封号位置二"></td><td colspan="2" contenteditable="true">--</td></tr>
+              <tr><td><input class="rob-operation-input" type="text" value="出海阀" aria-label="海底阀封号位置三"></td><td colspan="2" contenteditable="true">--</td></tr>
+            </tbody></table>
+          </div>
+        </section>`;
+    }
+
+    const saveState = $("saveState");
+    function updateReading(event) {
+      const field = event.target.dataset.field;
+      const id = Number(event.target.dataset.id);
+      if (!field || !id) return;
+      const reading = robReadings.find((item) => item.id === id);
+      if (reading) reading[field] = event.target.value;
+    }
+    $("workspace").addEventListener("input", updateReading);
+    $("workspace").addEventListener("change", updateReading);
+    function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+    $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
+    $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
+
+    renderMetrics();
+    renderEntry();
+  </script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步骤 03 · 抵港船舱计量 | 卸货检验作业台</title>
+  <link rel="stylesheet" href="step-common.css">
+  <style>
+    .ullage-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 14px; }
+    .ullage-source-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .interpolation-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 650; color: var(--text); }
+    .interpolation-toggle input { inline-size: 16px; block-size: 16px; accent-color: var(--primary); }
+    .interpolation-modal { width: min(680px, calc(100vw - 32px)); border: 0; border-radius: 12px; padding: 0; color: var(--text); box-shadow: 0 20px 60px rgba(18, 37, 60, .3); }
+    .interpolation-modal::backdrop { background: rgba(17, 31, 48, .38); }
+    .interpolation-modal header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); background: var(--primary-soft); }
+    .interpolation-modal h3, .interpolation-modal p { margin: 0; }
+    .interpolation-modal h3 { font-size: 16px; }
+    .interpolation-modal header p, .interpolation-note { margin-top: 4px; color: var(--text-secondary); font-size: 11px; }
+    .interpolation-body { padding: 18px; }
+    .interpolation-tip { margin: 0 0 16px; padding: 10px 12px; border-radius: 6px; background: #e6f1ff; color: #2375d8; font-size: 12px; }
+    .bilinear-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 8px; }
+    .bilinear-cell { min-height: 72px; border: 1px solid #aeb7c2; border-radius: 5px; background: #f7f7f7; display: grid; place-items: center; padding: 8px; text-align: center; }
+    .bilinear-cell input { width: 100%; min-height: 38px; border: 1px solid #4b9cff; border-radius: 4px; background: #edf6ff; padding: 0 8px; text-align: center; font-size: 14px; color: var(--text); }
+    .bilinear-cell.input { background: #eaf4ff; border-color: #4b9cff; }
+    .bilinear-cell.result { color: #687587; font-size: 13px; font-weight: 700; }
+    .bilinear-cell .cell-name { display: block; color: #ef4949; font-size: 16px; font-weight: 800; line-height: 1; }
+    .bilinear-cell .cell-value { display: block; margin-top: 5px; font-size: 13px; color: var(--text); }
+    .bilinear-corner { align-items: stretch; background: linear-gradient(to top right, transparent 49.4%, #aeb7c2 50%, transparent 50.6%), #f7f7f7; }
+    .bilinear-corner span { font-size: 11px; font-weight: 700; }
+    .bilinear-corner span:first-child { justify-self: end; }.bilinear-corner span:last-child { justify-self: start; }
+    .interpolation-result { margin-top: 14px; padding: 12px; border-radius: 5px; background: #edf7f1; color: #125b45; font-size: 12px; }
+    .interpolation-modal footer { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); }
+    .tov-interpolation { width: 100%; min-height: 28px; border: 1px solid #8ca6c3; border-radius: 4px; background: #f5f9fd; color: var(--primary); font-size: 10px; font-weight: 700; }
+    .add-tank-row { display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; padding: 2px 5px; border: 1px solid #9ab7d6; border-radius: 3px; background: #f5f9fd; color: var(--primary); font-size: 8px; font-weight: 700; white-space: nowrap; }
+    .delete-tank-row { display: inline-flex; align-items: center; margin-top: 4px; padding: 2px 5px; border: 1px solid #e3b8b8; border-radius: 3px; background: #fff8f8; color: #b53d3d; font-size: 8px; font-weight: 700; }
+    .custom-tank-name { width: 100%; min-width: 62px; min-height: 27px; border: 1px solid #8ca6c3; border-radius: 4px; padding: 0 5px; font-weight: 700; }
+  </style>
+</head>
+<body class="embedded-content">
+  <main class="app-shell">
+    <a class="skip-link" href="#workspace">跳到主要工作区</a>
+
+    <aside class="global-sidebar" aria-label="主导航">
+      <div class="product-mark" aria-label="容量计重离线工作台">
+        <span class="mark-square">CQ</span>
+        <span>
+          <strong>容量计重</strong>
+          <small>Quantity Survey · Offline</small>
+        </span>
+      </div>
+      <nav class="global-nav">
+        <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
+        <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
+        <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
+        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+      </nav>
+      <div class="offline-card">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div><strong>离线模式</strong><small>数据仅保存在本机</small></div>
+      </div>
+    </aside>
+
+    <section class="main-stage">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">项目 / 卸货检验 / 210225050087</div>
+          <h1>MT SAIQ · 卸货检验</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="project-state">现场作业中</span>
+          <span class="save-state" id="saveState">草稿已保存</span>
+          <button type="button" class="button secondary" id="saveDraftBtn">保存草稿</button>
+          <button type="button" class="button primary" id="reportBtn">报告预览</button>
+        </div>
+      </header>
+
+      <div class="project-strip">
+        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+        <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
+        <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
+      </div>
+
+      <div class="workbench-grid">
+        <aside class="workflow-panel" aria-label="卸货检验步骤">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Workflow · 流程进度</p><h2>Discharge Survey <small>卸货检验</small></h2></div>
+            <strong id="progressLabel">50%</strong>
+          </div>
+          <div class="progress-track" aria-label="整体完成度 50%"><span id="progressBar" style="width: 50%"></span></div>
+          <ol class="workflow-list">
+            <li class="done"><a href="../HTML-8-6/step-01-project-setup.html"><span class="step-index">01</span><span class="step-copy"><strong>项目与报告设置</strong><em>Project &amp; Report Setup</em><small>已完成</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="../HTML-8-6/step-02-timeline.html"><span class="step-index">02</span><span class="step-copy"><strong>作业时间线</strong><em>Operation Timeline</em><small>14 / 17 项</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="active"><a href="step-03-arrival-ullage.html" aria-current="step"><span class="step-index">03</span><span class="step-copy"><strong>抵港船舱计量</strong><em>Arrival Tank Measurement</em><small>17 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="../HTML-8-6/step-04-shore-tank.html"><span class="step-index">04</span><span class="step-copy"><strong>岸罐接收计量</strong><em>Shore Tank Measurement</em><small>6 组 Open / Close</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="../HTML-8-6/step-05-rob.html"><span class="step-index">05</span><span class="step-copy"><strong>卸货后 ROB</strong><em>ROB After Discharge</em><small>8 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="../HTML-8-6/step-06-vef.html"><span class="step-index">06</span><span class="step-copy"><strong>VEF 经验系数</strong><em>Vessel Experience Factor</em><small>5 个有效航次</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="../HTML-8-6/step-07-comparison.html"><span class="step-index">07</span><span class="step-copy"><strong>数量对比</strong><em>Quantity Comparison</em><small>动态计算</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="idle"><a href="../HTML-8-6/step-08-reports.html"><span class="step-index">08</span><span class="step-copy"><strong>报告包</strong><em>Report Package</em><small>0 / 8 份</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+          </ol>
+        </aside>
+
+        <section class="workspace" id="workspace">
+          <div class="workspace-heading ullage-heading">
+            <div><h2>Arrival Tank Measurement <small>抵港船舱计量</small></h2><p>录入抵港各舱液位、温度与游离水数据；需要时可启用内插工具，根据舱容表节点计算总观测体积。</p></div>
+          </div>
+
+          <section class="ullage-context-card" aria-label="项目摘要">
+            <div class="ullage-source-strip">
+              <dl><dt>VESSEL<small>船舶</small></dt><dd>MT SAIQ</dd></dl>
+              <dl><dt>PORT / TERMINAL<small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+            </div>
+          </section>
+
+          <div class="metric-row ullage-metrics" aria-label="船舱计量汇总" id="ullageMetrics"><!-- rendered by JS --></div>
+
+          <div class="ullage-actions" aria-label="计算工具">
+            <label class="interpolation-toggle"><input type="checkbox" id="useInterpolation">使用内插工具</label>
+            <button type="button" class="button primary" id="runCalculationBtn">运行计算</button>
+          </div>
+
+          <div id="panel-entry"><!-- rendered by JS --></div>
+
+          <dialog class="interpolation-modal" id="interpolationDialog" aria-labelledby="interpolationTitle">
+            <header><div><h3 id="interpolationTitle">内插计算</h3><p id="interpolationTankLabel">选择舱位后录入相邻舱容表节点</p></div><button type="button" class="button tertiary" id="closeInterpolationBtn">关闭</button></header>
+            <div class="interpolation-body">
+              <p class="interpolation-tip">● 请在蓝色格内录入查表值；Y2 自动带入修正后查表值，不可编辑。</p>
+              <div class="bilinear-grid" aria-label="双线性差值计算结构">
+                <div class="bilinear-cell bilinear-corner"><span>TRIM</span><span>SOUNDING</span></div>
+                <label class="bilinear-cell input"><span class="cell-name">X1</span><input type="number" step="0.001" id="x1" aria-label="X1"></label>
+                <div class="bilinear-cell result"><span class="cell-name">X2</span><span class="cell-value" id="x2Value">—</span></div>
+                <label class="bilinear-cell input"><span class="cell-name">X3</span><input type="number" step="0.001" id="x3" aria-label="X3"></label>
+                <label class="bilinear-cell input"><span class="cell-name">Y1</span><input type="number" step="0.001" id="y1" aria-label="Y1"></label>
+                <label class="bilinear-cell input"><span class="cell-name">X1Y1</span><input type="number" step="0.01" id="x1y1" aria-label="X1Y1"></label>
+                <div class="bilinear-cell result"><span class="cell-name">C</span><span class="cell-value" id="cValue">—</span></div>
+                <label class="bilinear-cell input"><span class="cell-name">X3Y1</span><input type="number" step="0.01" id="x3y1" aria-label="X3Y1"></label>
+                <div class="bilinear-cell result"><span class="cell-name">Y2</span><span class="cell-value" id="y2Value">—</span></div>
+                <div class="bilinear-cell result"><span class="cell-name">A</span><span class="cell-value" id="aValue">—</span></div>
+                <div class="bilinear-cell result"><span class="cell-name">E</span><span class="cell-value" id="eValue">—</span></div>
+                <div class="bilinear-cell result"><span class="cell-name">B</span><span class="cell-value" id="bValue">—</span></div>
+                <label class="bilinear-cell input"><span class="cell-name">Y3</span><input type="number" step="0.001" id="y3" aria-label="Y3"></label>
+                <label class="bilinear-cell input"><span class="cell-name">X1Y3</span><input type="number" step="0.01" id="x1y3" aria-label="X1Y3"></label>
+                <div class="bilinear-cell result"><span class="cell-name">D</span><span class="cell-value" id="dValue">—</span></div>
+                <label class="bilinear-cell input"><span class="cell-name">X3Y3</span><input type="number" step="0.01" id="x3y3" aria-label="X3Y3"></label>
+              </div>
+              <p class="interpolation-note">A、B 为沿 Y 轴的一次内插结果；E 为同时录入 X1/X3 时的双线性结果。带回 TOV 时优先使用 A，A 无值时使用 B。</p>
+              <div class="interpolation-result" id="interpolationResult">请填写 Y1、Y3 及对应的查表体积。</div>
+            </div>
+            <footer><button type="button" class="button secondary" id="resetInterpolationBtn">重置数据</button><button type="button" class="button secondary" id="cancelInterpolationBtn">取消</button><button type="button" class="button primary" id="saveInterpolationBtn">计算内差值并带回 TOV</button></footer>
+          </dialog>
+
+          <footer class="workspace-footer">
+            <div><strong>下一步：岸罐接收计量</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
+            <a class="button primary" href="../HTML-8-6/step-04-shore-tank.html">保存并进入下一步</a>
+          </footer>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const fmt = (value, digits = 3) => new Intl.NumberFormat("zh-CN", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+    const round3 = (v) => Math.round((v + Number.EPSILON) * 1000) / 1000;
+
+    const project = { jobNo: "210225050087", cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL", vesselName: "MT SAIQ", portName: "营口港", terminalName: "仙人岛原油码头", vcfVersion: "2004", sedimentWaterPct: 0.12 };
+    const conditions = { reportStage: "Before Discharging", inspectionDate: "2025-05-24", inspectionTime: "18:42", seaCondition: "Calm", levelDetectedBy: "UTI", utiSerialNo: "G17468", draftFwd: 19.8, draftAft: 19.8, trim: 0, trimState: "Even Keel", list: 0, listState: "Upright", fwDetectedBy: "UTI & Water Finding Paste", waterPasteBrand: "UNIVERSAL WATER FINDER PASTE", densityAt20: 0.8461, densitySuppliedBy: "LOADING PORT", applicant: "", clientReference: "" };
+
+    const readings = [
+      { id: 1, tank: "1C", hatch: "A", gaugeMethod: "U", observed: 4.020, corrected: 4.020, temperature: 16.7, tov: 154014.17, fwMethod: "I", fwInterface: 0.070, freeWater: 431.67, vcf: 0.99855 },
+      { id: 2, tank: "2C", hatch: "A", gaugeMethod: "U", observed: 3.940, corrected: 3.940, temperature: 16.6, tov: 190253.54, fwMethod: "I", fwInterface: 0.010, freeWater: 79.88, vcf: 0.99864 },
+      { id: 3, tank: "3C", hatch: "A", gaugeMethod: "U", observed: 4.910, corrected: 4.910, temperature: 16.8, tov: 182954.22, fwMethod: "I", fwInterface: 0.010, freeWater: 79.88, vcf: 0.99847 },
+      { id: 4, tank: "4C", hatch: "A", gaugeMethod: "U", observed: 3.840, corrected: 3.840, temperature: 17.0, tov: 191004.55, fwMethod: "I", fwInterface: 0.040, freeWater: 305.06, vcf: 0.99830 },
+      { id: 5, tank: "5C", hatch: "A", gaugeMethod: "U", observed: 3.740, corrected: 3.740, temperature: 16.9, tov: 186499.16, fwMethod: "I", fwInterface: "TRACE", freeWater: 0, vcf: 0.99838 },
+      { id: 6, tank: "1P", hatch: "A", gaugeMethod: "U", observed: 3.570, corrected: 3.570, temperature: 17.0, tov: 86450.29, fwMethod: "I", fwInterface: 0.050, freeWater: 67.93, vcf: 0.99830 },
+      { id: 7, tank: "1S", hatch: "A", gaugeMethod: "U", observed: 3.560, corrected: 3.560, temperature: 16.9, tov: 86489.92, fwMethod: "I", fwInterface: 0.040, freeWater: 55.35, vcf: 0.99838 },
+      { id: 8, tank: "2P", hatch: "A", gaugeMethod: "U", observed: 3.920, corrected: 3.920, temperature: 17.0, tov: 114960.12, fwMethod: "I", fwInterface: 0.040, freeWater: 133.66, vcf: 0.99830 },
+      { id: 9, tank: "2S", hatch: "A", gaugeMethod: "U", observed: 3.900, corrected: 3.900, temperature: 17.0, tov: 115056.35, fwMethod: "I", fwInterface: 0.030, freeWater: 101.58, vcf: 0.99830 },
+      { id: 10, tank: "3P", hatch: "A", gaugeMethod: "U", observed: 3.830, corrected: 3.830, temperature: 17.1, tov: 89488.90, fwMethod: "I", fwInterface: 0.020, freeWater: 54.72, vcf: 0.99821 },
+      { id: 11, tank: "3S", hatch: "A", gaugeMethod: "U", observed: 3.830, corrected: 3.830, temperature: 17.2, tov: 89488.90, fwMethod: "I", fwInterface: 0.020, freeWater: 54.72, vcf: 0.99813 },
+      { id: 12, tank: "4P", hatch: "A", gaugeMethod: "U", observed: 3.930, corrected: 3.930, temperature: 17.6, tov: 114887.78, fwMethod: "I", fwInterface: 0.060, freeWater: 198.13, vcf: 0.99779 },
+      { id: 13, tank: "4S", hatch: "A", gaugeMethod: "U", observed: 3.920, corrected: 3.920, temperature: 18.4, tov: 114935.59, fwMethod: "I", fwInterface: 0.090, freeWater: 295.62, vcf: 0.99710 },
+      { id: 14, tank: "5P", hatch: "A", gaugeMethod: "U", observed: 3.900, corrected: 3.900, temperature: 21.4, tov: 70315.04, fwMethod: "I", fwInterface: 0.070, freeWater: 107.18, vcf: 0.99455 },
+      { id: 15, tank: "5S", hatch: "A", gaugeMethod: "U", observed: 3.900, corrected: 3.900, temperature: 17.4, tov: 70315.04, fwMethod: "I", fwInterface: 0.130, freeWater: 195.74, vcf: 0.99796 },
+      { id: 16, tank: "SLOP P", hatch: "A", gaugeMethod: "U", observed: 3.260, corrected: 3.260, temperature: 96.6, tov: 24971.17, fwMethod: "I", fwInterface: 0.560, freeWater: 36.48, vcf: 0.92934 },
+      { id: 17, tank: "SLOP S", hatch: "A", gaugeMethod: "U", observed: 3.200, corrected: 3.200, temperature: 96.1, tov: 25066.78, fwMethod: "I", fwInterface: 0.510, freeWater: 32.71, vcf: 0.92978 },
+      { id: 18, tank: "P.Line", hatch: "A", gaugeMethod: "U", observed: 0, corrected: 0, temperature: "", tov: 0, fwMethod: "I", fwInterface: 0, freeWater: 0, vcf: 1.01271 },
+    ];
+    readings.forEach(r => { r.assetType = r.tank === "P.Line" ? "PIPELINE" : "TANK"; r.fwSource = r.fwInterface === "TRACE" ? "ULLAGE_IMPORTED" : "ULLAGE_IMPORTED"; });
+
+    let useInterpolation = false;
+    let interpolationTankId = null;
+    const $ = (id) => document.getElementById(id);
+
+    function ensureInterpolation(row) {
+      if (row.interpolation) return row.interpolation;
+      const span = row.tov === 0 ? 0 : Math.max(1, row.tov * 0.001);
+      row.interpolation = {
+        x1: "", x3: "",
+        y1: Number((row.corrected - 0.01).toFixed(3)),
+        y3: Number((row.corrected + 0.01).toFixed(3)),
+        x1y1: Math.max(0, row.tov - span), x1y3: row.tov + span,
+        x3y1: "", x3y3: "",
+      };
+      return row.interpolation;
+    }
+
+    function getBilinearValues(row) {
+      const p = ensureInterpolation(row);
+      const n = (value) => value === "" || value == null ? null : Number(value);
+      const y1 = n(p.y1), y2 = Number(row.corrected), y3 = n(p.y3);
+      const alongY = (first, last) => y1 == null || y3 == null || y1 === y3 || first == null || last == null ? null : first + (y2 - y1) * (last - first) / (y3 - y1);
+      const a = alongY(n(p.x1y1), n(p.x1y3));
+      const b = alongY(n(p.x3y1), n(p.x3y3));
+      const x1 = n(p.x1), x2 = Number(conditions.trim), x3 = n(p.x3);
+      const c = n(p.x1y1) != null && n(p.x3y1) != null ? n(p.x3y1) - n(p.x1y1) : null;
+      const d = n(p.x1y3) != null && n(p.x3y3) != null ? n(p.x3y3) - n(p.x1y3) : null;
+      const e = a != null && b != null && x1 != null && x3 != null && x1 !== x3 ? a + (x2 - x1) * (b - a) / (x3 - x1) : null;
+      return { a, b, c, d, e };
+    }
+
+    function interpolatedVolume(row) {
+      const { a, b } = getBilinearValues(row);
+      return Math.max(0, a ?? b ?? row.tov);
+    }
+
+    function addTankRow() {
+      const nextId = Math.max(...readings.map(row => row.id)) + 1;
+      const tankCount = readings.filter(row => row.assetType === "TANK").length + 1;
+      const row = { id: nextId, tank: `新增舱 ${tankCount}`, isCustom: true, assetType: "TANK", hatch: "A", gaugeMethod: "U", observed: 0, corrected: 0, temperature: 0, tov: 0, fwMethod: "I", fwInterface: 0, freeWater: 0, vcf: 1 };
+      const pipelineIndex = readings.findIndex(item => item.assetType === "PIPELINE");
+      readings.splice(pipelineIndex === -1 ? readings.length : pipelineIndex, 0, row);
+      renderMetrics(); renderEntry();
+      flash("已新增一行，请填写舱号和计量数据");
+    }
+
+    function deleteTankRow(id) {
+      const index = readings.findIndex(row => row.id === id && row.assetType === "TANK");
+      if (index === -1) return;
+      readings.splice(index, 1);
+      renderMetrics(); renderEntry();
+      flash("该舱位记录已删除，汇总已更新");
+    }
+
+    function computeTotals() {
+      return readings.reduce((s, r) => {
+        const gov = Math.max(r.tov - r.freeWater, 0);
+        return { tov: s.tov + r.tov, fw: s.fw + r.freeWater, gov: s.gov + gov, gsv: s.gsv + gov * r.vcf };
+      }, { tov: 0, fw: 0, gov: 0, gsv: 0 });
+    }
+
+    function renderMetrics() {
+      const t = computeTotals();
+      const fwPct = t.tov === 0 ? 0 : t.fw / t.tov * 100;
+      $("ullageMetrics").innerHTML = `
+        <article><span>Total Observed Volume · 总观测体积</span><strong>${fmt(t.tov, 2)}</strong><small>m³ · TOV</small></article>
+        <article><span>Total Free Water Volume · 游离水总体积</span><strong>${fmt(t.fw, 2)}</strong><small>m³ · 占 TOV ${fwPct.toFixed(3)}%</small></article>
+        <article class="metric-accent"><span>Gross Standard Volume · 标准毛体积</span><strong>${fmt(t.gsv, 3)}</strong><small>m³ @15℃ · GSV</small></article>`;
+    }
+
+    function renderEntry() {
+      const t = computeTotals();
+      const rows = readings.map((r) => {
+        const gov = Math.max(r.tov - r.freeWater, 0);
+        const trace = r.fwInterface === "TRACE";
+        const statusPill = trace ? `<span class="status-pill warning">TRACE</span>` : r.assetType === "PIPELINE" ? `<span class="status-pill neutral">管线记录</span>` : `<span class="status-pill success">已录入</span>`;
+        return `<tr class="${r.assetType === "PIPELINE" ? "pipeline-row" : ""}">
+          <th scope="row"><input class="custom-tank-name" type="text" value="${r.tank}" aria-label="${r.tank} 舱号" data-field="tank" data-id="${r.id}" />${r.assetType === "PIPELINE" ? "<small>管线</small>" : ""}</th>
+          <td><select data-field="hatch" data-id="${r.id}"><option${r.hatch === "F" ? " selected" : ""}>F</option><option${r.hatch === "C" ? " selected" : ""}>C</option><option${r.hatch === "A" ? " selected" : ""}>A</option></select></td>
+          <td><select data-field="gaugeMethod" data-id="${r.id}"><option${r.gaugeMethod === "U" ? " selected" : ""}>U</option><option${r.gaugeMethod === "I" ? " selected" : ""}>I</option></select></td>
+          <td><input type="number" step="0.001" value="${r.observed}" data-field="observed" data-id="${r.id}" /></td>
+          <td><input type="number" step="0.001" value="${r.corrected}" data-field="corrected" data-id="${r.id}" /></td>
+          <td><input type="number" step="0.1" value="${r.temperature}" placeholder="—" data-field="temperature" data-id="${r.id}" /></td>
+          <td>${useInterpolation ? `<button type="button" class="tov-interpolation" data-interpolation="${r.id}" title="编辑内插节点">${fmt(interpolatedVolume(r), 2)}</button>` : `<input type="number" step="0.01" value="${r.tov}" data-field="tov" data-id="${r.id}" />`}</td>
+          <td class="fw-cell"><select data-field="fwMethod" data-id="${r.id}" aria-label="${r.tank} 游离水空距或实高"><option${r.fwMethod === "U" ? " selected" : ""}>U</option><option${r.fwMethod === "I" ? " selected" : ""}>I</option></select></td>
+          <td class="fw-cell ${trace ? "trace-value" : ""}"><input type="text" inputmode="decimal" value="${r.fwInterface}" aria-label="${r.tank} 水界面高度" data-field="fwInterface" data-id="${r.id}" /></td>
+          <td class="fw-cell number"><input type="number" min="0" step="0.01" value="${r.freeWater}" aria-label="${r.tank} 游离水体积" data-field="freeWater" data-id="${r.id}" /></td>
+          <td class="calculated number">${fmt(gov, 2)}</td>
+          <td><input type="number" step="0.00001" value="${r.vcf}" data-field="vcf" data-id="${r.id}" /></td>
+          <td class="calculated number strong">${fmt(gov * r.vcf, 3)}</td>
+          <td class="fw-row-action">${statusPill}</td>
+          <td class="fw-row-action">${r.assetType === "TANK" ? `<button type="button" class="delete-tank-row" data-delete-tank="${r.id}">删除行</button>` : "—"}</td>
+        </tr>`;
+      }).join("");
+      $("panel-entry").innerHTML = `
+        <div class="table-card ullage-table-card">
+          <div class="table-scroll ullage-table-scroll"><table class="ullage-table">
+            <thead><tr class="group-header"><th rowSpan="2">Tank No.<small>舱号</small><button type="button" class="add-tank-row" id="addTankRowBtn">＋ 添加行</button></th><th rowSpan="2">G.H.L. (1)<small>检尺口位置</small></th><th colSpan="3">Gauge<small>液位测量</small></th><th rowSpan="2">Temp.<small>平均温度 · ℃</small></th><th rowSpan="2">Total Observed Volume<small>总观测体积 · m³</small></th><th colSpan="3" class="fw-group">Free Water<small>游离水</small></th><th rowSpan="2">Gross Observed Volume<small>观测毛体积 · m³</small></th><th rowSpan="2">VCF · T-54A<small>体积修正系数 · Ver. ${project.vcfVersion}</small></th><th rowSpan="2">Gross Standard Volume<small>标准毛体积 · m³ (15℃)</small></th><th rowSpan="2">Status<small>状态</small></th><th rowSpan="2">Action<small>操作</small></th></tr>
+            <tr><th>U/I (2)<small>空距 / 实高</small></th><th>Obs&apos;d<small>观测值 · m</small></th><th>Corr&apos;d<small>修正值 · m</small></th><th class="fw-group">U/I (2)<small>下拉选择</small></th><th class="fw-group">Interface<small>手动输入 · m</small></th><th class="fw-group">Volume<small>手动输入 · m³</small></th></tr></thead>
+            <tbody>${rows}</tbody>
+            <tfoot><tr><th scope="row" colSpan="6">TOTAL · ${readings.filter(r => r.assetType === "TANK").length} 舱 + P.Line</th><td>${fmt(t.tov, 2)}</td><td colSpan="2">—</td><td>${fmt(t.fw, 2)}</td><td>${fmt(t.gov, 2)}</td><td>—</td><td>${fmt(t.gsv, 3)}</td><td>3 项待确认</td><td>—</td></tr></tfoot>
+          </table></div>
+          <div class="excel-footnotes"><p><strong>(1) G.H.L.</strong> Gauge Hatch Location：F = Forward（前），C = Center（中），A = Aft（后）。</p><p><strong>(2) I/U</strong> Innage / Ullage：I = 实高，U = 空距。</p><p><strong>TRACE</strong> 原表 5C 的 Interface 为微量痕迹、Volume 为 0；这是原始状态，不等同于“未测量”。</p></div>
+        </div>`;
+    }
+
+    function updateFreeWaterDetail(row, changes) {
+      const next = Object.assign({}, row, changes);
+      let finalGauge = row.fwInterface;
+      let finalVolume = row.freeWater;
+      let determined = false;
+      const method = next.determinationMethod || "";
+      const num = (v) => (typeof v === "number" ? v : (v === "" || v == null ? undefined : Number(v)));
+      if (method === "UTI" && num(next.utiGauge) !== undefined && num(next.utiVolume) !== undefined) { finalGauge = num(next.utiGauge); finalVolume = num(next.utiVolume); determined = true; }
+      else if (method === "PASTE" && num(next.pasteGauge) !== undefined && num(next.pasteVolume) !== undefined) { finalGauge = num(next.pasteGauge); finalVolume = num(next.pasteVolume); determined = true; }
+      else if (method === "AVERAGE" && num(next.utiGauge) !== undefined && num(next.pasteGauge) !== undefined && num(next.utiVolume) !== undefined && num(next.pasteVolume) !== undefined) { finalGauge = round3((num(next.utiGauge) + num(next.pasteGauge)) / 2); finalVolume = round3((num(next.utiVolume) + num(next.pasteVolume)) / 2); determined = true; }
+      row.fwInterface = finalGauge;
+      row.freeWater = finalVolume;
+      row.fwSource = determined ? "DETERMINATION" : "ULLAGE_IMPORTED";
+    }
+
+    function renderFreeWater() {
+      const t = computeTotals();
+      const cargoTanks = readings.filter(r => r.assetType === "TANK");
+      const rows = cargoTanks.map((r) => {
+        const selected = r.id === selCalcId;
+        const determined = r.fwSource === "DETERMINATION";
+        return `<tr class="${selected ? "selected-fw-row" : ""}">
+          <th><button type="button" data-fwselect="${r.id}" aria-pressed="${selected}">${r.tank}<small>${selected ? "当前编辑" : "选择此舱"}</small></button></th>
+          <td class="imported-fw-value">${r.fwInterface === "" ? "—" : r.fwInterface}</td>
+          <td class="imported-fw-value number">${fmt(r.freeWater, 2)}</td>
+          <td><input aria-label="${r.tank} UTI 水高" inputmode="decimal" value="${r.utiGauge ?? ""}" placeholder="数值/TRACE" data-fwfield="utiGauge" data-id="${r.id}" /></td>
+          <td><input type="number" min="0" step="0.01" value="${r.utiVolume ?? ""}" data-fwfield="utiVolume" data-id="${r.id}" /></td>
+          <td><input aria-label="${r.tank} 试水膏水高" inputmode="decimal" value="${r.pasteGauge ?? ""}" placeholder="数值/TRACE" data-fwfield="pasteGauge" data-id="${r.id}" /></td>
+          <td><input type="number" min="0" step="0.01" value="${r.pasteVolume ?? ""}" data-fwfield="pasteVolume" data-id="${r.id}" /></td>
+          <td><select data-fwfield="bottomSampleVisible" data-id="${r.id}"><option value="">待选择</option><option${r.bottomSampleVisible === "YES" ? " selected" : ""}>YES</option><option${r.bottomSampleVisible === "NO" ? " selected" : ""}>NO</option></select></td>
+          <td><select data-fwfield="determinationMethod" data-id="${r.id}"><option value="">待选择</option><option${r.determinationMethod === "UTI" ? " selected" : ""}>UTI</option><option${r.determinationMethod === "PASTE" ? " selected" : ""}>Water Finding Paste</option><option${r.determinationMethod === "AVERAGE" ? " selected" : ""}>Average</option></select></td>
+          <td class="final-fw-value">${determined ? r.fwInterface : "—"}<small>${determined ? "已回写" : "等待判定"}</small></td>
+          <td class="final-fw-value number">${determined ? fmt(r.freeWater, 2) : "—"}<small>${determined ? "参与 GOV" : "未替换导入值"}</small></td>
+          <td><span class="status-pill ${determined ? "success" : "warning"}">${determined ? "已判定" : "待补依据"}</span></td>
+        </tr>`;
+      }).join("");
+      $("panel-freeWater").innerHTML = `
+        <section class="free-water-lineage">
+          <div><span>01</span><p><strong>UTI Measurement</strong><small>UTI 水高与体积</small></p></div><b>+</b>
+          <div><span>02</span><p><strong>Water Finding Paste</strong><small>试水膏水高与体积</small></p></div><b>+</b>
+          <div><span>03</span><p><strong>Bottom Sample</strong><small>底部样观察</small></p></div><b>→</b>
+          <div><span>04</span><p><strong>Final Determination</strong><small>最终 FW Interface / Volume</small></p></div><b>→</b>
+          <div class="lineage-result"><span>05</span><p><strong>Ullage Calculation</strong><small>回写主表并重算 GOV / GSV</small></p></div>
+        </section>
+        <div class="free-water-import-warning"><strong>数据迁移说明 / Migration Notice</strong><span>当前 Ullage 的最终 FW 结果已保留，但 Excel「Vsl FW」中的检测明细属于不同日期/批次且数值不一致，因此未自动导入。补录并完成判定后，系统才会把来源切换为“游离水测定”。</span></div>
+        <section class="free-water-context">
+          <header><div><p class="eyebrow">MEASUREMENT CONTEXT · 测定条件</p><h3>Free Water Measurement Report</h3></div><span class="source-badge project">与抵港计量共用项目快照</span></header>
+          <div><dl><dt>UTI SER. NO.<small>UTI 仪器编号</small></dt><dd>${conditions.utiSerialNo}</dd></dl><dl><dt>WATER FINDING PASTE<small>试水膏品牌</small></dt><dd>${conditions.waterPasteBrand}</dd></dl><dl><dt>DETECTED BY<small>检测方式</small></dt><dd>${conditions.fwDetectedBy}</dd></dl><dl><dt>DATE / TIME<small>测定日期时间</small></dt><dd>${conditions.inspectionDate} · ${conditions.inspectionTime}</dd></dl></div>
+        </section>
+        <div class="metric-row free-water-metrics">
+          <article><span>Tank Records · 舱位记录</span><strong>${cargoTanks.length}</strong><small>与抵港船舱清单共用</small></article>
+          <article><span>Determined · 已完成判定</span><strong>${cargoTanks.filter(r => r.fwSource === "DETERMINATION").length}</strong><small>完成后自动回写主表</small></article>
+          <article><span>Imported Result · 仅有导入结果</span><strong>${cargoTanks.filter(r => r.fwSource !== "DETERMINATION").length}</strong><small>缺少 UTI / 试水膏明细</small></article>
+          <article class="metric-accent"><span>Final FW Volume · 最终游离水</span><strong>${fmt(t.fw, 2)}</strong><small>m³ · 参与 GOV 计算</small></article>
+        </div>
+        <section class="table-card free-water-table-card">
+          <div class="table-toolbar"><div><strong>逐舱测定记录</strong><span>最终结果只由选定的判定方法生成</span></div><div><span class="legend-dot ok"></span> 已联动 <span class="legend-dot warn"></span> 待补测定依据</div></div>
+          <div class="table-scroll"><table class="free-water-table">
+            <thead><tr><th rowSpan="2">Tank No.<small>舱号</small></th><th colSpan="2">Current Ullage Result<small>当前抵港计量结果</small></th><th colSpan="2">Detected by UTI<small>UTI 检测</small></th><th colSpan="2">Water Finding Paste<small>试水膏检测</small></th><th rowSpan="2">Bottom Sample<small>底部样可见游离水</small></th><th rowSpan="2">Determination Method<small>最终判定方法</small></th><th colSpan="2">Final Determination<small>最终结果 / 自动回写</small></th><th rowSpan="2">Status<small>状态</small></th></tr>
+            <tr><th>Interface<small>水界面 · m</small></th><th>Volume<small>体积 · m³</small></th><th>Gauge<small>水高 · m</small></th><th>Volume<small>体积 · m³</small></th><th>Gauge<small>水高 · m</small></th><th>Volume<small>体积 · m³</small></th><th>Gauge<small>水高 · m</small></th><th>Volume<small>体积 · m³</small></th></tr></thead>
+            <tbody>${rows}</tbody>
+            <tfoot><tr><th colSpan="2">FINAL TOTAL · 最终合计</th><td>${fmt(t.fw, 2)}</td><td colSpan="6">完成判定后，同一条记录直接更新抵港主表，不产生第二份 FW 数据</td><td colSpan="2">${cargoTanks.filter(r => r.fwSource === "DETERMINATION").length} / ${cargoTanks.length} 已联动</td><td>m³</td></tr></tfoot>
+          </table></div>
+          <div class="free-water-rule-note"><strong>客户指示 / Client Instruction</strong><span>Excel 示例说明：底部样可见游离水时报告 UTI 结果，否则采用 UTI 与试水膏的平均值；但示例行存在不完全一致的选择，因此原型保留人工选择并要求后续由业务人员确认自动化规则。</span></div>
+        </section>`;
+    }
+
+    function renderCalculation() {
+      const t = computeTotals();
+      const excelStandardDensity15 = 849.7, excelSandWaterPct = 0.025, excelWcfMtAir = 0.848627984;
+      const netFactor = 1 - excelSandWaterPct / 100;
+      const quantityConversions = [
+        { label: "US Barrels (60℉)", zh: "60℉ 美制桶", factor: 6.292768373, digits: 2 },
+        { label: "Cubic Meters (15℃)", zh: "15℃ 标准立方米", factor: 1, digits: 3 },
+        { label: "Metric Tons (in air)", zh: "空气中公吨", factor: excelWcfMtAir, digits: 3 },
+        { label: "Long Tons (in air)", zh: "空气中长吨", factor: 0.8352252017, digits: 3 },
+      ];
+      const sel = readings.find(r => r.id === selCalcId) || readings[0];
+      const detailRows = readings.map((r) => {
+        const gov = Math.max(r.tov - r.freeWater, 0);
+        const selected = r.id === selCalcId;
+        return `<tr class="${selected ? "selected-calculation-row" : ""}">
+          <th><button type="button" data-calctrace="${r.id}">${r.tank}<small>${r.assetType === "PIPELINE" ? "Pipeline · 管线" : "View trace · 查看追溯"}</small></button></th>
+          <td class="input-value">${r.corrected.toFixed(3)}</td>
+          <td class="input-value">${r.temperature === "" ? "—" : r.temperature.toFixed(1)}</td>
+          <td class="input-value">${fmt(r.tov, 2)}</td>
+          <td class="input-value">${fmt(r.freeWater, 2)}</td>
+          <td class="formula-value">${fmt(gov, 2)}<small>= ${fmt(r.tov, 2)} − ${fmt(r.freeWater, 2)}</small></td>
+          <td class="formula-value">${r.vcf.toFixed(5)}<small>T-54A · ${project.vcfVersion}</small></td>
+          <td class="formula-value strong">${fmt(gov * r.vcf, 3)}<small>= GOV × VCF</small></td>
+          <td><span class="status-pill ${r.assetType === "PIPELINE" ? "neutral" : "success"}">${r.assetType === "PIPELINE" ? "管线记录" : "公式已复核"}</span></td>
+        </tr>`;
+      }).join("");
+      const qRows = quantityConversions.map((item) => {
+        const gross = t.gsv * item.factor;
+        const net = gross * netFactor;
+        return `<tr><th>${item.label}<small>${item.zh}</small></th><td class="number">${item.factor.toFixed(item.factor === 1 ? 0 : 9)}</td><td class="number">${fmt(gross, item.digits)}</td><td class="number">− ${fmt(gross - net, item.digits)}</td><td class="number strong">${fmt(net, item.digits)}</td></tr>`;
+      }).join("");
+      const sgov = Math.max(sel.tov - sel.freeWater, 0);
+      $("panel-calculation").innerHTML = `
+        <section class="calculation-lineage" aria-label="数据录入与计算明细关系">
+          <div><span class="lineage-index">01</span><p><strong>Data Entry</strong><small>数据录入：Gauge、温度、TOV、FW</small></p></div><b>→</b>
+          <div><span class="lineage-index">02</span><p><strong>Per-tank Calculation</strong><small>逐舱计算：GOV、VCF、GSV</small></p></div><b>→</b>
+          <div><span class="lineage-index">03</span><p><strong>Quantity Conversion</strong><small>汇总换算：标准体积、重量、毛量/净量</small></p></div><b>→</b>
+          <div><span class="lineage-index">04</span><p><strong>Report Output</strong><small>报告输出：Ullage Report / Quantity</small></p></div>
+        </section>
+        <div class="calculation-source-guide">
+          <span><i class="calc-source input"></i>Data Entry · 数据录入值</span><span><i class="calc-source parameter"></i>Project Parameter · 项目参数</span><span><i class="calc-source formula"></i>Excel Formula · 已确认公式</span><span><i class="calc-source pending"></i>Business Rule · 待业务确认</span>
+        </div>
+        <section class="calculation-basis">
+          <header><div><p class="eyebrow">CALCULATION BASIS · 计算依据</p><h3>当前项目参数与 Excel 口径</h3></div><span>来源：Ullage 页 105–110、133–148 行</span></header>
+          <div>
+            <dl><dt>VCF TABLE<small>VCF 表号</small></dt><dd>T-54A</dd><em class="calc-chip parameter">项目参数</em></dl>
+            <dl><dt>VCF VERSION<small>VCF 版本</small></dt><dd>${project.vcfVersion}</dd><em class="calc-chip parameter">项目参数</em></dl>
+            <dl><dt>DENSITY @20℃<small>20℃ 密度</small></dt><dd>${conditions.densityAt20.toFixed(4)} g/cm³</dd><em class="calc-chip input">报告输入</em></dl>
+            <dl><dt>STANDARD DENSITY @15℃<small>15℃ 标准密度</small></dt><dd>${excelStandardDensity15.toFixed(1)} kg/m³</dd><em class="calc-chip formula">Excel 结果</em></dl>
+            <dl><dt>WCF MT (AIR)<small>空气中公吨换算系数</small></dt><dd>${excelWcfMtAir.toFixed(9)}</dd><em class="calc-chip formula">Excel 结果</em></dl>
+            <dl class="${Math.abs(project.sedimentWaterPct - excelSandWaterPct) > 0.0001 ? "basis-warning" : ""}"><dt>S&amp;W % V/V<small>沉淀物和水体积百分比</small></dt><dd>${excelSandWaterPct.toFixed(3)}%</dd><em class="calc-chip pending">项目设置为 ${project.sedimentWaterPct}%</em></dl>
+          </div>
+        </section>
+        <section class="calculation-detail-card">
+          <header><div><p class="eyebrow">PER-TANK CALCULATION · 逐舱计算</p><h3>Excel 公式链与逐舱结果</h3></div><p>点击舱号查看该舱完整追溯链</p></header>
+          <div class="table-scroll"><table class="calculation-detail-table">
+            <thead><tr><th>Tank No.<small>舱号</small></th><th>Corr&apos;d<small>修正液位 · m</small></th><th>Temp.<small>温度 · ℃</small></th><th>TOV<small>总观测体积 · m³</small></th><th>FW Volume<small>游离水体积 · m³</small></th><th>GOV<small>TOV − FW · m³</small></th><th>VCF<small>vcf(...) 自定义函数</small></th><th>GSV<small>ROUND(GOV × VCF, 3)</small></th><th>Rule Status<small>规则状态</small></th></tr></thead>
+            <tbody>${detailRows}</tbody>
+            <tfoot><tr><th colSpan="3">TOTAL · 合计</th><td>${fmt(t.tov, 2)}</td><td>${fmt(t.fw, 2)}</td><td>${fmt(t.gov, 2)}</td><td>—</td><td>${fmt(t.gsv, 3)}</td><td>17 舱 + P.Line</td></tr></tfoot>
+          </table></div>
+        </section>
+        <section class="tank-trace-panel" aria-live="polite">
+          <header><div><p class="eyebrow">FORMULA TRACE · 公式追溯</p><h3>${sel.tank} · 从数据录入到报告结果</h3></div><span class="status-pill warning">2 项规则待确认</span></header>
+          <div class="tank-trace-grid">
+            <article><span>01 · Corr&apos;d</span><strong>${sel.corrected.toFixed(3)} m</strong><p>来自数据录入的修正液位。</p><em class="calc-chip pending">修正规则待确认</em></article>
+            <b>→</b><article><span>02 · TOV</span><strong>${fmt(sel.tov, 2)} m³</strong><p>根据修正液位取得总观测体积。</p><em class="calc-chip pending">舱容表逻辑待确认</em></article>
+            <b>−</b><article><span>03 · FW Volume</span><strong>${fmt(sel.freeWater, 2)} m³</strong><p>由 Free Water Interface 对应水体积。</p><em class="calc-chip input">数据录入</em></article>
+            <b>=</b><article><span>04 · GOV</span><strong>${fmt(sgov, 2)} m³</strong><p>Excel 明确公式：GOV = TOV − FW。</p><em class="calc-chip formula">公式已确认</em></article>
+            <b>×</b><article><span>05 · VCF</span><strong>${sel.vcf.toFixed(5)}</strong><p>vcf(Table, Version, Density, Temp, Cargo)。</p><em class="calc-chip formula">结构已确认</em></article>
+            <b>=</b><article><span>06 · GSV</span><strong>${fmt(sgov * sel.vcf, 3)} m³</strong><p>ROUND(GOV × VCF, 3)。</p><em class="calc-chip formula">公式已确认</em></article>
+          </div>
+        </section>
+        <section class="quantity-conversion-card">
+          <header><div><p class="eyebrow">TOTAL QUANTITY · 数量汇总</p><h3>Excel 表尾毛量、净量及单位换算</h3></div><p>Net = Gross × (1 − S&amp;W%)</p></header>
+          <div class="quantity-summary-strip"><dl><dt>Gross Standard Volume<small>标准毛体积</small></dt><dd>${fmt(t.gsv, 3)} m³</dd></dl><b>+</b><dl><dt>Total Free Water Volume<small>游离水总体积</small></dt><dd>${fmt(t.fw, 2)} m³</dd></dl><b>=</b><dl><dt>Total Calculated Volume<small>总计算体积</small></dt><dd>${fmt(t.gsv + t.fw, 3)} m³</dd></dl></div>
+          <div class="table-scroll"><table class="quantity-conversion-table"><thead><tr><th>Quantity Unit<small>数量单位</small></th><th>Conversion Factor<small>换算系数</small></th><th>Gross<small>毛量</small></th><th>S&amp;W Deduction<small>沉淀物和水扣除</small></th><th>Net<small>净量</small></th></tr></thead><tbody>${qRows}</tbody></table></div>
+          <div class="calculation-discrepancy"><strong>口径提示 / Basis Warning</strong><span>Excel Ullage 表尾的 S&amp;W 为 ${excelSandWaterPct.toFixed(3)}%，而当前“项目与报告设置”为 ${project.sedimentWaterPct.toFixed(3)}%。两者未确认前，正式软件不能静默选择其中一个。</span></div>
+        </section>`;
+    }
+
+    function renderIssues() {
+      $("panel-issues").innerHTML = `
+        <div class="issues-list" aria-live="polite">
+          <article><span class="issue-code">B-001</span><div><h3>Corr&apos;d 的生成逻辑尚未从 Excel 公式中确认</h3><p>字段已经按原表恢复，但需要业务人员确认它是人工录入，还是由 Obs&apos;d、Trim、List 和舱容表自动修正。</p></div><button type="button" data-goto="entry">查看字段</button></article>
+          <article><span class="issue-code">B-002</span><div><h3>5C 的 TRACE 需要确认报告规则</h3><p>原表 Interface 显示 TRACE、FW Volume 为 0。需确认软件中是否允许直接选“TRACE”，以及打印时是否必须保持英文。</p></div><button type="button" data-goto="entry">定位数据表</button></article>
+          <article><span class="issue-code">B-003</span><div><h3>项目设置与 Ullage 表尾的 S&amp;W 数值不一致</h3><p>项目设置当前为 ${project.sedimentWaterPct.toFixed(3)}%，Excel Ullage 表尾为 0.025%。需要确认最终净量计算采用哪个来源。</p></div><button type="button" data-goto="calculation">查看数量换算</button></article>
+        </div>`;
+    }
+
+    function renderAll() {
+      renderMetrics();
+      renderEntry();
+    }
+
+    $("workspace").addEventListener("change", (e) => {
+      const t = e.target;
+      // Entry table
+      if (t.dataset.field && t.dataset.id) {
+        const row = readings.find(r => r.id === Number(t.dataset.id));
+        if (!row) return;
+        let v = t.value;
+        if (t.type === "number") v = v === "" ? 0 : Number(v);
+        row[t.dataset.field] = v;
+        renderMetrics(); renderEntry();
+        return;
+      }
+    });
+
+    $("workspace").addEventListener("click", (e) => {
+      if (e.target.closest("#addTankRowBtn")) { addTankRow(); return; }
+      const deleteTank = e.target.closest("[data-delete-tank]");
+      if (deleteTank) { deleteTankRow(Number(deleteTank.dataset.deleteTank)); return; }
+      const interpolation = e.target.closest("[data-interpolation]");
+      if (interpolation) { openInterpolation(Number(interpolation.dataset.interpolation)); return; }
+    });
+
+    const saveState = $("saveState");
+    function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+
+    function updateInterpolationPreview() {
+      const row = readings.find(r => r.id === interpolationTankId);
+      if (!row) return;
+      const p = row.interpolation;
+      ["x1", "x3", "y1", "x1y1", "x3y1", "y3", "x1y3", "x3y3"].forEach((field) => { p[field] = $(field).value === "" ? "" : Number($(field).value); });
+      const values = getBilinearValues(row);
+      const show = (id, value) => { $(id).textContent = value == null || Number.isNaN(value) ? "—" : fmt(value, 2); };
+      $("x2Value").textContent = Number(conditions.trim).toFixed(3);
+      $("y2Value").textContent = Number(row.corrected).toFixed(3);
+      show("aValue", values.a); show("bValue", values.b); show("cValue", values.c); show("dValue", values.d); show("eValue", values.e);
+      const result = values.a ?? values.b;
+      $("interpolationResult").textContent = result == null
+        ? "请填写 Y1、Y3 及同一列对应的查表体积后计算。"
+        : `${row.tank} 的内插结果：${fmt(result, 2)} m³（${values.a != null ? "采用 A 值" : "A 值为空，采用 B 值"}）`;
+    }
+
+    function openInterpolation(id) {
+      const row = readings.find(r => r.id === id);
+      if (!row) return;
+      interpolationTankId = id;
+      const p = ensureInterpolation(row);
+      $("interpolationTankLabel").textContent = `${row.tank} · 修正液位 ${Number(row.corrected).toFixed(3)} m`;
+      ["x1", "x3", "y1", "x1y1", "x3y1", "y3", "x1y3", "x3y3"].forEach((field) => { $(field).value = p[field]; });
+      updateInterpolationPreview();
+      $("interpolationDialog").showModal();
+    }
+
+    $("useInterpolation").addEventListener("change", (e) => {
+      useInterpolation = e.target.checked;
+      renderEntry();
+      flash(useInterpolation ? "已启用内插工具：点击总观测体积编辑内插节点" : "已切换为手动输入总观测体积");
+    });
+    $("runCalculationBtn").addEventListener("click", () => {
+      if (!useInterpolation) { flash("当前为手动输入模式；启用内插工具后可运行内插计算"); return; }
+      readings.forEach((row) => { row.tov = Math.round(interpolatedVolume(row) * 100) / 100; });
+      renderMetrics(); renderEntry();
+      flash("内插计算已完成，汇总卡片与逐舱结果已更新");
+    });
+    ["x1", "x3", "y1", "x1y1", "x3y1", "y3", "x1y3", "x3y3"].forEach((id) => $(id).addEventListener("input", updateInterpolationPreview));
+    $("closeInterpolationBtn").addEventListener("click", () => $("interpolationDialog").close());
+    $("cancelInterpolationBtn").addEventListener("click", () => $("interpolationDialog").close());
+    $("resetInterpolationBtn").addEventListener("click", () => { const row = readings.find(r => r.id === interpolationTankId); if (!row) return; delete row.interpolation; const p = ensureInterpolation(row); ["x1", "x3", "y1", "x1y1", "x3y1", "y3", "x1y3", "x3y3"].forEach((field) => { $(field).value = p[field]; }); updateInterpolationPreview(); });
+    $("saveInterpolationBtn").addEventListener("click", () => { const row = readings.find(r => r.id === interpolationTankId); updateInterpolationPreview(); if (row) row.tov = Math.round(interpolatedVolume(row) * 100) / 100; $("interpolationDialog").close(); renderMetrics(); renderEntry(); flash("内插结果已带回总观测体积"); });
+    $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
+    $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
+
+    renderAll();
+  </script>
+</body>
+</html>

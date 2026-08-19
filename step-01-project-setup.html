@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步骤 01 · 项目与报告设置 | 卸货检验作业台</title>
+  <link rel="stylesheet" href="step-common.css">
+  <style>
+    /* 本页不展示字段来源标签，避免干扰表单阅读。 */
+    .settings-form .source-badge { display: none; }
+    #reportGroup { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 18px; }
+    #reportGroup label { min-width: 0; align-items: flex-start; }
+    #reportGroup label span { display: grid; gap: 1px; }
+    #reportGroup label span strong { font-weight: 650; }
+    #reportGroup label span small { color: var(--text-secondary); font-size: 9px; line-height: 1.25; }
+    @media (max-width: 920px) { #reportGroup { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  </style>
+</head>
+<body class="embedded-content">
+  <main class="app-shell">
+    <a class="skip-link" href="#workspace">跳到主要工作区</a>
+
+    <aside class="global-sidebar" aria-label="主导航">
+      <div class="product-mark" aria-label="容量计重离线工作台">
+        <span class="mark-square">CQ</span>
+        <span>
+          <strong>容量计重</strong>
+          <small>Quantity Survey · Offline</small>
+        </span>
+      </div>
+
+      <nav class="global-nav">
+        <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
+        <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
+        <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
+        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+      </nav>
+
+      <div class="offline-card">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong>离线模式</strong>
+          <small>数据仅保存在本机</small>
+        </div>
+      </div>
+    </aside>
+
+    <section class="main-stage">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">项目 / 卸货检验 / 210225050087</div>
+          <h1>MT SAIQ · 卸货检验</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="project-state">现场作业中</span>
+          <span class="save-state" id="saveState">草稿已保存</span>
+          <button type="button" class="button secondary" id="saveDraftBtn">保存草稿</button>
+          <button type="button" class="button primary" id="reportBtn">报告预览</button>
+        </div>
+      </header>
+
+      <div class="project-strip">
+        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+        <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
+        <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
+      </div>
+
+      <div class="workbench-grid">
+        <aside class="workflow-panel" aria-label="卸货检验步骤">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Workflow · 流程进度</p>
+              <h2>Discharge Survey <small>卸货检验</small></h2>
+            </div>
+            <strong id="progressLabel">13%</strong>
+          </div>
+          <div class="progress-track" aria-label="整体完成度 13%"><span id="progressBar" style="width: 13%"></span></div>
+          <ol class="workflow-list">
+            <li class="active"><a href="step-01-project-setup.html" aria-current="step"><span class="step-index">01</span><span class="step-copy"><strong>项目与报告设置</strong><em>Project &amp; Report Setup</em><small>已完成</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-02-timeline.html"><span class="step-index">02</span><span class="step-copy"><strong>作业时间线</strong><em>Operation Timeline</em><small>14 / 17 项</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-03-arrival-ullage.html"><span class="step-index">03</span><span class="step-copy"><strong>抵港船舱计量</strong><em>Arrival Tank Measurement</em><small>17 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-04-shore-tank.html"><span class="step-index">04</span><span class="step-copy"><strong>岸罐接收计量</strong><em>Shore Tank Measurement</em><small>6 组 Open / Close</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-05-rob.html"><span class="step-index">05</span><span class="step-copy"><strong>卸货后 ROB</strong><em>ROB After Discharge</em><small>8 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-06-vef.html"><span class="step-index">06</span><span class="step-copy"><strong>VEF 经验系数</strong><em>Vessel Experience Factor</em><small>5 个有效航次</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-07-comparison.html"><span class="step-index">07</span><span class="step-copy"><strong>数量对比</strong><em>Quantity Comparison</em><small>动态计算</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="idle"><a href="step-08-reports.html"><span class="step-index">08</span><span class="step-copy"><strong>报告包</strong><em>Report Package</em><small>0 / 8 份</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+          </ol>
+        </aside>
+
+        <section class="workspace" id="workspace">
+          <div class="workspace-heading settings-heading">
+            <div><h2>项目与报告设置</h2><p>先确定公共信息、计算口径和报告范围，再进入现场计量。</p></div>
+            <div class="context-actions"><button type="button" class="button tertiary" id="copyBtn">从历史项目复制</button><button type="button" class="button secondary" id="masterBtn">管理基础资料</button></div>
+          </div>
+
+          <div class="settings-change-warning" role="status" id="changeWarning" hidden><strong>设置已修改，尚未应用</strong><span>正式软件中，船舶、货物类别、密度类型或标准版本变化后，应把已有计算标记为“需要重新计算”。</span></div>
+
+          <form class="settings-form" id="settingsForm">
+            <section class="settings-section">
+              <header><div><span>01</span><h3>基本信息</h3></div><p>项目级数据</p></header>
+              <div class="form-grid">
+                <label class="setting-field"><span class="field-label"><span>作业号<b>*</b></span></span><input id="jobNo" value="210225050087" /></label>
+                <label class="setting-field"><span class="field-label"><span>报告日期<b>*</b></span></span><input type="date" id="reportDate" value="2025-05-26" /></label>
+                <label class="setting-field"><span class="field-label"><span>检验开始<b>*</b></span></span><input type="datetime-local" id="inspectionStart" value="2025-05-24T08:20" /></label>
+                <label class="setting-field"><span class="field-label"><span>检验结束</span></span><input type="datetime-local" id="inspectionEnd" value="2025-05-26T18:00" /></label>
+                <label class="setting-field"><span class="field-label"><span>作业类型<b>*</b></span></span><select id="operationType"><option value="DISCHARGE">卸货检验</option><option value="LOAD">装货检验</option><option value="STS">船对船 STS</option><option value="ITT">罐对罐 ITT</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>航次</span></span><input id="voyageNo" value="SAIQ-2505" /></label>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <header><div><span>02</span><h3>参与方与作业地点</h3></div><p>选择基础资料并确认作业地点</p></header>
+              <div class="form-grid">
+                <label class="setting-field"><span class="field-label"><span>委托方（中文）<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="clientName"><option>中国石油国际事业有限公司</option><option>中国联合石油有限责任公司</option><option>示例能源贸易有限公司</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>委托方（英文）</span><em class="source-badge master">基础资料</em></span><input id="clientNameEn" value="PETROCHINA INTERNATIONAL CO., LTD." /></label>
+                <label class="setting-field"><span class="field-label"><span>船舶<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="vesselName"><option>MT SAIQ</option><option>MT OCEAN CREST</option><option>MT EASTERN STAR</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>港口<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="portName"><option>营口港</option><option>青岛港</option><option>大连港</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>码头 / 油库<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="terminalName"><option>仙人岛原油码头</option><option>董家口原油码头</option><option>新港油库</option></select></label>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <header><div><span>03</span><h3>货物与计算参数</h3></div><p>关键字段变化需要重新计算</p></header>
+              <div class="form-grid">
+                <label class="setting-field"><span class="field-label"><span>货物名称（中文）<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoName"><option>阿曼出口混合原油</option><option>上扎库姆原油</option><option>0# 车用柴油</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>货物名称（英文）</span><em class="source-badge master">基础资料</em></span><input id="cargoNameEn" value="OMAN EXPORT BLEND CRUDE OIL" readonly /></label>
+                <label class="setting-field"><span class="field-label"><span>油品类别<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="cargoCategory"><option value="A">A · 原油</option><option value="B">B · 成品油</option><option value="C">C · 特殊/未知应用</option><option value="D">D · 润滑油</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>密度类型<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="densityType"><option value="DENSITY_15C">密度 @15℃</option><option value="DENSITY_20C">密度 @20℃</option><option value="API">API Gravity @60℉</option><option value="SG_60F">相对密度 SG 60/60℉</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>密度值<b>*</b></span><em class="source-badge project">项目填写</em></span><div class="compound-input" id="densityCompound"><input id="densityValue" type="number" step="0.0001" value="0.8598" aria-label="密度值" /><select id="densityUnit" aria-label="密度单位"></select></div><small id="densityHelper">当前解释为：15℃基准密度</small></label>
+                <label class="setting-field"><span class="field-label"><span>VCF 标准<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="vcfStandard"><option>ASTM D1250 / API MPMS 11.1</option><option>GB/T 1885</option><option>ASTM-IP Petroleum Measurement Tables</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>VCF 版本<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="vcfVersion"></select></label>
+                <label class="setting-field"><span class="field-label"><span>WCF 标准</span><em class="source-badge rule">系统规则</em></span><select id="wcfStandard"><option>API MPMS 11.5 (2013)</option><option>ASTM D1250 (1980)</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>沉淀物和水 S&amp;W %</span><em class="source-badge project">项目填写</em></span><input type="number" min="0" max="100" step="0.01" id="sedimentWaterPct" value="0.12" /></label>
+                <label class="setting-field"><span class="field-label"><span>允许船岸差率 %</span><em class="source-badge rule">系统规则</em></span><input type="number" min="0" step="0.001" id="allowedVariancePct" value="0.3" /></label>
+              </div>
+              <div class="legacy-standard-warning" role="status" id="legacyWarning" hidden><strong>历史/替代标准组合</strong><span>该组合不应作为新项目默认值，需要记录客户合同、作业规程或复核人批准依据。</span></div>
+            </section>
+
+            <section class="settings-section">
+              <header><div><span>04</span><h3>现场计量条件与工具</h3></div><p>记录测量时的船舶状态、工具和数据来源</p></header>
+              <div class="form-grid">
+                <label class="setting-field"><span class="field-label"><span>海况</span></span><select id="seaState"><option value="CALM">平静（0–1 级）</option><option value="SLIGHT" selected>轻浪（2–3 级）</option><option value="MODERATE">中浪（4–5 级）</option><option value="ROUGH">大浪（6 级及以上）</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>前吃水（m）</span></span><input id="forwardDraft" type="number" min="0" step="0.01" value="11.42" /></label>
+                <label class="setting-field"><span class="field-label"><span>后吃水（m）</span></span><input id="aftDraft" type="number" min="0" step="0.01" value="11.68" /></label>
+                <label class="setting-field"><span class="field-label"><span>吃水差（m）</span></span><input id="draftDifference" type="number" step="0.01" value="0.26" /></label>
+                <label class="setting-field"><span class="field-label"><span>纵倾（m）</span></span><input id="trim" type="number" step="0.01" value="0.26" /><small>正值表示艉倾，负值表示艏倾</small></label>
+                <label class="setting-field"><span class="field-label"><span>横倾（°）</span></span><input id="heel" type="number" step="0.01" value="0.00" /><small>正值表示右倾，负值表示左倾</small></label>
+                <label class="setting-field"><span class="field-label"><span>液位检测工具</span></span><select id="liquidLevelTool"><option>电子液位计</option><option>钢卷尺 / 量油尺</option><option>雷达液位计</option><option>其他</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>游离水检测工具</span></span><select id="freeWaterTool"><option>试水膏</option><option>电子界面仪</option><option>测深尺</option><option>其他</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>试水膏品牌</span></span><input id="waterPasteBrand" value="Kolor Kut" /></label>
+                <label class="setting-field"><span class="field-label"><span>密度来源</span></span><select id="densitySource"><option>实验室化验报告</option><option>船方 COQ / COA</option><option>岸罐化验报告</option><option>现场实测</option><option>其他</option></select></label>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <header><div><span>05</span><h3>报告输出设置</h3></div><p>替代 Excel 的报告首选项</p></header>
+              <div class="form-grid compact-grid">
+                <label class="setting-field"><span class="field-label"><span>报告语言</span><em class="source-badge project">项目填写</em></span><select id="reportLanguage"><option value="ZH_EN">中英文</option><option value="ZH">仅中文</option><option value="EN">仅英文</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>报告类型</span><em class="source-badge project">项目填写</em></span><select id="reportType"><option value="FIELD">现场报告</option><option value="FINAL">正式报告</option></select></label>
+              </div>
+              <fieldset class="choice-group"><legend>报告数量单位 <span class="source-badge rule">系统规则</span></legend><div id="unitGroup">
+                <label><input type="checkbox" value="M3_15C" checked /><span>m³ @15℃</span></label>
+                <label><input type="checkbox" value="M3_20C" /><span>m³ @20℃</span></label>
+                <label><input type="checkbox" value="BBL_60F" /><span>bbl @60℉</span></label>
+                <label><input type="checkbox" value="MT_AIR" checked /><span>公吨（空气中）</span></label>
+                <label><input type="checkbox" value="LT_AIR" /><span>长吨（空气中）</span></label>
+              </div></fieldset>
+              <fieldset class="choice-group"><legend>报告组成</legend><div id="reportGroup">
+                <label><input type="checkbox" value="COVER" checked /><span><strong>封面</strong><small>Cover Page</small></span></label>
+                <label><input type="checkbox" value="DISCHARGE_SUMMARY" checked /><span><strong>卸货摘要报告</strong><small>Discharge Summary Report</small></span></label>
+                <label><input type="checkbox" value="QUANTITY" checked /><span><strong>数量报告</strong><small>Quantity Report</small></span></label>
+                <label><input type="checkbox" value="QUALITY" /><span><strong>质量报告</strong><small>Quality Report</small></span></label>
+                <label><input type="checkbox" value="CARGO_TANK" /><span><strong>货舱检验报告</strong><small>Tank Inspection Report</small></span></label>
+                <label><input type="checkbox" value="ULLAGE_SLOP_A_DISCHARGE_B4" checked /><span><strong>空距报告（污油 A 卸货 B4 舱）</strong><small>Ullage Report (Slop A Discharge B4)</small></span></label>
+                <label><input type="checkbox" value="SHORE_SLOP_A_DISCHARGE" checked /><span><strong>岸罐报告（污油 A 卸货）</strong><small>Shore Tank Report (Slop A Discharge)</small></span></label>
+                <label><input type="checkbox" value="ROB" checked /><span><strong>卸货后船存 ROB(A)</strong><small>ROB After Discharge (A)</small></span></label>
+                <label><input type="checkbox" value="SAMPLE" checked /><span><strong>取样报告</strong><small>Sampling Report</small></span></label>
+                <label><input type="checkbox" value="TIME" checked /><span><strong>时间记录（卸货）</strong><small>Time Log (Discharging)</small></span></label>
+                <label><input type="checkbox" value="VEF" checked /><span><strong>VEF（船舶经验系数）</strong><small>VEF</small></span></label>
+                <label><input type="checkbox" value="OIL_WATER" checked /><span><strong>污油水报告</strong><small>Slop Report</small></span></label>
+                <label><input type="checkbox" value="BUNKER" checked /><span><strong>燃油报告</strong><small>Bunker Report</small></span></label>
+                <label><input type="checkbox" value="LINE_DISPLACEMENT" /><span><strong>管线置换报告</strong><small>Line Displacement Report</small></span></label>
+                <label><input type="checkbox" value="TANK_CLEANING" /><span><strong>洗舱检验/舱壁清洗测试报告（TBA）</strong><small>Wall Wash Test Report (TBA)</small></span></label>
+                <label><input type="checkbox" value="PROTEST" /><span><strong>抗议通知书</strong><small>Notice of Protest</small></span></label>
+                <label><input type="checkbox" value="APPARENT_DIFFERENCE" /><span><strong>明显差异通知书</strong><small>Notice of Apparent Discrepancy</small></span></label>
+                <label><input type="checkbox" value="STATEMENT_OF_FACT" /><span><strong>事实陈述书</strong><small>Statement of Fact</small></span></label>
+                <label><input type="checkbox" value="SEAL" /><span><strong>封条报告</strong><small>Seal Report</small></span></label>
+                <label><input type="checkbox" value="MASTER_DOCUMENT_RECEIPT" /><span><strong>船长文件收讫单</strong><small>Master Receipt of Documents</small></span></label>
+                <label><input type="checkbox" value="MASTER_SAMPLE_RECEIPT" /><span><strong>船长样品收讫单</strong><small>Master Receipt of Sample</small></span></label>
+                <label><input type="checkbox" value="ULLAGE_NON_B4" /><span><strong>空距报告（非指定 B4）</strong><small>Ullage Report (WO B Non-nominated B4)</small></span></label>
+                <label><input type="checkbox" value="ULLAGE_NON_FINAL" /><span><strong>空距报告（非指定尾舱）</strong><small>Ullage Report (WO B Non-nominated Aft)</small></span></label>
+                <label><input type="checkbox" value="WEDGE_RESIDUE" /><span><strong>楔形（舱底）残量报告</strong><small>Wedge Report</small></span></label>
+              </div></fieldset>
+            </section>
+
+            <footer class="settings-actions"><div><span id="settingsFooterMsg">应用后，顶部摘要、报告预览和后续计算将使用本项目设置。</span></div><button type="submit" class="button primary" id="applyBtn" disabled>保存并应用设置</button></footer>
+          </form>
+
+          <footer class="workspace-footer">
+            <div><strong>下一步：作业时间线</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
+            <a class="button primary" href="step-02-timeline.html">保存并进入下一步</a>
+          </footer>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const densityRules = {
+      DENSITY_15C: { label: "密度 @15℃", units: ["g/cm³", "kg/m³"], step: "0.0001", tableFamily: "54", inputBasis: "15℃基准密度" },
+      DENSITY_20C: { label: "密度 @20℃", units: ["g/cm³", "kg/m³"], step: "0.0001", tableFamily: "60", inputBasis: "20℃基准密度" },
+      API: { label: "API Gravity @60℉", units: ["°API"], step: "0.01", tableFamily: "6", inputBasis: "60℉ API重度" },
+      SG_60F: { label: "相对密度 SG 60/60℉", units: ["SG"], step: "0.0001", tableFamily: "24", inputBasis: "60/60℉相对密度" },
+    };
+    const vcfStandardVersions = {
+      "ASTM D1250 / API MPMS 11.1": ["2004", "1980"],
+      "GB/T 1885": ["1998"],
+      "ASTM-IP Petroleum Measurement Tables": ["1952"],
+    };
+    const cargoCategories = { "阿曼出口混合原油": "A", "上扎库姆原油": "A", "0# 车用柴油": "B" };
+
+    const settings = {
+      jobNo: "210225050087", reportDate: "2025-05-26", inspectionStart: "2025-05-24T08:20", inspectionEnd: "2025-05-26T18:00",
+      operationType: "DISCHARGE", voyageNo: "SAIQ-2505", clientName: "中国石油国际事业有限公司", clientNameEn: "PETROCHINA INTERNATIONAL CO., LTD.",
+      vesselName: "MT SAIQ", portName: "营口港", terminalName: "仙人岛原油码头", cargoName: "阿曼出口混合原油", cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL",
+      cargoCategory: "A", densityType: "DENSITY_15C", densityValue: 0.8598, densityUnit: "g/cm³", vcfStandard: "ASTM D1250 / API MPMS 11.1",
+      vcfVersion: "2004", wcfStandard: "API MPMS 11.5 (2013)", sedimentWaterPct: 0.12, allowedVariancePct: 0.3,
+      seaState: "SLIGHT", forwardDraft: 11.42, aftDraft: 11.68, draftDifference: 0.26, trim: 0.26, heel: 0,
+      liquidLevelTool: "电子液位计", freeWaterTool: "试水膏", waterPasteBrand: "Kolor Kut", densitySource: "实验室化验报告",
+      reportLanguage: "ZH_EN", reportType: "FINAL", quantityUnits: ["M3_15C", "MT_AIR"], selectedReports: ["COVER", "DISCHARGE_SUMMARY", "QUANTITY", "ULLAGE_SLOP_A_DISCHARGE_B4", "SHORE_SLOP_A_DISCHARGE", "ROB", "SAMPLE", "TIME", "VEF", "OIL_WATER", "BUNKER"],
+    };
+
+    let changed = false;
+    const $ = (id) => document.getElementById(id);
+
+    function syncDensityUnitOptions() {
+      const rule = densityRules[settings.densityType];
+      const sel = $("densityUnit");
+      sel.innerHTML = rule.units.map((u) => `<option${u === settings.densityUnit ? " selected" : ""}>${u}</option>`).join("");
+      if (!rule.units.includes(settings.densityUnit)) {
+        settings.densityUnit = rule.units[0];
+        sel.value = settings.densityUnit;
+      }
+    }
+    function syncVcfVersionOptions() {
+      const versions = vcfStandardVersions[settings.vcfStandard] || [];
+      const sel = $("vcfVersion");
+      sel.innerHTML = versions.map((v) => `<option${v === settings.vcfVersion ? " selected" : ""}>${v}</option>`).join("");
+      if (!versions.includes(settings.vcfVersion)) {
+        settings.vcfVersion = versions[0];
+        sel.value = settings.vcfVersion;
+      }
+    }
+
+    function updateCalcRoute() {
+      const rule = densityRules[settings.densityType];
+      $("densityHelper").textContent = settings.densityValue === "" || settings.densityValue === null ? `请重新输入${rule.label}的原始检验值` : `当前解释为：${rule.inputBasis}`;
+      $("densityCompound").classList.toggle("invalid", settings.densityValue === "" || settings.densityValue === null);
+      $("legacyWarning").hidden = !(settings.vcfVersion !== "2004" || settings.vcfStandard !== "ASTM D1250 / API MPMS 11.1");
+    }
+
+    function revalidate() {
+      const densityRule = densityRules[settings.densityType];
+      const densityComplete = settings.densityValue !== "" && settings.densityValue !== null && Number(settings.densityValue) > 0 && densityRule.units.includes(settings.densityUnit);
+      const vcfComplete = (vcfStandardVersions[settings.vcfStandard] || []).includes(settings.vcfVersion);
+      const requiredComplete = Boolean(settings.jobNo && settings.reportDate && settings.vesselName && settings.cargoName && settings.clientName && densityComplete && vcfComplete && settings.quantityUnits.length > 0);
+      const applyBtn = $("applyBtn");
+      applyBtn.disabled = !(requiredComplete && changed);
+      const msg = $("settingsFooterMsg");
+      if (changed) {
+        if (!requiredComplete) msg.className = "form-error";
+        else msg.className = "";
+        msg.textContent = requiredComplete ? "应用后，顶部摘要、报告预览和后续计算将使用本项目设置。" : "请补齐必填信息、有效密度组合、VCF标准版本和至少一个报告数量单位。";
+      }
+    }
+
+    function markChanged() { changed = true; $("changeWarning").hidden = false; revalidate(); }
+
+    // 绑定文本/数字输入
+    ["jobNo", "reportDate", "inspectionStart", "inspectionEnd", "voyageNo", "clientNameEn", "vesselName", "portName", "terminalName", "cargoNameEn", "wcfStandard", "sedimentWaterPct", "allowedVariancePct", "seaState", "forwardDraft", "aftDraft", "draftDifference", "trim", "heel", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => {
+      $(id).addEventListener("input", (e) => { settings[id] = e.target.value; markChanged(); });
+      $(id).addEventListener("change", (e) => { settings[id] = e.target.value; markChanged(); });
+    });
+    ["densityValue"].forEach((id) => {
+      $(id).addEventListener("input", (e) => { settings[id] = e.target.value === "" ? "" : Number(e.target.value); updateCalcRoute(); markChanged(); });
+    });
+
+    // 联动选择
+    $("clientName").addEventListener("change", (e) => {
+      settings.clientName = e.target.value;
+      const map = { "中国石油国际事业有限公司": "PETROCHINA INTERNATIONAL CO., LTD.", "中国联合石油有限责任公司": "CHINAOIL CO., LTD.", "示例能源贸易有限公司": "DEMO ENERGY TRADING CO., LTD." };
+      settings.clientNameEn = map[e.target.value] || ""; $("clientNameEn").value = settings.clientNameEn; markChanged();
+    });
+    $("portName").addEventListener("change", (e) => {
+      settings.portName = e.target.value;
+      const first = { "营口港": "仙人岛原油码头", "青岛港": "董家口原油码头", "大连港": "新港油库" }[e.target.value];
+      if (first) { settings.terminalName = first; $("terminalName").value = first; }
+      markChanged();
+    });
+    $("cargoName").addEventListener("change", (e) => {
+      settings.cargoName = e.target.value;
+      const en = { "阿曼出口混合原油": "OMAN EXPORT BLEND CRUDE OIL", "上扎库姆原油": "UPPER ZAKUM CRUDE OIL", "0# 车用柴油": "NO. 0 AUTOMOTIVE DIESEL" }[e.target.value];
+      const cat = cargoCategories[e.target.value] || "A";
+      settings.cargoNameEn = en || ""; $("cargoNameEn").value = settings.cargoNameEn;
+      settings.cargoCategory = cat; $("cargoCategory").value = cat;
+      updateCalcRoute(); markChanged();
+    });
+    $("cargoCategory").addEventListener("change", (e) => { settings.cargoCategory = e.target.value; updateCalcRoute(); markChanged(); });
+    $("densityType").addEventListener("change", (e) => {
+      settings.densityType = e.target.value;
+      settings.densityUnit = densityRules[e.target.value].units[0];
+      settings.densityValue = ""; $("densityValue").value = "";
+      syncDensityUnitOptions(); updateCalcRoute(); markChanged();
+    });
+    $("densityUnit").addEventListener("change", (e) => { settings.densityUnit = e.target.value; updateCalcRoute(); markChanged(); });
+    $("vcfStandard").addEventListener("change", (e) => {
+      settings.vcfStandard = e.target.value;
+      settings.vcfVersion = vcfStandardVersions[e.target.value][0];
+      syncVcfVersionOptions(); updateCalcRoute(); markChanged();
+    });
+    $("vcfVersion").addEventListener("change", (e) => { settings.vcfVersion = e.target.value; updateCalcRoute(); markChanged(); });
+
+    // 选择组
+    function bindChoiceGroup(groupId, field) {
+      $(groupId).addEventListener("change", (e) => {
+        const cb = e.target;
+        const arr = settings[field];
+        if (cb.checked) { if (!arr.includes(cb.value)) arr.push(cb.value); }
+        else settings[field] = arr.filter((v) => v !== cb.value);
+        updateCalcRoute(); markChanged();
+      });
+    }
+    bindChoiceGroup("unitGroup", "quantityUnits");
+    bindChoiceGroup("reportGroup", "selectedReports");
+
+    $("settingsForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      changed = false; $("changeWarning").hidden = true; revalidate();
+      $("saveState").textContent = "设置已应用（演示）";
+      setTimeout(() => { $("saveState").textContent = "草稿已保存"; }, 1800);
+    });
+
+    // 顶栏按钮（演示，不持久化）
+    const saveState = $("saveState");
+    function flash(message) { saveState.textContent = message; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+    $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
+    $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
+    $("copyBtn").addEventListener("click", () => window.alert("历史项目复制应只复制公共信息和设置，不复制测量读数、计算结果与签发记录。"));
+    $("masterBtn").addEventListener("click", () => flash("（演示）基础资料管理在「基础资料」模块"));
+
+    // 初始化
+    syncDensityUnitOptions();
+    syncVcfVersionOptions();
+    updateCalcRoute();
+    revalidate();
+  </script>
+</body>
+</html>

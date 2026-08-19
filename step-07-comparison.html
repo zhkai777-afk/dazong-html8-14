@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步骤 07 · 数量对比 | 卸货检验作业台</title>
+  <link rel="stylesheet" href="step-common.css">
+</head>
+<body class="embedded-content">
+  <main class="app-shell">
+    <a class="skip-link" href="#workspace">跳到主要工作区</a>
+
+    <aside class="global-sidebar" aria-label="主导航">
+      <div class="product-mark" aria-label="容量计重离线工作台">
+        <span class="mark-square">CQ</span>
+        <span><strong>容量计重</strong><small>Quantity Survey · Offline</small></span>
+      </div>
+      <nav class="global-nav">
+        <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
+        <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
+        <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
+        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+      </nav>
+      <div class="offline-card"><span class="status-dot" aria-hidden="true"></span><div><strong>离线模式</strong><small>数据仅保存在本机</small></div></div>
+    </aside>
+
+    <section class="main-stage">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">项目 / 卸货检验 / 210225050087</div>
+          <h1>MT SAIQ · 卸货检验</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="project-state">现场作业中</span>
+          <span class="save-state" id="saveState">草稿已保存</span>
+          <button type="button" class="button secondary" id="saveDraftBtn">保存草稿</button>
+          <button type="button" class="button primary" id="reportBtn">报告预览</button>
+        </div>
+      </header>
+
+      <div class="project-strip">
+        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+        <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
+        <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
+      </div>
+
+      <div class="workbench-grid">
+        <aside class="workflow-panel" aria-label="卸货检验步骤">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Workflow · 流程进度</p><h2>Discharge Survey <small>卸货检验</small></h2></div>
+            <strong id="progressLabel">88%</strong>
+          </div>
+          <div class="progress-track" aria-label="整体完成度 88%"><span id="progressBar" style="width: 88%"></span></div>
+          <ol class="workflow-list">
+            <li class="done"><a href="step-01-project-setup.html"><span class="step-index">01</span><span class="step-copy"><strong>项目与报告设置</strong><em>Project &amp; Report Setup</em><small>已完成</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-02-timeline.html"><span class="step-index">02</span><span class="step-copy"><strong>作业时间线</strong><em>Operation Timeline</em><small>14 / 17 项</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-03-arrival-ullage.html"><span class="step-index">03</span><span class="step-copy"><strong>抵港船舱计量</strong><em>Arrival Tank Measurement</em><small>17 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-04-shore-tank.html"><span class="step-index">04</span><span class="step-copy"><strong>岸罐接收计量</strong><em>Shore Tank Measurement</em><small>6 组 Open / Close</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-05-rob.html"><span class="step-index">05</span><span class="step-copy"><strong>卸货后 ROB</strong><em>ROB After Discharge</em><small>8 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-06-vef.html"><span class="step-index">06</span><span class="step-copy"><strong>VEF 经验系数</strong><em>Vessel Experience Factor</em><small>5 个有效航次</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="active"><a href="step-07-comparison.html" aria-current="step"><span class="step-index">07</span><span class="step-copy"><strong>数量对比</strong><em>Quantity Comparison</em><small>动态计算</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="idle"><a href="step-08-reports.html"><span class="step-index">08</span><span class="step-copy"><strong>报告包</strong><em>Report Package</em><small>0 / 8 份</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+          </ol>
+        </aside>
+
+        <section class="workspace" id="workspace">
+          <div class="workspace-heading">
+            <div><p class="eyebrow">步骤 07</p><h2>数量对比</h2><p>集中复核 VEF 修正后船卸量、岸收量、差量和项目允许偏差。</p></div>
+            <div class="context-actions"><button type="button" class="button tertiary" id="recalcBtn">重新汇总</button></div>
+          </div>
+
+          <div class="metric-row" id="cmpMetrics"><!-- rendered by JS --></div>
+
+          <section class="variance-card">
+            <header><div><p class="eyebrow">数量平衡</p><h3>船岸数量差异</h3></div><span class="status-pill" id="limitPill">偏差内</span></header>
+            <div class="balance-equation" id="balanceEquation"><!-- rendered by JS --></div>
+            <div class="trace-strip" id="traceStrip"><!-- rendered by JS --></div>
+            <p>抵港船舶计量已恢复 17 / 17 舱及 P.Line；ROB 当前仍为 8 / 17 舱，因此本页只用于验证计算链路，不作为最终签发值。</p>
+          </section>
+
+          <footer class="workspace-footer">
+            <div><strong>下一步：报告包</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
+            <a class="button primary" href="step-08-reports.html">保存并进入下一步</a>
+          </footer>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const fmt = (value, digits = 3) => new Intl.NumberFormat("zh-CN", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+    const round3 = (v) => Math.round((v + Number.EPSILON) * 1000) / 1000;
+
+    // 抵港船舱（来自步骤 03）
+    const readings = [
+      { tov: 154014.17, freeWater: 431.67, vcf: 0.99855 }, { tov: 190253.54, freeWater: 79.88, vcf: 0.99864 },
+      { tov: 182954.22, freeWater: 79.88, vcf: 0.99847 }, { tov: 191004.55, freeWater: 305.06, vcf: 0.99830 },
+      { tov: 186499.16, freeWater: 0, vcf: 0.99838 }, { tov: 86450.29, freeWater: 67.93, vcf: 0.99830 },
+      { tov: 86489.92, freeWater: 55.35, vcf: 0.99838 }, { tov: 114960.12, freeWater: 133.66, vcf: 0.99830 },
+      { tov: 115056.35, freeWater: 101.58, vcf: 0.99830 }, { tov: 89488.90, freeWater: 54.72, vcf: 0.99821 },
+      { tov: 89488.90, freeWater: 54.72, vcf: 0.99813 }, { tov: 114887.78, freeWater: 198.13, vcf: 0.99779 },
+      { tov: 114935.59, freeWater: 295.62, vcf: 0.99710 }, { tov: 70315.04, freeWater: 107.18, vcf: 0.99455 },
+      { tov: 70315.04, freeWater: 195.74, vcf: 0.99796 }, { tov: 24971.17, freeWater: 36.48, vcf: 0.92934 },
+      { tov: 25066.78, freeWater: 32.71, vcf: 0.92978 }, { tov: 0, freeWater: 0, vcf: 1.01271 },
+    ];
+    const totals = readings.reduce((s, r) => { const gov = Math.max(r.tov - r.freeWater, 0); return { tov: s.tov + r.tov, fw: s.fw + r.freeWater, gov: s.gov + gov, gsv: s.gsv + gov * r.vcf }; }, { tov: 0, fw: 0, gov: 0, gsv: 0 });
+    const arrivalGsv = totals.gsv;
+
+    // 岸罐（来自步骤 04）
+    function makeShoreMeasurement(c) { return Object.assign({ gaugeMethod: "INNAGE", referenceHeight: 0, gaugeResult: 0, v1: 0, v2: 0, v3: 0, hydrostaticVolume: 0, freeWaterVolume: 0, shellCorrection: 1, pipelineVolume: 0, floatingRoofCorrection: 0, vcf: 1, sandWaterPct: 0.025, wcf: 1, shellMaterial: "INSULATED", oilTemp: 20, ambientTemp: 20 }, c); }
+    const shoreReadings = [
+      { open: makeShoreMeasurement({ referenceHeight: 23.8, floatingRoofWeight: 495, nonMeasLower: 1.906, nonMeasUpper: 2.136 }), close: makeShoreMeasurement({ referenceHeight: 23.8, floatingRoofWeight: 495, nonMeasLower: 1.906, nonMeasUpper: 2.136, gaugeResult: 19.581, oilTemp: 35.8, v1: 98033.554, shellCorrection: 1.00033, floatingRoofCorrection: 588.252, vcf: 0.98254, thermalExpansionCoefficient60F: 0.05 }) },
+      { open: makeShoreMeasurement({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.825, floatingRoofWeight: 495, nonMeasLower: 1.983, nonMeasUpper: 2.133 }), close: makeShoreMeasurement({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.825, floatingRoofWeight: 495, nonMeasLower: 1.983, nonMeasUpper: 2.133, gaugeResult: 19.331, oilTemp: 35.6, v1: 96979.093, shellCorrection: 1.00033, floatingRoofCorrection: 588.225, vcf: 0.98270, sandWaterPct: 0.05 }) },
+      { open: makeShoreMeasurement({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.757, floatingRoofWeight: 516.034, nonMeasLower: 1.684, nonMeasUpper: 1.838 }), close: makeShoreMeasurement({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.757, floatingRoofWeight: 516.034, nonMeasLower: 1.684, nonMeasUpper: 1.838, gaugeResult: 18.474, oilTemp: 36.2, v1: 93340.358, shellCorrection: 1.00034, floatingRoofCorrection: 613.533, vcf: 0.98220 }) },
+      { open: makeShoreMeasurement({ referenceHeight: 23.655, floatingRoofWeight: 515.776, nonMeasLower: 1.757, nonMeasUpper: 1.911 }), close: makeShoreMeasurement({ referenceHeight: 23.655, floatingRoofWeight: 515.776, nonMeasLower: 1.757, nonMeasUpper: 1.911, gaugeResult: 3.2, oilTemp: 31.2, v1: 16306.693, freeWaterVolume: 354.591, shellCorrection: 1.00024, floatingRoofCorrection: 610.537, vcf: 0.98641, sandWaterPct: 0.2 }) },
+      { open: makeShoreMeasurement({ referenceHeight: 0, nonMeasLower: 1.67, nonMeasUpper: 1.824, oilTemp: 0, ambientTemp: 15, vcf: 1.01248 }), close: makeShoreMeasurement({ referenceHeight: 0, nonMeasLower: 1.67, nonMeasUpper: 1.824, oilTemp: 36.8, shellCorrection: 1.00035, vcf: 0.98169 }) },
+      { open: makeShoreMeasurement({ density: 0.8484, standardDensity: 848.4, wcf: 0.847327789, referenceHeight: 0, nonMeasLower: 2.03, nonMeasUpper: 2.183, oilTemp: 0, ambientTemp: 0, vcf: 1.01275, sandWaterPct: 0.05 }), close: makeShoreMeasurement({ density: 0.8484, standardDensity: 848.4, wcf: 0.847327789, referenceHeight: 0, nonMeasLower: 2.03, nonMeasUpper: 2.183, oilTemp: 0, ambientTemp: 0, shellCorrection: 0.99952, vcf: 1.01275, sandWaterPct: 0.05 }) },
+    ];
+    const shoreComputed = (m) => {
+      const vSum = m.v1 + m.v2 + m.v3;
+      const tov = round3(vSum + m.hydrostaticVolume);
+      const correctedVolume = round3(Math.max(tov - m.freeWaterVolume, 0) * m.shellCorrection + m.pipelineVolume);
+      const gov = round3(Math.max(correctedVolume - m.floatingRoofCorrection, 0));
+      const gsv = round3(gov * m.vcf);
+      const nsv = round3(gsv * (1 - m.sandWaterPct / 100));
+      const grossWeight = round3(gsv * m.wcf);
+      const netWeight = round3(nsv * m.wcf);
+      return { gov, gsv, nsv, grossWeight, netWeight };
+    };
+    const shoreTotals = shoreReadings.reduce((s, r) => { const o = shoreComputed(r.open), c = shoreComputed(r.close); return { beforeGsv: s.beforeGsv + o.gsv, afterGsv: s.afterGsv + c.gsv, receivedGsv: s.receivedGsv + c.gsv - o.gsv, receivedNsv: s.receivedNsv + c.nsv - o.nsv, receivedGrossWeight: s.receivedGrossWeight + c.grossWeight - o.grossWeight, receivedNetWeight: s.receivedNetWeight + c.netWeight - o.netWeight }; }, { beforeGsv: 0, afterGsv: 0, receivedGsv: 0, receivedNsv: 0, receivedGrossWeight: 0, receivedNetWeight: 0 });
+    const shoreReceived = shoreTotals.receivedGsv;
+
+    // 卸货后 ROB（来自步骤 05）
+    const robReadings = [
+      { liquidVolume: 42.8, nonLiquidVolume: 0, vcf: 0.99734 }, { liquidVolume: 31.4, nonLiquidVolume: 0, vcf: 0.99743 },
+      { liquidVolume: 0, nonLiquidVolume: 0, vcf: 0.99752 }, { liquidVolume: 58.6, nonLiquidVolume: 0, vcf: 0.99726 },
+      { liquidVolume: 0, nonLiquidVolume: 12.5, vcf: 0.99743 }, { liquidVolume: 27.9, nonLiquidVolume: 0, vcf: 0.99752 },
+      { liquidVolume: 0, nonLiquidVolume: 0, vcf: 0.99752 }, { liquidVolume: 35.2, nonLiquidVolume: 0, vcf: 0.99734 },
+    ];
+    const robGsv = robReadings.reduce((s, r) => s + r.liquidVolume * r.vcf + r.nonLiquidVolume, 0);
+
+    // VEF（来自步骤 06）
+    const vefVoyages = [
+      { vef: 1.00150, included: true }, { vef: 1.00190, included: true }, { vef: 1.00170, included: true },
+      { vef: 1.00540, included: false }, { vef: 1.00190, included: true }, { vef: 1.00150, included: true },
+    ];
+    const includedVef = vefVoyages.filter(r => r.included);
+    const averageVef = includedVef.length === 0 ? 1 : includedVef.reduce((s, r) => s + r.vef, 0) / includedVef.length;
+
+    const shipBeforeVef = Math.max(arrivalGsv - robGsv, 0);
+    const shipDischarged = shipBeforeVef / averageVef;
+    const variance = shoreReceived - shipDischarged;
+    const variancePct = shipDischarged === 0 ? 0 : variance / shipDischarged * 100;
+    const withinLimit = Math.abs(variancePct) <= 0.3;
+
+    const $ = (id) => document.getElementById(id);
+    function render() {
+      $("cmpMetrics").innerHTML = `
+        <article><span>VEF 修正后船卸量</span><strong>${fmt(shipDischarged, 2)}</strong><small>（抵港 GSV − ROB）÷ ${averageVef.toFixed(5)}</small></article>
+        <article><span>岸收标准体积</span><strong>${fmt(shoreReceived, 2)}</strong><small>岸罐卸后 − 卸前</small></article>
+        <article><span>船岸差量</span><strong>${fmt(variance, 2)}</strong><small>岸收量 − 船卸量</small></article>
+        <article class="${withinLimit ? "metric-accent" : "metric-warning"}"><span>船岸差率</span><strong>${fmt(variancePct, 3)}%</strong><small>允许偏差 ±0.300%</small></article>`;
+      $("balanceEquation").innerHTML = `
+        <div><span>岸收 GSV</span><strong>${fmt(shoreReceived, 2)}</strong></div><b>−</b>
+        <div><span>船卸 GSV</span><strong>${fmt(shipDischarged, 2)}</strong></div><b>=</b>
+        <div class="result"><span>差量</span><strong>${fmt(variance, 2)} m³</strong></div>`;
+      $("traceStrip").innerHTML = `<span>抵港 GSV ${fmt(arrivalGsv, 2)}</span><b>−</b><span>ROB ${fmt(robGsv, 2)}</span><b>÷</b><span>VEF ${averageVef.toFixed(5)}</span><b>=</b><strong>船卸 ${fmt(shipDischarged, 2)} m³</strong>`;
+      const pill = $("limitPill");
+      pill.textContent = withinLimit ? "偏差内" : "需复核";
+      pill.className = `status-pill ${withinLimit ? "success" : "warning"}`;
+    }
+
+    const saveState = $("saveState");
+    function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+    $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
+    $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
+    $("recalcBtn").addEventListener("click", () => flash(`已重新汇总：差率 ${fmt(variancePct, 3)}%（演示）`));
+
+    render();
+  </script>
+</body>
+</html>

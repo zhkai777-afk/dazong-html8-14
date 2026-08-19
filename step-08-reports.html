@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步骤 08 · 报告包 | 卸货检验作业台</title>
+  <link rel="stylesheet" href="step-common.css">
+</head>
+<body class="embedded-content">
+  <main class="app-shell">
+    <a class="skip-link" href="#workspace">跳到主要工作区</a>
+
+    <aside class="global-sidebar" aria-label="主导航">
+      <div class="product-mark" aria-label="容量计重离线工作台">
+        <span class="mark-square">CQ</span>
+        <span><strong>容量计重</strong><small>Quantity Survey · Offline</small></span>
+      </div>
+      <nav class="global-nav">
+        <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
+        <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
+        <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
+        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+      </nav>
+      <div class="offline-card"><span class="status-dot" aria-hidden="true"></span><div><strong>离线模式</strong><small>数据仅保存在本机</small></div></div>
+    </aside>
+
+    <section class="main-stage">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">项目 / 卸货检验 / 210225050087</div>
+          <h1>MT SAIQ · 卸货检验</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="project-state">现场作业中</span>
+          <span class="save-state" id="saveState">草稿已保存</span>
+          <button type="button" class="button secondary" id="saveDraftBtn">保存草稿</button>
+          <button type="button" class="button primary" id="reportBtn">刷新汇总</button>
+        </div>
+      </header>
+
+      <div class="project-strip">
+        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+        <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
+        <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
+      </div>
+
+      <div class="workbench-grid">
+        <aside class="workflow-panel" aria-label="卸货检验步骤">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Workflow · 流程进度</p><h2>Discharge Survey <small>卸货检验</small></h2></div>
+            <strong id="progressLabel">100%</strong>
+          </div>
+          <div class="progress-track" aria-label="整体完成度 100%"><span id="progressBar" style="width: 100%"></span></div>
+          <ol class="workflow-list">
+            <li class="done"><a href="step-01-project-setup.html"><span class="step-index">01</span><span class="step-copy"><strong>项目与报告设置</strong><em>Project &amp; Report Setup</em><small>已完成</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-02-timeline.html"><span class="step-index">02</span><span class="step-copy"><strong>作业时间线</strong><em>Operation Timeline</em><small>14 / 17 项</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-03-arrival-ullage.html"><span class="step-index">03</span><span class="step-copy"><strong>抵港船舱计量</strong><em>Arrival Tank Measurement</em><small>17 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-04-shore-tank.html"><span class="step-index">04</span><span class="step-copy"><strong>岸罐接收计量</strong><em>Shore Tank Measurement</em><small>6 组 Open / Close</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-05-rob.html"><span class="step-index">05</span><span class="step-copy"><strong>卸货后 ROB</strong><em>ROB After Discharge</em><small>8 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-06-vef.html"><span class="step-index">06</span><span class="step-copy"><strong>VEF 经验系数</strong><em>Vessel Experience Factor</em><small>5 个有效航次</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-07-comparison.html"><span class="step-index">07</span><span class="step-copy"><strong>数量对比</strong><em>Quantity Comparison</em><small>动态计算</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="active"><a href="step-08-reports.html" aria-current="step"><span class="step-index">08</span><span class="step-copy"><strong>报告包</strong><em>Report Package</em><small>0 / 8 份</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+          </ol>
+        </aside>
+
+        <section class="workspace" id="workspace">
+          <div class="workspace-heading">
+            <div><p class="eyebrow">步骤 08</p><h2>报告包</h2><p>冻结计算批次和报告数据后签发。下方为当前项目 8 份报告的就绪状态。</p></div>
+            <div class="context-actions"><button type="button" class="button secondary" id="printBtn">打印 / 另存 PDF 草稿</button></div>
+          </div>
+
+          <div class="metric-row" id="reportMetrics"><!-- rendered by JS --></div>
+
+          <div class="report-readiness"><strong>当前不可签发</strong><span>仍有计量问题，ROB 仅完成 8 / 17 舱。签发前需补齐剩余舱位并完成数量链路复核。</span></div>
+
+          <ul class="report-list" id="reportList"><!-- rendered by JS --></ul>
+
+          <footer class="workspace-footer">
+            <div><strong>流程已完成</strong><span>返回任意步骤可继续修改草稿，数据保存在本机</span></div>
+            <a class="button primary" href="step-01-project-setup.html">完成并回到项目设置</a>
+          </footer>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const fmt = (value, digits = 3) => new Intl.NumberFormat("zh-CN", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+    const round3 = (v) => Math.round((v + Number.EPSILON) * 1000) / 1000;
+
+    // 复用各步骤汇总（与步骤 07 同源）
+    const readings = [
+      { tov: 154014.17, freeWater: 431.67, vcf: 0.99855 }, { tov: 190253.54, freeWater: 79.88, vcf: 0.99864 },
+      { tov: 182954.22, freeWater: 79.88, vcf: 0.99847 }, { tov: 191004.55, freeWater: 305.06, vcf: 0.99830 },
+      { tov: 186499.16, freeWater: 0, vcf: 0.99838 }, { tov: 86450.29, freeWater: 67.93, vcf: 0.99830 },
+      { tov: 86489.92, freeWater: 55.35, vcf: 0.99838 }, { tov: 114960.12, freeWater: 133.66, vcf: 0.99830 },
+      { tov: 115056.35, freeWater: 101.58, vcf: 0.99830 }, { tov: 89488.90, freeWater: 54.72, vcf: 0.99821 },
+      { tov: 89488.90, freeWater: 54.72, vcf: 0.99813 }, { tov: 114887.78, freeWater: 198.13, vcf: 0.99779 },
+      { tov: 114935.59, freeWater: 295.62, vcf: 0.99710 }, { tov: 70315.04, freeWater: 107.18, vcf: 0.99455 },
+      { tov: 70315.04, freeWater: 195.74, vcf: 0.99796 }, { tov: 24971.17, freeWater: 36.48, vcf: 0.92934 },
+      { tov: 25066.78, freeWater: 32.71, vcf: 0.92978 }, { tov: 0, freeWater: 0, vcf: 1.01271 },
+    ];
+    const totals = readings.reduce((s, r) => { const gov = Math.max(r.tov - r.freeWater, 0); return { tov: s.tov + r.tov, fw: s.fw + r.freeWater, gov: s.gov + gov, gsv: s.gsv + gov * r.vcf }; }, { tov: 0, fw: 0, gov: 0, gsv: 0 });
+    const arrivalGsv = totals.gsv;
+
+    function makeShore(c) { return Object.assign({ gaugeMethod: "INNAGE", referenceHeight: 0, gaugeResult: 0, v1: 0, v2: 0, v3: 0, hydrostaticVolume: 0, freeWaterVolume: 0, shellCorrection: 1, pipelineVolume: 0, floatingRoofCorrection: 0, vcf: 1, sandWaterPct: 0.025, wcf: 1, shellMaterial: "INSULATED", oilTemp: 20, ambientTemp: 20 }, c); }
+    const shoreReadings = [
+      { open: makeShore({ referenceHeight: 23.8, floatingRoofWeight: 495, nonMeasLower: 1.906, nonMeasUpper: 2.136 }), close: makeShore({ referenceHeight: 23.8, floatingRoofWeight: 495, nonMeasLower: 1.906, nonMeasUpper: 2.136, gaugeResult: 19.581, oilTemp: 35.8, v1: 98033.554, shellCorrection: 1.00033, floatingRoofCorrection: 588.252, vcf: 0.98254, thermalExpansionCoefficient60F: 0.05 }) },
+      { open: makeShore({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.825, floatingRoofWeight: 495, nonMeasLower: 1.983, nonMeasUpper: 2.133 }), close: makeShore({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.825, floatingRoofWeight: 495, nonMeasLower: 1.983, nonMeasUpper: 2.133, gaugeResult: 19.331, oilTemp: 35.6, v1: 96979.093, shellCorrection: 1.00033, floatingRoofCorrection: 588.225, vcf: 0.98270, sandWaterPct: 0.05 }) },
+      { open: makeShore({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.757, floatingRoofWeight: 516.034, nonMeasLower: 1.684, nonMeasUpper: 1.838 }), close: makeShore({ density: 0.8574, standardDensity: 857.4, wcf: 0.856329139, referenceHeight: 23.757, floatingRoofWeight: 516.034, nonMeasLower: 1.684, nonMeasUpper: 1.838, gaugeResult: 18.474, oilTemp: 36.2, v1: 93340.358, shellCorrection: 1.00034, floatingRoofCorrection: 613.533, vcf: 0.98220 }) },
+      { open: makeShore({ referenceHeight: 23.655, floatingRoofWeight: 515.776, nonMeasLower: 1.757, nonMeasUpper: 1.911 }), close: makeShore({ referenceHeight: 23.655, floatingRoofWeight: 515.776, nonMeasLower: 1.757, nonMeasUpper: 1.911, gaugeResult: 3.2, oilTemp: 31.2, v1: 16306.693, freeWaterVolume: 354.591, shellCorrection: 1.00024, floatingRoofCorrection: 610.537, vcf: 0.98641, sandWaterPct: 0.2 }) },
+      { open: makeShore({ referenceHeight: 0, nonMeasLower: 1.67, nonMeasUpper: 1.824, oilTemp: 0, ambientTemp: 15, vcf: 1.01248 }), close: makeShore({ referenceHeight: 0, nonMeasLower: 1.67, nonMeasUpper: 1.824, oilTemp: 36.8, shellCorrection: 1.00035, vcf: 0.98169 }) },
+      { open: makeShore({ density: 0.8484, standardDensity: 848.4, wcf: 0.847327789, referenceHeight: 0, nonMeasLower: 2.03, nonMeasUpper: 2.183, oilTemp: 0, ambientTemp: 0, vcf: 1.01275, sandWaterPct: 0.05 }), close: makeShore({ density: 0.8484, standardDensity: 848.4, wcf: 0.847327789, referenceHeight: 0, nonMeasLower: 2.03, nonMeasUpper: 2.183, oilTemp: 0, ambientTemp: 0, shellCorrection: 0.99952, vcf: 1.01275, sandWaterPct: 0.05 }) },
+    ];
+    const shoreComputed = (m) => { const vSum = m.v1 + m.v2 + m.v3; const tov = round3(vSum + m.hydrostaticVolume); const cv = round3(Math.max(tov - m.freeWaterVolume, 0) * m.shellCorrection + m.pipelineVolume); const gov = round3(Math.max(cv - m.floatingRoofCorrection, 0)); const gsv = round3(gov * m.vcf); const nsv = round3(gsv * (1 - m.sandWaterPct / 100)); return { gov, gsv, nsv, grossWeight: round3(gsv * m.wcf), netWeight: round3(nsv * m.wcf) }; };
+    const shoreTotals = shoreReadings.reduce((s, r) => { const o = shoreComputed(r.open), c = shoreComputed(r.close); return { beforeGsv: s.beforeGsv + o.gsv, afterGsv: s.afterGsv + c.gsv, receivedGsv: s.receivedGsv + c.gsv - o.gsv }; }, { beforeGsv: 0, afterGsv: 0, receivedGsv: 0 });
+    const shoreReceived = shoreTotals.receivedGsv;
+
+    const robReadings = [
+      { liquidVolume: 42.8, nonLiquidVolume: 0, vcf: 0.99734 }, { liquidVolume: 31.4, nonLiquidVolume: 0, vcf: 0.99743 },
+      { liquidVolume: 0, nonLiquidVolume: 0, vcf: 0.99752 }, { liquidVolume: 58.6, nonLiquidVolume: 0, vcf: 0.99726 },
+      { liquidVolume: 0, nonLiquidVolume: 12.5, vcf: 0.99743 }, { liquidVolume: 27.9, nonLiquidVolume: 0, vcf: 0.99752 },
+      { liquidVolume: 0, nonLiquidVolume: 0, vcf: 0.99752 }, { liquidVolume: 35.2, nonLiquidVolume: 0, vcf: 0.99734 },
+    ];
+    const robGsv = robReadings.reduce((s, r) => s + r.liquidVolume * r.vcf + r.nonLiquidVolume, 0);
+
+    const vefVoyages = [{ vef: 1.00150, included: true }, { vef: 1.00190, included: true }, { vef: 1.00170, included: true }, { vef: 1.00540, included: false }, { vef: 1.00190, included: true }, { vef: 1.00150, included: true }];
+    const inc = vefVoyages.filter(r => r.included);
+    const averageVef = inc.length === 0 ? 1 : inc.reduce((s, r) => s + r.vef, 0) / inc.length;
+    const shipDischarged = Math.max(arrivalGsv - robGsv, 0) / averageVef;
+    const variancePct = shipDischarged === 0 ? 0 : (shoreReceived - shipDischarged) / shipDischarged * 100;
+
+    const $ = (id) => document.getElementById(id);
+    const reports = [
+      { no: "01", name: "数量证书", note: "公共信息完整，最终数量待复核", status: "partial", statusText: "草稿" },
+      { no: "02", name: "卸货摘要报告", note: "已生成草稿数量链路", status: "partial", statusText: "草稿" },
+      { no: "03", name: "船舱计量报告", note: "17 / 17 舱及 P.Line 已录入", status: "ready", statusText: "可预览" },
+      { no: "04", name: "岸罐计量报告", note: "3 个岸罐已计算", status: "partial", statusText: "草稿" },
+      { no: "05", name: "船岸数量差异报告", note: `差率 ${fmt(variancePct, 3)}%`, status: "partial", statusText: "草稿" },
+      { no: "06", name: "ROB 报告", note: "8 / 17 舱已检查", status: "partial", statusText: "草稿" },
+      { no: "07", name: "VEF 报告", note: `VEF = ${averageVef.toFixed(5)}`, status: "ready", statusText: "可预览" },
+      { no: "08", name: "时间与取样记录", note: "时间 14 / 17 项，样品待补录", status: "partial", statusText: "草稿" },
+    ];
+    const ready = reports.filter(r => r.status === "ready").length;
+
+    function render() {
+      $("reportMetrics").innerHTML = `
+        <article><span>报告总数</span><strong>${reports.length}</strong><small>8 份标准报告</small></article>
+        <article><span>可预览</span><strong>${ready}</strong><small>数量链路已就绪</small></article>
+        <article><span>草稿</span><strong>${reports.length - ready}</strong><small>等待数据补齐</small></article>
+        <article class="metric-accent"><span>船岸差率</span><strong>${fmt(variancePct, 3)}%</strong><small>允许偏差 ±0.300%</small></article>`;
+      $("reportList").innerHTML = reports.map((r) => `
+        <li><span>${r.no}</span><div><strong>${r.name}</strong><small>${r.note}</small></div><em class="${r.status}">${r.statusText}</em></li>`).join("");
+    }
+
+    const saveState = $("saveState");
+    function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+    $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
+    $("reportBtn").addEventListener("click", () => flash("已刷新报告就绪状态（演示）"));
+    $("printBtn").addEventListener("click", () => window.print());
+
+    render();
+  </script>
+</body>
+</html>

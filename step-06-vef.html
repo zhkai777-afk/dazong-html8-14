@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>步骤 06 · VEF 经验系数 | 卸货检验作业台</title>
+  <link rel="stylesheet" href="step-common.css">
+</head>
+<body class="embedded-content">
+  <main class="app-shell">
+    <a class="skip-link" href="#workspace">跳到主要工作区</a>
+
+    <aside class="global-sidebar" aria-label="主导航">
+      <div class="product-mark" aria-label="容量计重离线工作台">
+        <span class="mark-square">CQ</span>
+        <span><strong>容量计重</strong><small>Quantity Survey · Offline</small></span>
+      </div>
+      <nav class="global-nav">
+        <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
+        <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
+        <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
+        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+      </nav>
+      <div class="offline-card"><span class="status-dot" aria-hidden="true"></span><div><strong>离线模式</strong><small>数据仅保存在本机</small></div></div>
+    </aside>
+
+    <section class="main-stage">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">项目 / 卸货检验 / 210225050087</div>
+          <h1>MT SAIQ · 卸货检验</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="project-state">现场作业中</span>
+          <span class="save-state" id="saveState">草稿已保存</span>
+          <button type="button" class="button secondary" id="saveDraftBtn">保存草稿</button>
+          <button type="button" class="button primary" id="reportBtn">报告预览</button>
+        </div>
+      </header>
+
+      <div class="project-strip">
+        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
+        <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
+        <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
+      </div>
+
+      <div class="workbench-grid">
+        <aside class="workflow-panel" aria-label="卸货检验步骤">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Workflow · 流程进度</p><h2>Discharge Survey <small>卸货检验</small></h2></div>
+            <strong id="progressLabel">81%</strong>
+          </div>
+          <div class="progress-track" aria-label="整体完成度 81%"><span id="progressBar" style="width: 81%"></span></div>
+          <ol class="workflow-list">
+            <li class="done"><a href="step-01-project-setup.html"><span class="step-index">01</span><span class="step-copy"><strong>项目与报告设置</strong><em>Project &amp; Report Setup</em><small>已完成</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-02-timeline.html"><span class="step-index">02</span><span class="step-copy"><strong>作业时间线</strong><em>Operation Timeline</em><small>14 / 17 项</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-03-arrival-ullage.html"><span class="step-index">03</span><span class="step-copy"><strong>抵港船舱计量</strong><em>Arrival Tank Measurement</em><small>17 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-04-shore-tank.html"><span class="step-index">04</span><span class="step-copy"><strong>岸罐接收计量</strong><em>Shore Tank Measurement</em><small>6 组 Open / Close</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="done"><a href="step-05-rob.html"><span class="step-index">05</span><span class="step-copy"><strong>卸货后 ROB</strong><em>ROB After Discharge</em><small>8 / 17 舱</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="active"><a href="step-06-vef.html" aria-current="step"><span class="step-index">06</span><span class="step-copy"><strong>VEF 经验系数</strong><em>Vessel Experience Factor</em><small>5 个有效航次</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="partial"><a href="step-07-comparison.html"><span class="step-index">07</span><span class="step-copy"><strong>数量对比</strong><em>Quantity Comparison</em><small>动态计算</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+            <li class="idle"><a href="step-08-reports.html"><span class="step-index">08</span><span class="step-copy"><strong>报告包</strong><em>Report Package</em><small>0 / 8 份</small></span><span class="step-state" aria-hidden="true"></span></a></li>
+          </ol>
+        </aside>
+
+        <section class="workspace" id="workspace">
+          <div class="workspace-heading">
+            <div><h2>VEF 经验系数</h2><p>维护最近 20 个历史航次，依据船岸比、剔除码和 ±0.30% 区间计算本项目 VEF。</p></div>
+            <div class="context-actions"><button type="button" class="button tertiary" id="ruleBtn">计算规则</button><button type="button" class="button secondary" id="addBtn">新增历史航次</button></div>
+          </div>
+
+          <div class="metric-row" aria-label="VEF 汇总" id="vefMetrics"><!-- rendered by JS --></div>
+
+          <div class="table-card vef-table"><div class="table-toolbar"><strong>最近 20 航次 · 船舶经验系数表</strong><span>剔除码 A / B / C 的航次不参与初始平均；空白或 N 为待判定航次</span></div><div class="table-scroll"><table id="vefTable">
+            <thead><tr><th scope="col">航次</th><th scope="col">装货港</th><th scope="col">卸货港</th><th scope="col">岸量 / B-L<br><small>Shore TCV</small></th><th scope="col">离港船量<br><small>Vessel Sailing TCV</small></th><th scope="col">OBQ</th><th scope="col">船舶装载量<br><small>Sailing − OBQ</small></th><th scope="col">船岸比</th><th scope="col">剔除码</th><th scope="col">合格判定</th><th scope="col">剔除原因</th></tr></thead>
+            <tbody id="vefBody"><!-- rendered by JS --></tbody>
+          </table></div></div>
+
+          <div class="formula-notice"><strong>当前应用规则 · VEF-RULE-2024.1</strong><span>单航次船岸比 =（离港船量 − OBQ）÷ 岸量（B/L）；先排除 A / B / C 航次，再按初始平均值的 99.7%–100.3% 筛选。合格航次少于 5 条时 VEF = 1；否则为合格船量合计 ÷ 合格岸量合计（4 位小数）。船舶卸出标准体积按（抵港 GSV − ROB）÷ VEF 计算。</span></div>
+
+          <footer class="workspace-footer">
+            <div><strong>下一步：数量对比</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
+            <a class="button primary" href="step-07-comparison.html">保存并进入下一步</a>
+          </footer>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const fmt = (value, digits = 3) => new Intl.NumberFormat("zh-CN", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+    const round = (value, digits) => Number(value.toFixed(digits));
+    const excludedCodes = new Set(["A", "B", "C"]);
+
+    // 字段及口径与 Excel 的 VEF 页签一致：岸量、离港船量、OBQ、船舶装载量、船岸比和剔除码。
+    const vefVoyages = [
+      { id: 1, voyage: "SAIQ-2405", loadPort: "米纳阿法", dischargePort: "营口", shoreTcv: 951230.2, sailingTcv: 952657.1, obq: 0, code: "", reason: "" },
+      { id: 2, voyage: "SAIQ-2402", loadPort: "米纳阿法", dischargePort: "青岛", shoreTcv: 887462.4, sailingTcv: 889148.2, obq: 0, code: "", reason: "" },
+      { id: 3, voyage: "SAIQ-2311", loadPort: "米纳阿法", dischargePort: "宁波", shoreTcv: 902118.7, sailingTcv: 903652.3, obq: 0, code: "", reason: "" },
+      { id: 4, voyage: "SAIQ-2308", loadPort: "米纳阿法", dischargePort: "大连", shoreTcv: 864506.1, sailingTcv: 869174.4, obq: 0, code: "B", reason: "更换舱容表，历史口径不一致" },
+      { id: 5, voyage: "SAIQ-2304", loadPort: "米纳阿法", dischargePort: "舟山", shoreTcv: 925506.3, sailingTcv: 927264.6, obq: 0, code: "", reason: "" },
+      { id: 6, voyage: "SAIQ-2212", loadPort: "米纳阿法", dischargePort: "天津", shoreTcv: 918806.5, sailingTcv: 920184.7, obq: 0, code: "", reason: "" },
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const loadedTcv = (r) => r.sailingTcv - r.obq;
+    const ratio = (r) => loadedTcv(r) / r.shoreTcv;
+    const initialVoyages = () => vefVoyages.filter(r => !excludedCodes.has(r.code));
+    const weightedRatio = (rows) => rows.length ? rows.reduce((sum, r) => sum + loadedTcv(r), 0) / rows.reduce((sum, r) => sum + r.shoreTcv, 0) : 1;
+    function calculation() {
+      const initial = initialVoyages();
+      const initialAverage = round(weightedRatio(initial), 5);
+      const lower = round(initialAverage * 0.997, 5);
+      const upper = round(initialAverage * 1.003, 5);
+      const qualified = initial.filter(r => ratio(r) > lower && ratio(r) < upper);
+      return { initial, initialAverage, lower, upper, qualified, vef: qualified.length < 5 ? 1 : round(weightedRatio(qualified), 4) };
+    }
+
+    function renderMetrics() {
+      const { initial, initialAverage, lower, upper, qualified, vef } = calculation();
+      $("vefMetrics").innerHTML = `
+        <article><span>历史航次</span><strong>${vefVoyages.length} / 20</strong><small>已维护记录</small></article>
+        <article><span>初始平均船岸比</span><strong>${initialAverage.toFixed(5)}</strong><small>${initial.length} 条非剔除航次</small></article>
+        <article><span>合格区间</span><strong>${lower.toFixed(5)}–${upper.toFixed(5)}</strong><small>初始平均 ±0.30%</small></article>
+        <article class="metric-accent"><span>项目 VEF</span><strong>${vef.toFixed(4)}</strong><small>${qualified.length} 条合格航次${qualified.length < 5 ? " · 少于 5 条返回 1" : ""}</small></article>`;
+    }
+
+    function renderTable() {
+      const { lower, upper, qualified, vef } = calculation();
+      const rows = vefVoyages.map((r) => `
+        <tr class="${excludedCodes.has(r.code) ? "excluded-row" : ""}">
+          <th scope="row">${r.voyage}</th>
+          <td>${r.loadPort}</td>
+          <td>${r.dischargePort}</td>
+          <td class="number">${fmt(r.shoreTcv, 3)}</td>
+          <td class="number">${fmt(r.sailingTcv, 3)}</td>
+          <td class="number">${fmt(r.obq, 3)}</td>
+          <td class="number strong">${fmt(loadedTcv(r), 3)}</td>
+          <td class="number strong">${ratio(r).toFixed(5)}</td>
+          <td><select data-code="${r.id}" aria-label="${r.voyage} 剔除码"><option value="" ${r.code === "" ? "selected" : ""}>N</option><option value="A" ${r.code === "A" ? "selected" : ""}>A</option><option value="B" ${r.code === "B" ? "selected" : ""}>B</option><option value="C" ${r.code === "C" ? "selected" : ""}>C</option></select></td>
+          <td><span class="status-pill ${qualified.includes(r) ? "success" : "warning"}">${excludedCodes.has(r.code) ? "已剔除" : (ratio(r) > lower && ratio(r) < upper ? "合格" : "超出区间")}</span></td>
+          <td class="reason-cell">${r.reason || "—"}</td>
+        </tr>`).join("");
+      $("vefBody").innerHTML = rows + `<tfoot><tr><th scope="row" colSpan="7">最终 VEF（合格船量合计 ÷ 合格岸量合计）</th><td>${vef.toFixed(4)}</td><td colSpan="3">${qualified.length} 条合格航次参与计算</td></tr></tfoot>`;
+    }
+
+    $("vefBody").addEventListener("change", (e) => {
+      const t = e.target;
+      if (t.dataset.code) {
+        const r = vefVoyages.find(x => x.id === Number(t.dataset.code));
+        if (r) r.code = t.value;
+        renderMetrics();
+        renderTable();
+      }
+    });
+
+    const saveState = $("saveState");
+    function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+    $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
+    $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
+    $("ruleBtn").addEventListener("click", () => flash("VEF-RULE-2024.1：先筛选船岸比，再按合格航次合计比计算"));
+    $("addBtn").addEventListener("click", () => flash("（演示）新增历史航次功能在正式版提供"));
+
+    renderMetrics();
+    renderTable();
+  </script>
+</body>
+</html>

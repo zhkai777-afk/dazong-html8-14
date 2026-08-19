@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>检验任务详情 · 容量计重离线系统</title>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-hover: #142b46;
+      --success: #047857;
+      --success-bg: #e7f5ef;
+      --warning: #8a5a05;
+      --warning-bg: #fff7d6;
+      --danger: #b42318;
+      --danger-bg: #fdecec;
+      --background: #f3f6f9;
+      --surface: #ffffff;
+      --surface-muted: #f7f9fb;
+      --text: #15202f;
+      --text-secondary: #526071;
+      --border: #d7dee7;
+      --border-strong: #b8c3d0;
+      --link: #245a91;
+      --focus: rgba(37, 99, 235, .22);
+      --control-height: 32px;
+      --radius: 4px;
+      font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif;
+      color: var(--text);
+      background: var(--background);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { min-width: 320px; background: var(--background); }
+    body { margin: 0; min-height: 100vh; font-size: 13px; line-height: 1.5; color: var(--text); }
+    button, input, select { font: inherit; }
+    button, select, a { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .5; }
+    a { color: var(--link); text-decoration: none; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    /* ---------- Layout (content-only, hosted inside the app frame's iframe) ---------- */
+    .content { min-width: 0; padding: 16px 0 24px; }
+    .content-inner { display: grid; gap: 12px; }
+    .card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: 0 1px 2px rgba(24,47,76,.04); }
+
+    /* ---------- Task summary card ---------- */
+    .summary { padding: 14px 18px; display: grid; grid-template-columns: minmax(0,1fr) 230px auto; gap: 18px; align-items: center; min-height: 112px; }
+    .summary-left .back { display: inline-flex; gap: 5px; align-items: center; color: var(--link); font-size: 12px; font-weight: 600; }
+    .summary-left .back svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .summary-left .back:hover { text-decoration: underline; }
+    .summary-title-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+    .summary-title { font-size: 22px; font-weight: 600; line-height: 1.2; }
+    .summary-sub { margin-top: 6px; color: var(--text-secondary); font-size: 12px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .summary-sub .sep { margin: 0 8px; color: #b8c3d0; }
+    .summary-center .progress-label { color: var(--text-secondary); font-size: 11px; }
+    .summary-center .progress-count { margin-top: 2px; font-size: 13px; font-weight: 600; }
+    .summary-center .progress-count b { color: var(--primary); font-variant-numeric: tabular-nums; }
+    .progress-track { width: 180px; height: 7px; margin-top: 7px; overflow: hidden; border-radius: 4px; background: #e7ebf0; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: var(--primary); transition: width 220ms ease; }
+    .summary-center .progress-aux { margin-top: 6px; color: var(--text-secondary); font-size: 11px; }
+    .summary-right { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+    .button { height: var(--control-height); padding: 0 14px; display: inline-flex; gap: 6px; align-items: center; justify-content: center; border: 1px solid var(--border-strong); border-radius: var(--radius); color: #415065; background: var(--surface); font-weight: 650; white-space: nowrap; transition: background 180ms ease, border-color 180ms ease, color 180ms ease; }
+    .button:hover:not(:disabled) { border-color: #8494a8; background: var(--surface-muted); }
+    .button svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .button.primary { border-color: var(--primary); color: #fff; background: var(--primary); }
+    .button.primary:hover:not(:disabled) { border-color: var(--primary-hover); background: var(--primary-hover); }
+    .button.danger { border-color: var(--danger); color: #fff; background: var(--danger); }
+    .button.danger:hover:not(:disabled) { border-color: #8f1c14; background: #8f1c14; }
+    .button.icon-only { width: var(--control-height); padding: 0; }
+    .menu-wrap { position: relative; }
+    .menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 40; min-width: 168px; padding: 5px; display: none; border: 1px solid var(--border); border-radius: 5px; background: #fff; box-shadow: 0 10px 28px rgba(16,30,48,.18); }
+    .menu.show { display: block; }
+    .menu button { width: 100%; min-height: 34px; padding: 0 10px; display: flex; align-items: center; gap: 8px; border: 0; border-radius: 3px; background: transparent; color: var(--text); font-size: 12px; text-align: left; }
+    .menu button:hover { background: var(--surface-muted); }
+    .menu svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; color: var(--text-secondary); }
+
+    /* ---------- Demo control (relocated from the removed topbar) ---------- */
+    .demo-control { display: flex; gap: 6px; align-items: center; }
+    .demo-control label { color: var(--text-secondary); font-size: 10px; white-space: nowrap; }
+    .demo-control select { height: 26px; padding: 0 6px; border: 1px solid #cfd7e3; border-radius: 3px; color: var(--text-secondary); background: var(--surface-muted); font-size: 11px; }
+    .demo-control select:hover { border-color: #8da0b6; }
+
+    /* ---------- Status tags ---------- */
+    .tag { padding: 2px 7px; display: inline-flex; gap: 4px; align-items: center; border: 1px solid; border-radius: 3px; font-size: 10px; font-weight: 700; white-space: nowrap; line-height: 1.4; }
+    .tag.active { color: #0b4f8a; border-color: #9cc1e0; background: #e7f1fa; }
+    .tag.pending { color: var(--warning); border-color: #e1c57d; background: var(--warning-bg); }
+    .tag.done { color: var(--success); border-color: #8cc9b5; background: var(--success-bg); }
+    .tag.idle { color: #5b6675; border-color: #c3ccd6; background: #eef1f5; }
+    .tag.danger { color: var(--danger); border-color: #e6a7a0; background: var(--danger-bg); }
+    .tag.signed { color: #065f46; border-color: #8cc9b5; background: var(--success-bg); }
+    .tag.signed svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .sync-tag { gap: 5px; }
+    .sync-tag::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: currentColor; }
+    .sync-tag.synced { color: var(--success); border-color: #8cc9b5; background: var(--success-bg); }
+    .sync-tag.waiting { color: var(--warning); border-color: #e1c57d; background: var(--warning-bg); }
+
+    /* ---------- Main card with tabs ---------- */
+    .main-card { overflow: hidden; }
+    .tabs { display: flex; gap: 2px; padding: 0 6px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .tab { position: relative; height: 44px; padding: 0 18px; display: inline-flex; gap: 6px; align-items: center; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 600; transition: color 180ms ease, border-color 180ms ease; }
+    .tab:hover { color: var(--text); }
+    .tab[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab .count { padding: 0 6px; border: 1px solid var(--border-strong); border-radius: 9px; color: var(--text-secondary); font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .tab[aria-selected="true"] .count { color: var(--primary); border-color: #9cc1e0; background: #e7f1fa; }
+    .tab-panel { padding: 16px 18px; }
+
+    /* ---------- Basic info ---------- */
+    .group { margin-bottom: 14px; }
+    .group:last-child { margin-bottom: 0; }
+    .group-head { display: flex; gap: 10px; align-items: baseline; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eef1f5; }
+    .group-head .idx { color: var(--primary); font: 700 13px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .group-head h3 { margin: 0; font-size: 15px; font-weight: 600; }
+    .group-head .hint { margin-left: auto; color: var(--text-secondary); font-size: 11px; }
+    .desc { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .desc > div { padding: 9px 12px; background: var(--surface); }
+    .desc dt { color: var(--text-secondary); font-size: 11px; margin-bottom: 3px; }
+    .desc dd { margin: 0; font-size: 13px; color: var(--text); }
+    .desc dd.num { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .task-relation { margin-top: 10px; padding: 10px 12px; display: flex; gap: 14px; align-items: center; justify-content: space-between; border: 1px solid #c5d4e3; border-radius: 4px; background: #f4f8fb; }
+    .task-relation .relation-label { flex: none; color: var(--text-secondary); font-size: 11px; }
+    .task-relation .relation-content { min-width: 0; flex: 1; display: flex; gap: 14px; align-items: center; }
+    .task-relation .relation-main { min-width: 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .task-relation .relation-link { min-height: 28px; padding: 0; display: inline-flex; gap: 6px; align-items: center; border: 0; background: transparent; color: var(--link); font-size: 12px; font-weight: 650; text-align: left; }
+    .task-relation .relation-link:hover { text-decoration: underline; }
+    .task-relation .relation-link svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .task-relation .relation-note { color: var(--text-secondary); font-size: 11px; }
+    .task-relation .relation-empty { color: var(--text-secondary); font-size: 12px; }
+    .task-relation .button { flex: none; height: 30px; font-size: 11px; }
+    .alert-note { margin-top: 14px; padding: 11px 14px; border: 1px solid #c5d4e3; border-left: 3px solid var(--primary); border-radius: 4px; background: #eef3f8; }
+    .alert-note h4 { margin: 0 0 4px; font-size: 13px; font-weight: 600; color: #1c3a5e; }
+    .alert-note p { margin: 0; font-size: 12px; color: #3a4a5d; }
+
+    /* ---------- Field data ---------- */
+    .metric-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 14px; }
+    .metric { padding: 11px 14px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); }
+    .metric.warn { border-color: #e1c57d; background: var(--warning-bg); }
+    .metric .m-label { color: var(--text-secondary); font-size: 11px; }
+    .metric .m-value { margin-top: 5px; font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); }
+    .metric .m-aux { margin-top: 3px; font-size: 11px; color: var(--text-secondary); }
+    .metric.warn .m-value { color: var(--warning); }
+
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 16px; }
+    .step { display: flex; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); }
+    .step .step-ico { width: 22px; height: 22px; flex: none; margin-top: 1px; }
+    .step .step-ico svg { width: 22px; height: 22px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .step .step-ico.done { color: var(--success); }
+    .step .step-ico.active { color: var(--primary); }
+    .step .step-ico.pending { color: var(--warning); }
+    .step .step-ico.idle { color: #9aa6b3; }
+    .step .step-body { min-width: 0; }
+    .step .step-no { color: var(--text-secondary); font: 700 10px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .step .step-zh { font-size: 13px; font-weight: 600; }
+    .step .step-en { font-size: 9px; color: var(--text-secondary); }
+    .step .step-sum { margin-top: 3px; font-size: 11px; color: var(--text-secondary); }
+    .step .step-st { margin-top: 5px; }
+
+    .subtabs { display: flex; gap: 2px; padding: 0 2px; border-bottom: 1px solid var(--border); margin-bottom: 14px; overflow-x: auto; }
+    .subtab { height: 38px; padding: 0 14px; display: inline-flex; align-items: center; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 600; white-space: nowrap; transition: color 180ms ease, border-color 180ms ease; }
+    .subtab:hover { color: var(--text); }
+    .subtab[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .data-view { display: none; }
+    .data-view.show { display: block; }
+    .data-head { display: flex; gap: 12px; align-items: baseline; margin-bottom: 10px; }
+    .data-head h4 { margin: 0; font-size: 14px; font-weight: 600; }
+    .data-head .updated { color: var(--text-secondary); font-size: 11px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .data-head .button { margin-left: auto; height: 28px; padding: 0 10px; font-size: 11px; }
+    .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 4px; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    th, td { padding: 6px 10px; border-right: 1px solid #e5e9ef; border-bottom: 1px solid #e5e9ef; text-align: left; white-space: nowrap; }
+    th:last-child, td:last-child { border-right: 0; }
+    thead th { height: 36px; color: #293546; background: #f8f9fb; font-size: 11px; font-weight: 700; }
+    tbody tr { transition: background 160ms ease; }
+    tbody tr:hover { background: #f5f8fb; box-shadow: inset 3px 0 #7e9cbb; }
+    tbody td { color: #4b5869; font-size: 12px; }
+    td.number, th.number { text-align: right; font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: #2e536f; }
+    td.center, th.center { text-align: center; }
+    td.calc { background: #f5f7fa; }
+    .table-foot { padding: 8px 10px; color: var(--text-secondary); font-size: 11px; border-top: 1px solid var(--border); background: var(--surface-muted); }
+
+    .problems { margin-top: 16px; }
+    .problems h4 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+    .problem { display: flex; gap: 12px; align-items: flex-start; padding: 11px 14px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); margin-bottom: 8px; }
+    .problem .p-code { color: var(--text-secondary); font: 700 10px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .problem .p-body { min-width: 0; flex: 1; }
+    .problem .p-title { font-size: 13px; font-weight: 600; }
+    .problem .p-desc { margin-top: 3px; font-size: 12px; color: var(--text-secondary); }
+    .problem .p-locate { margin-top: 6px; }
+    .link-btn { border: 0; background: transparent; color: var(--link); font-size: 12px; font-weight: 600; padding: 0; }
+    .link-btn:hover { text-decoration: underline; }
+    .no-problem { display: flex; gap: 10px; align-items: center; padding: 14px; border: 1px solid #8cc9b5; border-radius: 4px; background: var(--success-bg); color: #075d49; font-size: 13px; font-weight: 600; }
+
+    /* ---------- Report tab ---------- */
+    .alert { padding: 12px 14px; border: 1px solid; border-radius: 4px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+    .alert.warning { border-color: #e1c57d; background: var(--warning-bg); }
+    .alert.success { border-color: #8cc9b5; background: var(--success-bg); }
+    .alert .a-ico { width: 20px; height: 20px; flex: none; margin-top: 1px; }
+    .alert.warning .a-ico { color: var(--warning); }
+    .alert.success .a-ico { color: var(--success); }
+    .alert .a-body { min-width: 0; flex: 1; }
+    .alert h4 { margin: 0; font-size: 13px; font-weight: 700; }
+    .alert.warning h4 { color: var(--warning); }
+    .alert.success h4 { color: #065f46; }
+    .alert p { margin: 4px 0 0; font-size: 12px; color: #54524a; }
+    .alert .a-action { margin-left: auto; }
+
+    .report-metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 14px; }
+
+    .op-link { min-width: 44px; height: 28px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: 3px; color: var(--primary); background: var(--surface); font-size: 11px; font-weight: 700; }
+    .op-link:hover:not(:disabled) { background: var(--surface-muted); border-color: #8494a8; }
+    .op-link:disabled { color: #9aa6b3; border-color: #dde3ea; }
+
+    /* ---------- Empty states ---------- */
+    .empty { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--text-secondary); }
+    .empty svg { width: 64px; height: 64px; margin-bottom: 10px; fill: none; stroke: #c5ccd5; stroke-width: 1.8; stroke-linejoin: round; }
+    .empty strong { color: #4b5869; font-size: 15px; }
+    .empty p { margin: 6px 0 14px; font-size: 12px; max-width: 420px; }
+
+    /* ---------- Modal ---------- */
+    .modal-backdrop { position: fixed; inset: 0; z-index: 100; padding: 20px; display: none; place-items: center; background: rgba(16,28,43,.52); }
+    .modal-backdrop.show { display: grid; }
+    .report-modal { width: min(1000px, 92vw); height: 88vh; display: flex; flex-direction: column; overflow: hidden; border-radius: 6px; background: #fff; box-shadow: 0 24px 60px rgba(11,24,40,.28); }
+    .report-modal header { padding: 12px 16px; display: flex; gap: 16px; align-items: center; border-bottom: 1px solid var(--border); background: #f8fafc; }
+    .report-modal header .r-title { font-size: 15px; font-weight: 600; }
+    .report-modal header .r-meta { margin-top: 2px; color: var(--text-secondary); font-size: 11px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .report-modal .close { width: 32px; height: 32px; margin-left: auto; border: 0; border-radius: 4px; color: #58677a; background: transparent; font-size: 22px; line-height: 1; }
+    .report-modal .close:hover { background: #e9eef4; }
+    .report-modal .r-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 210px minmax(0,1fr); }
+    .r-toc { padding: 10px; border-right: 1px solid var(--border); overflow-y: auto; background: var(--surface-muted); }
+    .r-toc button { width: 100%; min-height: 34px; padding: 6px 10px; display: block; border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--text); font-size: 12px; text-align: left; line-height: 1.3; transition: background 160ms ease; }
+    .r-toc button:hover { background: #e9eef4; }
+    .r-toc button.active { border-color: #9cc1e0; background: #e7f1fa; color: var(--primary); font-weight: 600; }
+    .r-toc button .t-en { display: block; font-size: 9px; color: var(--text-secondary); }
+    .r-paper-wrap { padding: 18px; overflow-y: auto; background: #eef1f5; }
+    .r-paper { max-width: 560px; margin: 0 auto; min-height: 100%; padding: 28px 30px; border: 1px solid #d7dee7; border-radius: 2px; background: #fff; box-shadow: 0 2px 10px rgba(16,30,48,.08); }
+    .r-paper .p-co { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 14px; }
+    .r-paper .p-co .co-name { font-size: 16px; font-weight: 700; color: var(--primary); }
+    .r-paper .p-co .co-en { font-size: 10px; color: var(--text-secondary); letter-spacing: .04em; }
+    .r-paper .p-rep { text-align: center; margin-bottom: 16px; }
+    .r-paper .p-rep .rep-zh { font-size: 18px; font-weight: 700; }
+    .r-paper .p-rep .rep-en { font-size: 11px; color: var(--text-secondary); }
+    .r-paper dl { display: grid; grid-template-columns: 96px 1fr; gap: 6px 12px; margin: 0 0 16px; }
+    .r-paper dt { color: var(--text-secondary); font-size: 11px; }
+    .r-paper dd { margin: 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .r-paper .p-qty { border-top: 1px dashed var(--border-strong); padding-top: 12px; margin-top: 4px; }
+    .r-paper .p-qty .q-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+    .r-paper .p-qty .q-row b { font-variant-numeric: tabular-nums; }
+    .r-paper .p-sign { display: flex; gap: 24px; margin-top: 28px; }
+    .r-paper .p-sign .sign-box { flex: 1; }
+    .r-paper .p-sign .sign-line { margin-top: 26px; border-top: 1px solid var(--text); }
+    .r-paper .p-sign .sign-label { font-size: 10px; color: var(--text-secondary); }
+    .report-modal footer { padding: 10px 16px; display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--border); background: #f8fafc; }
+
+    /* ---------- Temporary task association ---------- */
+    .task-modal { width: min(760px, 92vw); max-height: min(680px, 88vh); display: flex; flex-direction: column; overflow: hidden; border-radius: 6px; background: #fff; box-shadow: 0 24px 60px rgba(11,24,40,.28); }
+    .task-modal header { padding: 14px 16px; display: flex; gap: 16px; align-items: flex-start; border-bottom: 1px solid var(--border); background: #f8fafc; }
+    .task-modal header h2 { margin: 0; font-size: 16px; font-weight: 650; }
+    .task-modal header p { margin: 3px 0 0; color: var(--text-secondary); font-size: 11px; }
+    .task-modal .close { width: 32px; height: 32px; margin-left: auto; border: 0; border-radius: 4px; color: #58677a; background: transparent; font-size: 22px; line-height: 1; }
+    .task-modal .close:hover { background: #e9eef4; }
+    .task-modal-body { min-height: 0; padding: 14px 16px; overflow-y: auto; }
+    .task-list { margin: 0; padding: 0; border: 0; display: grid; gap: 8px; }
+    .task-list legend { margin-bottom: 10px; color: var(--text-secondary); font-size: 11px; }
+    .task-option { min-height: 68px; padding: 10px 12px; display: grid; grid-template-columns: 18px minmax(128px,.7fr) minmax(220px,1.6fr) minmax(120px,.8fr); gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; transition: border-color 160ms ease, background 160ms ease; }
+    .task-option:hover { border-color: #9bacc0; background: var(--surface-muted); }
+    .task-option.selected { border-color: #7ca8cf; background: #eef5fb; box-shadow: inset 3px 0 var(--primary); }
+    .task-option input { width: 16px; height: 16px; margin: 0; accent-color: var(--primary); }
+    .task-option strong { display: block; font-size: 12px; }
+    .task-option small { display: block; margin-top: 2px; color: var(--text-secondary); font-size: 10px; }
+    .task-modal footer { padding: 10px 16px; display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--border); background: #f8fafc; }
+    .confirm-modal { width: min(440px, 92vw); }
+    .confirm-body { padding: 18px 18px 16px; display: flex; gap: 14px; }
+    .confirm-icon { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--danger); background: var(--danger-bg); }
+    .confirm-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .confirm-copy h3 { margin: 0; font-size: 15px; }
+    .confirm-copy p { margin: 6px 0 0; color: var(--text-secondary); font-size: 12px; }
+    .confirm-copy .confirm-task { margin-top: 8px; padding: 8px 10px; border-radius: 4px; background: var(--surface-muted); color: var(--text); font-size: 11px; }
+
+    /* ---------- Toast ---------- */
+    .toast { position: fixed; z-index: 120; top: 18px; left: 50%; padding: 8px 14px; border: 1px solid #a5cabb; border-radius: 4px; color: #075d49; background: #fff; box-shadow: 0 8px 24px rgba(21,36,56,.16); opacity: 0; pointer-events: none; transform: translate(-50%,-12px); transition: opacity 180ms ease, transform 180ms ease; font-size: 12px; max-width: 90vw; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1180px) {
+      .summary { grid-template-columns: minmax(0,1fr) auto; align-items: start; }
+      .summary-left { grid-column: 1; grid-row: 1; }
+      .summary-center { grid-column: 2; grid-row: 1; }
+      .summary-right { grid-column: 1 / -1; grid-row: 2; justify-content: flex-end; }
+      .desc { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .metric-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .steps { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .report-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 780px) {
+      :root { --control-height: 40px; }
+      .content { padding: 12px 0; }
+      .summary { grid-template-columns: minmax(0,1fr); gap: 12px; align-items: stretch; }
+      .summary-center, .summary-right { grid-column: auto; grid-row: auto; order: 0; }
+      .summary-right { justify-content: flex-start; }
+      .summary-right .button.primary { flex: 1; }
+      .desc { grid-template-columns: 1fr; }
+      .task-relation { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .task-relation .relation-content { width: 100%; align-items: flex-start; flex-direction: column; gap: 4px; }
+      .task-relation > .button { width: 100%; margin-top: 6px; }
+      .task-option { grid-template-columns: 18px minmax(0,1fr); }
+      .task-option .task-option-name, .task-option .task-option-place { grid-column: 2; }
+      .metric-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .steps { grid-template-columns: 1fr; }
+      .report-metrics { grid-template-columns: 1fr 1fr; }
+      .tabs { overflow-x: auto; }
+      .report-modal .r-body { grid-template-columns: 1fr; }
+      .r-toc { display: none; }
+      .alert { flex-wrap: wrap; }
+      .alert .a-action { margin-left: 0; width: 100%; }
+      .alert .a-action .button { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration: .01ms !important; } }
+
+    /* ---------- Print ---------- */
+    @media print {
+      .summary-right, .tabs, .toast, .modal-backdrop, .menu { display: none !important; }
+      body { background: #fff; }
+      .content { padding: 0; }
+      .content-inner { max-width: none; gap: 0; }
+      .card { box-shadow: none; border: 1px solid #999; break-inside: avoid; }
+      .tab-panel[hidden] { display: none !important; }
+      .table-scroll { border-color: #999; }
+      table { font-size: 11px; }
+      thead th { background: #eee; }
+      tbody tr:hover { background: transparent; box-shadow: none; }
+      .tag { border-color: #999 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="content-inner">
+
+      <!-- ===== Task summary card ===== -->
+      <section class="card summary" aria-label="任务摘要">
+        <div class="summary-left">
+          <a class="back" id="btnBack" href="./检验任务管理.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回检验任务列表</a>
+          <div class="summary-title-row">
+            <span class="summary-title">MT SAIQ 卸货检验</span>
+            <span class="tag idle">正式任务单</span>
+            <span class="tag" id="sumStatus" data-status="进行中">进行中</span>
+            <span class="tag sync-tag" id="sumSync" data-sync="待上传">待上传</span>
+          </div>
+          <div class="summary-sub">
+            <span>任务单编号 RW-202505-0087</span><span class="sep">·</span><span>工单编号 210225050087</span><span class="sep">·</span><span>卸货检验</span>
+          </div>
+        </div>
+        <div class="summary-center">
+          <div class="progress-label">现场检验进度</div>
+          <div class="progress-count"><b id="progDone">5</b> / <span id="progTotal">8</span> 环节已完成</div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="68" id="progBarWrap"><div class="progress-bar" id="progBar" style="width:68%"></div></div>
+          <div class="progress-aux" id="progAux">2 项待补录 · 1 项需复核</div>
+        </div>
+        <div class="summary-right">
+          <div class="demo-control">
+            <label for="demoStatus">演示状态</label>
+            <select id="demoStatus" aria-label="演示状态切换">
+              <option value="待开始">待开始</option>
+              <option value="进行中" selected>进行中</option>
+              <option value="已完成">已完成</option>
+            </select>
+          </div>
+          <button class="button" type="button" id="btnPrint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>打印详情</button>
+          <div class="menu-wrap">
+            <button class="button" type="button" id="btnMore" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>更多操作</button>
+            <div class="menu" id="moreMenu" role="menu">
+              <button type="button" role="menuitem" id="miExport"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>导出任务摘要</button>
+              <button type="button" role="menuitem" id="miLog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h10"/></svg>查看操作记录</button>
+            </div>
+          </div>
+          <button class="button primary" type="button" id="btnPrimary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span id="btnPrimaryText">继续录入现场检验数据</span></button>
+        </div>
+      </section>
+
+      <!-- ===== Main card with tabs ===== -->
+      <section class="card main-card">
+        <div class="tabs" role="tablist" aria-label="任务详情页签">
+          <button class="tab" role="tab" id="tab-basic-btn" aria-controls="tab-basic" aria-selected="true">基本信息</button>
+          <button class="tab" role="tab" id="tab-report-btn" aria-controls="tab-report" aria-selected="false">检验报告<span class="count">8</span></button>
+        </div>
+
+        <!-- Basic info -->
+        <div class="tab-panel" id="tab-basic" role="tabpanel" aria-labelledby="tab-basic-btn">
+          <div class="group">
+            <div class="group-head"><span class="idx">01</span><h3>任务信息</h3><span class="hint">任务识别及来源</span></div>
+            <dl class="desc">
+              <div><dt>任务单编号</dt><dd class="num">RW-202505-0087</dd></div>
+              <div><dt>任务单名称</dt><dd>MT SAIQ 卸货检验</dd></div>
+              <div><dt>任务类型</dt><dd><span class="tag idle">正式任务单</span></dd></div>
+              <div><dt>检验类型</dt><dd>卸货检验</dd></div>
+              <div><dt>任务状态</dt><dd><span class="tag active" id="basicStatus">进行中</span></dd></div>
+              <div><dt>工单编号</dt><dd class="num">210225050087</dd></div>
+              <div><dt>工单名称</dt><dd>营口港原油卸货计量</dd></div>
+              <div><dt>任务来源</dt><dd>任务中心下载</dd></div>
+              <div><dt>数据归属</dt><dd>当前离线设备</dd></div>
+              <div><dt>同步状态</dt><dd><span class="tag sync-tag waiting" id="basicSync">待上传</span></dd></div>
+              <div><dt>创建时间</dt><dd class="num">2025-05-23 09:42</dd></div>
+              <div><dt>最后更新</dt><dd class="num">2025-05-25 15:06</dd></div>
+              <div><dt>任务优先级</dt><dd>普通</dd></div>
+            </dl>
+            <div class="task-relation" id="taskRelation" aria-label="关联临时任务"></div>
+          </div>
+          <div class="group">
+            <div class="group-head"><span class="idx">02</span><h3>检验对象与人员</h3><span class="hint">船舶、货物、现场与负责人员</span></div>
+            <dl class="desc">
+              <div><dt>船舶名称</dt><dd>MT SAIQ</dd></div>
+              <div><dt>IMO 编号</dt><dd class="num">9723792</dd></div>
+              <div><dt>航次</dt><dd class="num">SAIQ-2505</dd></div>
+              <div><dt>货物</dt><dd>阿曼出口混合原油</dd></div>
+              <div><dt>委托方</dt><dd>中国石油国际事业有限公司</dd></div>
+              <div><dt>港口</dt><dd>营口港</dd></div>
+              <div><dt>检验场所</dt><dd>仙人岛原油码头</dd></div>
+              <div><dt>服务技术</dt><dd>陈海峰</dd></div>
+              <div><dt>跟单人</dt><dd>刘洋</dd></div>
+              <div><dt>联系方式</dt><dd class="num">138 0000 2486</dd></div>
+              <div><dt>所属公司</dt><dd>容量计重检验部</dd></div>
+              <div><dt>现场联系人</dt><dd>赵经理 / 139 0000 6618</dd></div>
+            </dl>
+          </div>
+          <div class="group">
+            <div class="group-head"><span class="idx">03</span><h3>计划与检验要求</h3><span class="hint">时间、计算规则和任务说明</span></div>
+            <dl class="desc">
+              <div><dt>计划开始</dt><dd class="num">2025-05-24 08:20</dd></div>
+              <div><dt>计划结束</dt><dd class="num">2025-05-26 18:00</dd></div>
+              <div><dt>实际检验开始</dt><dd class="num">2025-05-24 14:15</dd></div>
+              <div><dt>报告日期</dt><dd class="num">2025-05-26</dd></div>
+              <div><dt>密度口径</dt><dd>0.8598 g/cm³ @15℃</dd></div>
+              <div><dt>VCF 标准</dt><dd>ASTM D1250 / API MPMS 11.1（2004）</dd></div>
+              <div><dt>WCF 标准</dt><dd>API MPMS 11.5（2013）</dd></div>
+              <div><dt>允许差率</dt><dd>±0.300%</dd></div>
+              <div><dt>报告语言</dt><dd>中英文</dd></div>
+              <div><dt>报告类型</dt><dd>正式报告</dd></div>
+              <div><dt>报告数量单位</dt><dd>m³ @15℃、MT Air</dd></div>
+              <div><dt>任务说明</dt><dd style="grid-column:auto">完成抵港船舱、卸货前后岸罐、ROB、VEF、时间记录及船岸差复核；异常数据须保留现场说明。</dd></div>
+            </dl>
+            <div class="alert-note">
+              <h4>离线数据说明</h4>
+              <p>当前任务数据保存在本机。任务基本信息来自任务中心，现场检验数据修改会生成本地修订记录，上传后更新同步状态。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Report -->
+        <div class="tab-panel" id="tab-report" role="tabpanel" aria-labelledby="tab-report-btn" hidden></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Temporary task association modal -->
+  <div class="modal-backdrop" id="linkTaskModal" role="presentation">
+    <div class="task-modal" role="dialog" aria-modal="true" aria-labelledby="linkTaskTitle">
+      <header>
+        <div>
+          <h2 id="linkTaskTitle">关联临时任务单</h2>
+          <p>仅展示当前设备中已创建且尚未被其他正式任务关联的临时任务单。</p>
+        </div>
+        <button class="close" type="button" id="linkTaskClose" aria-label="关闭关联临时任务弹窗">×</button>
+      </header>
+      <div class="task-modal-body">
+        <fieldset class="task-list" id="tempTaskList">
+          <legend id="tempTaskCount">请选择要关联的临时任务单</legend>
+        </fieldset>
+      </div>
+      <footer>
+        <button class="button" type="button" id="linkTaskCancel">取消</button>
+        <button class="button primary" type="button" id="linkTaskConfirm" disabled>确认关联</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Unlink confirmation modal -->
+  <div class="modal-backdrop" id="unlinkTaskModal" role="presentation">
+    <div class="task-modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="unlinkTaskTitle" aria-describedby="unlinkTaskDesc">
+      <div class="confirm-body">
+        <div class="confirm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 4.4 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.4a2 2 0 0 0-3.4 0z"/></svg></div>
+        <div class="confirm-copy">
+          <h3 id="unlinkTaskTitle">确认解除关联？</h3>
+          <p id="unlinkTaskDesc">解除后，临时任务单将重新回到可关联列表。已承接的现场数据不会被删除。</p>
+          <div class="confirm-task" id="unlinkTaskName"></div>
+        </div>
+      </div>
+      <footer>
+        <button class="button" type="button" id="unlinkTaskCancel">取消</button>
+        <button class="button danger" type="button" id="unlinkTaskConfirm">确认解除</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Report preview modal -->
+  <div class="modal-backdrop" id="reportModal" role="presentation">
+    <div class="report-modal" role="dialog" aria-modal="true" aria-labelledby="rModalTitle">
+      <header>
+        <div>
+          <div class="r-title" id="rModalTitle">数量证书</div>
+          <div class="r-meta" id="rModalMeta">版本 v2.3 · 数据快照 2025-05-26 09:12</div>
+        </div>
+        <button class="close" type="button" id="rClose" aria-label="关闭预览">×</button>
+      </header>
+      <div class="r-body">
+        <nav class="r-toc" id="rToc" aria-label="报告目录"></nav>
+        <div class="r-paper-wrap">
+          <div class="r-paper" id="rPaper"></div>
+        </div>
+      </div>
+      <footer>
+        <button class="button" type="button" id="rCancel">取消</button>
+        <button class="button" type="button" id="rPrint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>打印</button>
+        <button class="button primary" type="button" id="rDownload"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>下载 PDF</button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* ---------- helpers ---------- */
+    const $ = (sel, root) => (root || document).querySelector(sel);
+    const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+    const fmt = (n, d = 2) => Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+    const gsv = (tov, fw, vcf) => (Number(tov) - Number(fw)) * Number(vcf);
+    function showToast(msg) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => t.classList.remove("show"), 3000);
+    }
+    function statusTag(text) {
+      const map = { "进行中": "active", "待开始": "pending", "待处理": "pending", "待复核": "pending", "已完成": "done", "已生成": "done", "已同步": "done", "未开始": "idle", "数据未就绪": "idle", "阻断": "danger", "已签发": "signed" };
+      const cls = map[text] || "idle";
+      const ico = text === "已签发" ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 7"/></svg>' : "";
+      return '<span class="tag ' + cls + '"' + (cls === "danger" || cls === "pending" || cls === "idle" ? ' role="status"' : "") + '>' + ico + text + '</span>';
+    }
+    const TASK_NO = "RW-202505-0087";
+    const DATA_TIME = "2025-05-25 15:06";
+    const tempTasks = [
+      { id: "LS-202505-0005", name: "MT SAIQ 现场临时卸货检验", type: "卸货检验", place: "营口港 · 仙人岛原油码头", createdAt: "2025-05-24 07:58", status: "进行中" },
+      { id: "LS-202505-0008", name: "OCEAN CREST 岸罐临时计量", type: "岸罐计量", place: "青岛港 · 董家口码头", createdAt: "2025-05-25 08:16", status: "待开始" },
+      { id: "LS-202505-0011", name: "PACIFIC HORIZON 装货现场检验", type: "装货检验", place: "大连港 · 新港码头", createdAt: "2025-05-25 11:40", status: "待开始" }
+    ];
+    let linkedTempTask = null;
+    let selectedTempTaskId = null;
+
+    /* ---------- frame communication (hosted inside 系统框架.html iframe) ---------- */
+    const inFrame = window.parent !== window;
+    function notifyParent(type, payload) {
+      if (inFrame) window.parent.postMessage(Object.assign({ type }, payload || {}), "*");
+    }
+
+    /* ---------- field data (shared) ---------- */
+    const arrivalRows = [
+      { no: "1C", ro: 4.020, rc: 4.020, t: 16.7, tov: 154014.17, fw: 431.67, vcf: 0.99855, chk: "通过" },
+      { no: "2C", ro: 3.940, rc: 3.940, t: 16.6, tov: 190253.54, fw: 79.88, vcf: 0.99864, chk: "通过" },
+      { no: "3C", ro: 4.910, rc: 4.910, t: 16.8, tov: 182954.22, fw: 79.88, vcf: 0.99847, chk: "通过" },
+      { no: "4C", ro: 3.840, rc: 3.840, t: 17.0, tov: 191004.55, fw: 305.06, vcf: 0.99830, chk: "通过" },
+      { no: "5C", ro: 3.740, rc: 3.740, t: 16.9, tov: 186499.16, fw: 0.00, vcf: 0.99838, chk: "通过" }
+    ];
+    const timelineRows = [
+      { ev: "船舶抵达锚地", start: "2025-05-24 06:40", end: "2025-05-24 07:10", dur: "30 min", note: "锚地等待引航", st: "已完成" },
+      { ev: "船舶靠妥", start: "2025-05-24 08:05", end: "2025-05-24 08:20", dur: "15 min", note: "仙人岛码头 #2 泊位", st: "已完成" },
+      { ev: "检验开始", start: "2025-05-24 14:15", end: "—", dur: "—", note: "联合计量前会议", st: "已完成" },
+      { ev: "开始卸货", start: "2025-05-25 02:30", end: "—", dur: "—", note: "首舱开泵", st: "进行中" },
+      { ev: "卸货作业", start: "2025-05-25 02:30", end: "—", dur: "—", note: "17 舱顺序卸货", st: "进行中" }
+    ];
+    const shoreRows = [
+      { tk: "01TK-201", phase: "Open", gauge: 14.862, temp: 17.2, gov: 71204.18, gsv: 70886.40, st: "已完成" },
+      { tk: "01TK-201", phase: "Close", gauge: 3.214, temp: 17.5, gov: 15980.44, gsv: 15905.51, st: "已完成" },
+      { tk: "01TK-206", phase: "Open", gauge: 11.540, temp: 17.0, gov: 58021.77, gsv: 57756.93, st: "已完成" },
+      { tk: "01TK-206", phase: "Close", gauge: 2.880, temp: 17.3, gov: 13884.21, gsv: 13824.66, st: "已完成" },
+      { tk: "04TK-706", phase: "Open", gauge: 9.020, temp: 18.1, gov: 46330.90, gsv: 46090.16, st: "待复核" },
+      { tk: "04TK-706", phase: "Close", gauge: 1.760, temp: 18.4, gov: 9210.55, gsv: 9161.50, st: "待复核" },
+      { tk: "04TK-708", phase: "Open", gauge: 8.410, temp: 18.0, gov: 44118.80, gsv: 43891.95, st: "已完成" },
+      { tk: "04TK-708", phase: "Close", gauge: 1.520, temp: 18.2, gov: 8910.33, gsv: 8862.46, st: "已完成" }
+    ];
+    const robRows = [
+      { no: "1C", st: "已完成", liq: 842.16, non: 0.00, t: 17.1, std: 839.92, pump: "不可泵", note: "舱底油脚已确认", chk: "通过" },
+      { no: "2C", st: "已完成", liq: 798.40, non: 0.00, t: 16.9, std: 796.31, pump: "不可泵", note: "无明显残留", chk: "通过" },
+      { no: "3C", st: "已完成", liq: 910.55, non: 12.30, t: 17.0, std: 907.74, pump: "不可泵", note: "含少量油泥", chk: "通过" },
+      { no: "4C", st: "已完成", liq: 855.22, non: 0.00, t: 17.2, std: 852.90, pump: "不可泵", note: "舱底平整", chk: "通过" },
+      { no: "5C", st: "进行中", liq: null, non: null, t: null, std: null, pump: "待处理", note: "待复测空距", chk: "待复核" },
+      { no: "1P", st: "待处理", liq: 132.80, non: 0.00, t: 17.0, std: 132.42, pump: "可泵", note: "管线泵出残留", chk: "待复核" }
+    ];
+    const vefRows = [
+      { voy: "SAIQ-2409", port: "营口", bl: 1905120, ves: 1901884, vef: 0.99830, inc: "纳入", reason: "—" },
+      { voy: "SAIQ-2411", port: "营口", bl: 1912640, ves: 1915330, vef: 1.00140, inc: "纳入", reason: "—" },
+      { voy: "SAIQ-2502", port: "大连", bl: 1888500, ves: 1891210, vef: 1.00143, inc: "纳入", reason: "—" },
+      { voy: "SAIQ-2503", port: "营口", bl: 1920000, ves: 1923560, vef: 1.00186, inc: "纳入", reason: "—" },
+      { voy: "SAIQ-2406", port: "青岛", bl: 1870000, ves: 1902300, vef: 1.01727, inc: "排除", reason: "单点系泊异常" }
+    ];
+    const stepsBase = [
+      { n: "01", zh: "项目与报告设置", en: "Project & Report Setup", sum: "公共信息与规则已确认", st: "已完成" },
+      { n: "02", zh: "作业时间线", en: "Operation Timeline", sum: "14 / 17 项", st: "进行中" },
+      { n: "03", zh: "抵港船舱计量", en: "Arrival Tank Measurement", sum: "17 / 17 舱 + P.Line", st: "已完成" },
+      { n: "04", zh: "岸罐接收计量", en: "Shore Tank Measurement", sum: "6 组 Open / Close", st: "待复核" },
+      { n: "05", zh: "卸货后 ROB", en: "ROB After Discharge", sum: "8 / 17 舱", st: "进行中" },
+      { n: "06", zh: "VEF 经验系数", en: "Vessel Experience Factor", sum: "5 个有效航次", st: "已完成" },
+      { n: "07", zh: "数量对比", en: "Quantity Comparison", sum: "船岸差动态计算", st: "待复核" },
+      { n: "08", zh: "报告包", en: "Report Package", sum: "0 / 8 份已签发", st: "未开始" }
+    ];
+    const stepIcon = {
+      "已完成": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>',
+      "进行中": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>',
+      "待复核": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>',
+      "未开始": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>'
+    };
+    const problemsInProgress = [
+      { lv: "阻断", code: "B-01", title: "还有 9 个舱位未完成 ROB 检查", desc: "当前仅完成 8 / 17 舱 ROB，剩余 9 舱未检，无法计算最终船岸差。", target: "rob" },
+      { lv: "警告", code: "W-01", title: "1 个舱仍有可泵残留", desc: "1P 管线存在可泵残留 132.42 m³，需现场确认是否计入 ROB。", target: "rob" },
+      { lv: "警告", code: "W-02", title: "船岸差率 +0.326%，超过允许偏差 ±0.300%", desc: "当前过程船岸差率超出允许差率，需复核岸罐与船舱计量数据。", target: "comparison" }
+    ];
+    const reports = [
+      { zh: "数量证书", en: "Certificate of Quantity", sum: "船卸量 / 岸收量 / 船岸差", ver: "v2.3 / 2024-11" },
+      { zh: "卸货摘要报告", en: "Discharge Summary", sum: "作业时间线 / 总体计量", ver: "v1.8 / 2024-11" },
+      { zh: "船舱计量报告", en: "Vessel Tank Measurement Report", sum: "17 舱 + P.Line 空距计量", ver: "v2.1 / 2024-11" },
+      { zh: "岸罐计量报告", en: "Shore Tank Measurement Report", sum: "4 岸罐 Open/Close 记录", ver: "v2.0 / 2024-11" },
+      { zh: "船岸数量差异报告", en: "Ship/Shore Difference Report", sum: "船岸差量与差率", ver: "v1.5 / 2024-11" },
+      { zh: "ROB 报告", en: "Remaining on Board Report", sum: "残留量与可泵状态", ver: "v1.4 / 2024-11" },
+      { zh: "VEF 报告", en: "Vessel Experience Factor Report", sum: "5 有效航次经验系数", ver: "v1.2 / 2024-11" },
+      { zh: "时间与取样记录", en: "Time Log & Sampling Record", sum: "时间线 / 取样点", ver: "v1.1 / 2024-11" }
+    ];
+    const reportStatus = {
+      "进行中": ["草稿", "草稿", "可预览", "草稿", "数据未就绪", "数据未就绪", "可预览", "草稿"],
+      "已完成": ["已签发", "已生成", "已生成", "已生成", "已生成", "已生成", "已生成", "已生成"]
+    };
+
+    /* ---------- field data views ---------- */
+    const subtabs = [
+      { id: "timeline", label: "作业时间线" },
+      { id: "arrival", label: "抵港船舱" },
+      { id: "shore", label: "岸罐计量" },
+      { id: "rob", label: "ROB" },
+      { id: "vef", label: "VEF" },
+      { id: "comparison", label: "数量对比" }
+    ];
+    function dataViewHTML(id) {
+      if (id === "timeline") {
+        const rows = timelineRows.map(r => `<tr>
+          <td>${r.ev}</td><td class="num">${r.start}</td><td class="num">${r.end}</td><td class="num">${r.dur}</td><td>${r.note}</td><td class="center">${statusTag(r.st)}</td></tr>`).join("");
+        return viewWrap("作业时间线", "Operation Timeline", `<div class="table-scroll"><table>
+          <thead><tr><th>事件</th><th class="number">发生/开始时间</th><th class="number">结束时间</th><th class="number">持续时间</th><th>现场备注</th><th class="center">状态</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>`);
+      }
+      if (id === "arrival") {
+        const rows = arrivalRows.map(r => `<tr>
+          <td>${r.no}</td><td class="number">${fmt(r.ro,3)}</td><td class="number">${fmt(r.rc,3)}</td><td class="number">${fmt(r.t,1)}</td>
+          <td class="number">${fmt(r.tov,2)}</td><td class="number">${fmt(r.fw,2)}</td><td class="number">${r.vcf}</td>
+          <td class="number calc">${fmt(gsv(r.tov,r.fw,r.vcf),2)}</td><td class="center">${statusTag(r.chk)}</td></tr>`).join("");
+        return viewWrap("抵港船舱计量", "Arrival Tank Measurement", `<div class="table-scroll"><table>
+          <thead><tr><th>舱号</th><th class="number">原始空距 m</th><th class="number">修正空距 m</th><th class="number">温度 ℃</th><th class="number">TOV m³</th><th class="number">游离水 m³</th><th class="number">VCF</th><th class="number">GSV m³</th><th class="center">校验</th></tr></thead>
+          <tbody>${rows}</tbody></table></div><div class="table-foot">仅展示前 5 条，共 18 条记录（GSV = (TOV − 游离水) × VCF，前端实时计算）</div>`);
+      }
+      if (id === "shore") {
+        const rows = shoreRows.map(r => `<tr>
+          <td>${r.tk}</td><td>${r.phase}</td><td class="number">${fmt(r.gauge,3)}</td><td class="number">${fmt(r.temp,1)}</td>
+          <td class="number">${fmt(r.gov,2)}</td><td class="number">${fmt(r.gsv,2)}</td><td class="center">${statusTag(r.st)}</td></tr>`).join("");
+        return viewWrap("岸罐接收计量", "Shore Tank Measurement", `<div class="table-scroll"><table>
+          <thead><tr><th>岸罐</th><th>卸前/卸后</th><th class="number">检尺结果 m</th><th class="number">油温 ℃</th><th class="number">GOV m³</th><th class="number">GSV m³</th><th class="center">状态</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>`);
+      }
+      if (id === "rob") {
+        const rows = robRows.map(r => `<tr>
+          <td>${r.no}</td><td class="center">${statusTag(r.st)}</td>
+          <td class="number">${r.liq == null ? "—" : fmt(r.liq,2)}</td><td class="number">${r.non == null ? "—" : fmt(r.non,2)}</td>
+          <td class="number">${r.t == null ? "—" : fmt(r.t,1)}</td><td class="number">${r.std == null ? "—" : fmt(r.std,2)}</td>
+          <td class="center">${r.pump === "可泵" ? statusTag("待处理") : r.pump}</td><td>${r.note}</td><td class="center">${statusTag(r.chk)}</td></tr>`).join("");
+        return viewWrap("卸货后 ROB", "ROB After Discharge", `<div class="table-scroll"><table>
+          <thead><tr><th>舱号</th><th class="center">状态</th><th class="number">液态残留 m³</th><th class="number">非液态 m³</th><th class="number">温度 ℃</th><th class="number">标准体积 m³</th><th class="center">是否可泵</th><th>现场说明</th><th class="center">校验</th></tr></thead>
+          <tbody>${rows}</tbody></table></div><div class="table-foot">当前已检查 8 / 17 舱</div>`);
+      }
+      if (id === "vef") {
+        const rows = vefRows.map(r => `<tr>
+          <td class="num">${r.voy}</td><td>${r.port}</td><td class="number">${fmt(r.bl,0)}</td><td class="number">${fmt(r.ves,0)}</td>
+          <td class="number">${fmt(r.vef,5)}</td><td class="center">${r.inc === "纳入" ? statusTag("已完成") : statusTag("待处理")}</td><td>${r.reason}</td></tr>`).join("");
+        return viewWrap("VEF 经验系数", "Vessel Experience Factor", `<div class="alert-note" style="margin:0 0 10px"><h4>项目平均 VEF 1.00170</h4><p>基于 4 个有效航次计算，已排除 1 个异常航次。</p></div><div class="table-scroll"><table>
+          <thead><tr><th class="number">航次</th><th>卸货港</th><th class="number">提单数量</th><th class="number">船舶数量</th><th class="number">VEF</th><th class="center">是否纳入</th><th>排除原因</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>`);
+      }
+      /* comparison */
+      const arrivalGSV = 1915846.32, robStd = 6532.18, vef = 1.00170;
+      const shipGSV = (arrivalGSV - robStd) / vef;
+      const shoreGSV = 1912291.85;
+      const diff = shoreGSV - shipGSV;
+      const diffRate = (diff / shipGSV) * 100;
+      const over = Math.abs(diffRate) > 0.300;
+      const metrics = `
+        <div class="metric-row" style="margin-bottom:12px">
+          <div class="metric"><div class="m-label">VEF 修正后船卸量</div><div class="m-value">${fmt(shipGSV,2)} m³</div><div class="m-aux">抵港 GSV − ROB ÷ VEF</div></div>
+          <div class="metric"><div class="m-label">岸收标准体积</div><div class="m-value">${fmt(shoreGSV,2)} m³</div><div class="m-aux">4 岸罐 + 2 管线记录</div></div>
+          <div class="metric"><div class="m-label">船岸差量</div><div class="m-value">${diff >= 0 ? "+" : ""}${fmt(diff,2)} m³</div><div class="m-aux">岸收 − 船卸</div></div>
+          <div class="metric ${over ? "warn" : ""}"><div class="m-label">船岸差率</div><div class="m-value">${diffRate >= 0 ? "+" : ""}${fmt(diffRate,3)}%</div><div class="m-aux">${over ? "超过允许偏差 ±0.300%" : "在允许偏差内"}</div></div>
+        </div>`;
+      const formula = `<div class="table-scroll" style="border:0;background:var(--surface-muted);padding:12px 14px">
+        <div style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:#2e536f;line-height:1.9">
+          抵港 GSV − ROB ÷ VEF = 船卸 GSV<br>
+          岸收 GSV − 船卸 GSV = 船岸差量
+        </div></div>
+        <div class="alert-note" style="margin-top:12px"><h4>过程复核提示</h4><p>ROB 当前仅完成 8 / 17 舱，数量对比结果用于过程复核，不作为最终签发值。</p></div>`;
+      return viewWrap("数量对比", "Quantity Comparison", metrics + formula);
+    }
+    function viewWrap(title, en, body) {
+      return `<div class="data-head"><h4>${title} <span style="color:var(--text-secondary);font-size:11px;font-weight:400">/ ${en}</span></h4>
+        <span class="updated">数据更新 ${DATA_TIME}</span>
+        <button class="button" type="button" data-viewall>查看全部</button></div>${body}`;
+    }
+
+    function fieldHTML(state) {
+      if (state === "待开始") {
+        return `<div class="empty">
+          <svg viewBox="0 0 80 80" aria-hidden="true"><path d="M14 8h22l10 10v44a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zM36 8v12h14"/><path d="M22 34h22M22 42h22M22 50h14"/></svg>
+          <strong>尚未录入现场检验数据</strong>
+          <p>开始现场检验后，可在此查看计量记录、过程数据和校验问题。</p>
+          <button class="button primary" type="button" id="emptyEntry"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>录入现场检验数据</button>
+        </div>`;
+      }
+      const done = state === "已完成";
+      const steps = done ? stepsBase.map(s => ({ ...s, st: "已完成", sum: s.n === "08" ? "8 / 8 份已签发" : (s.n === "02" ? "17 / 17 项" : (s.n === "05" ? "17 / 17 舱" : (s.n === "04" ? "8 组 Open / Close" : (s.n === "07" ? "船岸差已定稿" : s.sum)))) })) : stepsBase;
+      const stepsHtml = steps.map(s => `<div class="step">
+        <span class="step-ico ${s.st === "已完成" ? "done" : s.st === "进行中" ? "active" : s.st === "待复核" ? "pending" : "idle"}">${stepIcon[s.st]}</span>
+        <div class="step-body"><div class="step-no">${s.n}</div><div class="step-zh">${s.zh}</div><div class="step-en">${s.en}</div><div class="step-sum">${s.sum}</div><div class="step-st">${statusTag(s.st)}</div></div>
+      </div>`).join("");
+      const subHtml = subtabs.map((t, i) => `<button class="subtab" role="tab" data-sub="${t.id}" aria-selected="${i === 1 ? "true" : "false"}">${t.label}</button>`).join("");
+      const viewsHtml = subtabs.map((t, i) => `<div class="data-view ${i === 1 ? "show" : ""}" data-view="${t.id}">${dataViewHTML(t.id)}</div>`).join("");
+      const metrics = done
+        ? `<div class="metric"><div class="m-label">流程完成度</div><div class="m-value">8 / 8</div><div class="m-aux">100%</div></div>
+           <div class="metric"><div class="m-label">抵港船舶 GSV</div><div class="m-value">${fmt(1915846.32,2)} m³</div><div class="m-aux">17 / 17 舱 + P.Line</div></div>
+           <div class="metric"><div class="m-label">岸收标准体积</div><div class="m-value">${fmt(1912291.85,2)} m³</div><div class="m-aux">4 岸罐 + 2 管线记录</div></div>
+           <div class="metric"><div class="m-label">待处理问题</div><div class="m-value">0</div><div class="m-aux">无阻断 · 无警告</div></div>`
+        : `<div class="metric"><div class="m-label">流程完成度</div><div class="m-value">5 / 8</div><div class="m-aux">68%</div></div>
+           <div class="metric"><div class="m-label">抵港船舶 GSV</div><div class="m-value">${fmt(1915846.32,2)} m³</div><div class="m-aux">17 / 17 舱 + P.Line</div></div>
+           <div class="metric"><div class="m-label">岸收标准体积</div><div class="m-value">${fmt(1912291.85,2)} m³</div><div class="m-aux">4 岸罐 + 2 管线记录</div></div>
+           <div class="metric warn"><div class="m-label">待处理问题</div><div class="m-value">3</div><div class="m-aux">1 阻断 · 2 警告</div></div>`;
+      let problemsHtml;
+      if (done) {
+        problemsHtml = `<div class="no-problem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>校验通过，无阻断或警告问题。</div>`;
+      } else {
+        problemsHtml = problemsInProgress.map(p => `<div class="problem">
+          <span class="tag ${p.lv === "阻断" ? "danger" : "pending"}" role="status">${p.lv}</span>
+          <div class="p-body"><div class="p-code">${p.code}</div><div class="p-title">${p.title}</div><div class="p-desc">${p.desc}</div>
+          <div class="p-locate"><button class="link-btn" type="button" data-locate="${p.target}">定位数据 →</button></div></div>
+        </div>`).join("");
+      }
+      return `<div class="metric-row">${metrics}</div>
+        <div class="steps">${stepsHtml}</div>
+        <div class="subtabs" role="tablist" aria-label="现场检验数据分组">${subHtml}</div>
+        <div id="fieldViews">${viewsHtml}</div>
+        <div class="problems"><h4>校验问题</h4>${problemsHtml}</div>`;
+    }
+
+    /* ---------- report tab ---------- */
+    function reportHTML(state) {
+      if (state === "待开始") {
+        return `<div class="empty">
+          <svg viewBox="0 0 80 80" aria-hidden="true"><path d="M14 8h22l10 10v44a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zM36 8v12h14"/><path d="M22 34h22M22 42h22M22 50h14"/></svg>
+          <strong>暂无检验报告</strong>
+          <p>现场检验数据完成并通过校验后，系统将生成报告草稿。</p>
+        </div>`;
+      }
+      const done = state === "已完成";
+      const alert = done
+        ? `<div class="alert success"><svg class="a-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+            <div class="a-body"><h4>检验报告已生成</h4><p>8 份报告已基于冻结数据快照生成，报告包版本 v1.0。</p></div></div>`
+        : `<div class="alert warning"><svg class="a-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17h.01"/></svg>
+            <div class="a-body"><h4>当前报告包不可签发</h4><p>仍有 1 项阻断问题，ROB 仅完成 8 / 17 舱。可以预览已生成的草稿，但不能签发正式报告。</p></div>
+            <div class="a-action"><button class="button" type="button" id="alertLocate">查看阻断问题</button></div></div>`;
+      const metrics = done
+        ? `<div class="metric"><div class="m-label">报告总数</div><div class="m-value">8</div><div class="m-aux">全部报告</div></div>
+           <div class="metric"><div class="m-label">已生成</div><div class="m-value">8</div><div class="m-aux">基于冻结快照</div></div>
+           <div class="metric"><div class="m-label">已签发</div><div class="m-value">8</div><div class="m-aux">正式报告</div></div>
+           <div class="metric"><div class="m-label">报告版本</div><div class="m-value">v1.0</div><div class="m-aux">冻结数据快照</div></div>`
+        : `<div class="metric"><div class="m-label">报告总数</div><div class="m-value">8</div><div class="m-aux">全部报告</div></div>
+           <div class="metric"><div class="m-label">可预览</div><div class="m-value">2</div><div class="m-aux">已生成草稿</div></div>
+           <div class="metric"><div class="m-label">草稿</div><div class="m-value">6</div><div class="m-aux">编辑中</div></div>
+           <div class="metric"><div class="m-label">已签发</div><div class="m-value">0</div><div class="m-aux">未签发</div></div>`;
+      const stArr = reportStatus[state];
+      const rows = reports.map((r, i) => {
+        const st = stArr[i];
+        const disabled = st === "数据未就绪";
+        const time = disabled ? "—" : "2025-05-26 09:12";
+        const ops = done
+          ? `<button class="op-link" type="button" data-preview="${i}">预览</button> <button class="op-link" type="button" data-download="${i}">下载 PDF</button>`
+          : `<button class="op-link" type="button" data-preview="${i}" ${disabled ? "disabled" : ""}>预览</button>`;
+        const note = disabled ? '<div style="font-size:10px;color:var(--text-secondary);margin-top:2px">数据未就绪，暂不可预览</div>' : "";
+        return `<tr>
+          <td class="center num">${i + 1}</td>
+          <td><strong>${r.zh}</strong><div style="font-size:9px;color:var(--text-secondary)">${r.en}</div></td>
+          <td>${r.sum}</td>
+          <td class="num">${r.ver}</td>
+          <td class="num">${time}</td>
+          <td class="center">${statusTag(st)}</td>
+          <td class="center">${ops}${note}</td>
+        </tr>`;
+      }).join("");
+      return alert + `<div class="report-metrics">${metrics}</div>
+        <div class="table-scroll"><table>
+          <thead><tr><th class="center">序号</th><th>报告名称</th><th>数据摘要</th><th class="number">模板版本</th><th class="number">生成时间</th><th class="center">状态</th><th class="center">操作</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>`;
+    }
+
+    /* ---------- state application ---------- */
+    const summaryCfg = {
+      "待开始": { status: "待开始", statusCls: "pending", sync: "待上传", syncCls: "waiting", done: 0, total: 8, pct: 0, aux: "尚未开始现场检验", btn: "录入现场检验数据", entry: true },
+      "进行中": { status: "进行中", statusCls: "active", sync: "待上传", syncCls: "waiting", done: 5, total: 8, pct: 68, aux: "2 项待补录 · 1 项需复核", btn: "继续录入现场检验数据", entry: true },
+      "已完成": { status: "已完成", statusCls: "done", sync: "已同步", syncCls: "synced", done: 8, total: 8, pct: 100, aux: "全部环节已完成", btn: "查看检验报告", entry: false }
+    };
+    function applyState(state) {
+      const cfg = summaryCfg[state];
+      // summary tags
+      const sumStatus = $("#sumStatus");
+      sumStatus.textContent = cfg.status;
+      sumStatus.className = "tag " + cfg.statusCls;
+      sumStatus.dataset.status = cfg.status;
+      const sumSync = $("#sumSync");
+      sumSync.textContent = cfg.sync;
+      sumSync.className = "tag sync-tag " + cfg.syncCls;
+      sumSync.dataset.sync = cfg.sync;
+      // basic info status/sync
+      const basicStatus = $("#basicStatus");
+      basicStatus.textContent = cfg.status;
+      basicStatus.className = "tag " + cfg.statusCls;
+      const basicSync = $("#basicSync");
+      basicSync.textContent = cfg.sync;
+      basicSync.className = "tag sync-tag " + cfg.syncCls;
+      // progress
+      $("#progDone").textContent = cfg.done;
+      $("#progTotal").textContent = cfg.total;
+      $("#progBar").style.width = cfg.pct + "%";
+      $("#progAux").textContent = cfg.aux;
+      $("#progBarWrap").setAttribute("aria-valuenow", cfg.pct);
+      // primary button
+      $("#btnPrimaryText").textContent = cfg.btn;
+      $("#btnPrimary").dataset.entry = cfg.entry ? "1" : "0";
+      // panels
+      $("#tab-report").innerHTML = reportHTML(state);
+      bindReportHandlers();
+    }
+
+    /* ---------- tabs ---------- */
+    function activateTab(id) {
+      const map = { "tab-basic": "tab-basic-btn", "tab-report": "tab-report-btn" };
+      Object.keys(map).forEach(panelId => {
+        const sel = panelId === id;
+        $("#" + panelId).hidden = !sel;
+        const btn = $("#" + map[panelId]);
+        btn.setAttribute("aria-selected", sel ? "true" : "false");
+      });
+    }
+    ["tab-basic-btn", "tab-report-btn"].forEach(btnId => {
+      $("#" + btnId).addEventListener("click", () => activateTab(btnId.replace("-btn", "")));
+    });
+
+    /* ---------- report handlers ---------- */
+    function bindReportHandlers() {
+      const alertLocate = $("#alertLocate");
+      if (alertLocate) alertLocate.addEventListener("click", () => {
+        goEntry();
+      });
+      $$('#tab-report [data-preview]').forEach(b => b.addEventListener("click", () => openReport(Number(b.dataset.preview))));
+      $$('#tab-report [data-download]').forEach(b => b.addEventListener("click", () => downloadReport(Number(b.dataset.download))));
+    }
+
+    /* ---------- temporary task association ---------- */
+    const linkTaskModal = $("#linkTaskModal");
+    const unlinkTaskModal = $("#unlinkTaskModal");
+    function renderTaskRelation() {
+      const wrap = $("#taskRelation");
+      if (!linkedTempTask) {
+        wrap.innerHTML = `<div class="relation-content"><span class="relation-label">关联临时任务</span><span class="relation-empty">暂未关联临时任务单</span></div>
+          <button class="button" type="button" id="openLinkTask"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1"/></svg>关联临时任务</button>`;
+        $("#openLinkTask").addEventListener("click", openLinkTaskModal);
+        return;
+      }
+      wrap.innerHTML = `<div class="relation-content"><span class="relation-label">关联临时任务</span><div class="relation-main">
+          <button class="relation-link" type="button" id="linkedTempTask" aria-label="查看关联临时任务 ${linkedTempTask.id}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1"/></svg>
+            <span class="num">${linkedTempTask.id}</span> · ${linkedTempTask.name}
+          </button><span class="tag done">已关联</span><span class="relation-note">正式任务已承接该临时任务的现场数据</span>
+        </div></div><button class="button" type="button" id="openUnlinkTask">解除绑定</button>`;
+      $("#linkedTempTask").addEventListener("click", () => showToast("关联临时任务：" + linkedTempTask.id + " · " + linkedTempTask.name));
+      $("#openUnlinkTask").addEventListener("click", openUnlinkTaskModal);
+    }
+    function renderTempTaskList() {
+      const availableTasks = tempTasks.filter(task => !linkedTempTask || task.id !== linkedTempTask.id);
+      $("#tempTaskCount").textContent = "共 " + availableTasks.length + " 个未关联临时任务单，请选择 1 个";
+      $("#tempTaskList").querySelectorAll(".task-option").forEach(item => item.remove());
+      availableTasks.forEach(task => {
+        const label = document.createElement("label");
+        label.className = "task-option";
+        label.innerHTML = `<input type="radio" name="tempTask" value="${task.id}">
+          <span><strong class="num">${task.id}</strong><small>${task.type} · ${task.status}</small></span>
+          <span class="task-option-name"><strong>${task.name}</strong><small>创建时间 ${task.createdAt}</small></span>
+          <span class="task-option-place"><strong>${task.place}</strong><small>当前设备创建</small></span>`;
+        label.querySelector("input").addEventListener("change", function () {
+          selectedTempTaskId = this.value;
+          $$(".task-option", $("#tempTaskList")).forEach(item => item.classList.toggle("selected", item.contains(this)));
+          $("#linkTaskConfirm").disabled = false;
+        });
+        $("#tempTaskList").appendChild(label);
+      });
+    }
+    function openLinkTaskModal() {
+      selectedTempTaskId = null;
+      $("#linkTaskConfirm").disabled = true;
+      renderTempTaskList();
+      linkTaskModal.classList.add("show");
+      $("#linkTaskClose").focus();
+    }
+    function closeLinkTaskModal() {
+      linkTaskModal.classList.remove("show");
+      $("#openLinkTask")?.focus();
+    }
+    function openUnlinkTaskModal() {
+      if (!linkedTempTask) return;
+      $("#unlinkTaskName").textContent = linkedTempTask.id + " · " + linkedTempTask.name;
+      unlinkTaskModal.classList.add("show");
+      $("#unlinkTaskCancel").focus();
+    }
+    function closeUnlinkTaskModal() {
+      unlinkTaskModal.classList.remove("show");
+      $("#openUnlinkTask")?.focus();
+    }
+    $("#linkTaskClose").addEventListener("click", closeLinkTaskModal);
+    $("#linkTaskCancel").addEventListener("click", closeLinkTaskModal);
+    $("#linkTaskConfirm").addEventListener("click", function () {
+      const task = tempTasks.find(item => item.id === selectedTempTaskId);
+      if (!task) return;
+      linkedTempTask = task;
+      linkTaskModal.classList.remove("show");
+      renderTaskRelation();
+      showToast("已关联临时任务单「" + task.id + "」");
+      $("#openUnlinkTask").focus();
+    });
+    $("#unlinkTaskCancel").addEventListener("click", closeUnlinkTaskModal);
+    $("#unlinkTaskConfirm").addEventListener("click", function () {
+      const taskNo = linkedTempTask ? linkedTempTask.id : "";
+      linkedTempTask = null;
+      unlinkTaskModal.classList.remove("show");
+      renderTaskRelation();
+      showToast("已解除与临时任务单「" + taskNo + "」的关联");
+      $("#openLinkTask").focus();
+    });
+    linkTaskModal.addEventListener("mousedown", e => { if (e.target === linkTaskModal) closeLinkTaskModal(); });
+    unlinkTaskModal.addEventListener("mousedown", e => { if (e.target === unlinkTaskModal) closeUnlinkTaskModal(); });
+
+    /* ---------- entry navigation ---------- */
+    function goEntry() {
+      window.location.href = "./现场检验数据录入.html?taskNo=" + TASK_NO;
+    }
+    $("#btnPrimary").addEventListener("click", function () {
+      if (this.dataset.entry === "1") goEntry();
+      else activateTab("tab-report");
+    });
+
+    /* ---------- back to task list (frame-aware) ---------- */
+    const backBtn = $("#btnBack");
+    if (backBtn) backBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (inFrame) {
+        notifyParent("close-task-page");
+      } else {
+        window.location.href = this.getAttribute("href");
+      }
+    });
+
+    /* ---------- more menu ---------- */
+    const moreMenu = $("#moreMenu");
+    $("#btnMore").addEventListener("click", function (e) {
+      e.stopPropagation();
+      const show = moreMenu.classList.toggle("show");
+      this.setAttribute("aria-expanded", show ? "true" : "false");
+    });
+    document.addEventListener("click", function (e) {
+      if (!moreMenu.contains(e.target) && e.target !== $("#btnMore")) {
+        moreMenu.classList.remove("show");
+        $("#btnMore").setAttribute("aria-expanded", "false");
+      }
+    });
+    $("#miExport").addEventListener("click", function () {
+      moreMenu.classList.remove("show");
+      const relationText = linkedTempTask ? linkedTempTask.id + " · " + linkedTempTask.name : "未关联";
+      const txt = "检验任务摘要\n任务单编号: RW-202505-0087\n任务单名称: MT SAIQ 卸货检验\n任务类型: 正式任务单\n检验类型: 卸货检验\n关联临时任务: " + relationText + "\n任务状态: " + $("#sumStatus").textContent + "\n同步状态: " + $("#sumSync").textContent + "\n船舶: MT SAIQ (IMO 9723792)\n货物: 阿曼出口混合原油\n港口: 营口港 仙人岛原油码头\n服务技术: 陈海峰\n导出时间: " + new Date().toLocaleString("zh-CN", { hour12: false });
+      const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "检验任务摘要_RW-202505-0087.txt";
+      a.click(); URL.revokeObjectURL(url);
+      showToast("任务摘要已导出");
+    });
+    $("#miLog").addEventListener("click", function () {
+      moreMenu.classList.remove("show");
+      showToast("操作记录：2025-05-25 15:06 本地修订（现场数据）· 2025-05-23 09:42 任务下载");
+    });
+
+    /* ---------- print ---------- */
+    $("#btnPrint").addEventListener("click", () => window.print());
+    $("#rPrint").addEventListener("click", () => window.print());
+
+    /* ---------- report preview modal ---------- */
+    const reportModal = $("#reportModal");
+    let currentReport = 0;
+    function paperHTML(i) {
+      const r = reports[i];
+      return `<div class="p-co"><div class="co-name">容量计重检验部</div><div class="co-en">QUANTITY SURVEY · OFFLINE DIVISION</div></div>
+        <div class="p-rep"><div class="rep-zh">${r.zh}</div><div class="rep-en">${r.en}</div></div>
+        <dl>
+          <dt>任务单编号</dt><dd>RW-202505-0087</dd>
+          <dt>船舶名称</dt><dd>MT SAIQ</dd>
+          <dt>货物</dt><dd>阿曼出口混合原油</dd>
+          <dt>港口 / 场所</dt><dd>营口港 · 仙人岛原油码头</dd>
+          <dt>报告日期</dt><dd>2025-05-26</dd>
+          <dt>模板版本</dt><dd>${r.ver}</dd>
+        </dl>
+        <div class="p-qty">
+          <div class="q-row"><span>抵港船舶 GSV（@15℃）</span><b>1,915,846.32 m³</b></div>
+          <div class="q-row"><span>岸收标准体积（@15℃）</span><b>1,912,291.85 m³</b></div>
+          <div class="q-row"><span>船岸差量</span><b>+6,220.72 m³</b></div>
+          <div class="q-row"><span>船岸差率</span><b>+0.326%</b></div>
+        </div>
+        <div class="p-sign">
+          <div class="sign-box"><div class="sign-line"></div><div class="sign-label">检验员：陈海峰</div></div>
+          <div class="sign-box"><div class="sign-line"></div><div class="sign-label">审核：刘洋</div></div>
+        </div>`;
+    }
+    function openReport(i) {
+      currentReport = i;
+      $("#rModalTitle").textContent = reports[i].zh;
+      $("#rModalMeta").textContent = "版本 " + reports[i].ver.replace(" / ", " · 数据快照 ") + " 09:12";
+      $("#rPaper").innerHTML = paperHTML(i);
+      const toc = $("#rToc");
+      toc.innerHTML = reports.map((r, k) => `<button type="button" class="${k === i ? "active" : ""}" data-toc="${k}">${r.zh}<span class="t-en">${r.en}</span></button>`).join("");
+      $$("#rToc [data-toc]").forEach(b => b.addEventListener("click", () => openReport(Number(b.dataset.toc))));
+      reportModal.classList.add("show");
+      $("#rClose").focus();
+    }
+    function closeReport() {
+      reportModal.classList.remove("show");
+      $("#btnPrimary").focus();
+    }
+    $("#rClose").addEventListener("click", closeReport);
+    $("#rCancel").addEventListener("click", closeReport);
+    reportModal.addEventListener("mousedown", e => { if (e.target === reportModal) closeReport(); });
+    function downloadReport(i) {
+      const r = reports[i];
+      const txt = r.zh + " / " + r.en + "\n任务单编号: RW-202505-0087\n船舶: MT SAIQ\n货物: 阿曼出口混合原油\n报告日期: 2025-05-26\n（演示用文本报告，正式 PDF 由报告中心签发）";
+      const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = r.zh + "_RW-202505-0087.txt";
+      a.click(); URL.revokeObjectURL(url);
+      showToast("报告「" + r.zh + "」已下载（演示文件）");
+    }
+    $("#rDownload").addEventListener("click", () => downloadReport(currentReport));
+
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Escape") return;
+      if (unlinkTaskModal.classList.contains("show")) closeUnlinkTaskModal();
+      else if (linkTaskModal.classList.contains("show")) closeLinkTaskModal();
+      else if (reportModal.classList.contains("show")) closeReport();
+    });
+
+    /* ---------- demo status ---------- */
+    $("#demoStatus").addEventListener("change", e => {
+      applyState(e.target.value);
+      showToast("演示状态已切换为「" + e.target.value + "」");
+    });
+
+    /* ---------- init ---------- */
+    renderTaskRelation();
+    applyState("进行中");
+    activateTab("tab-basic");
+    // notify the host frame (系统框架.html) so its top bar shows 检验任务详情
+    notifyParent("navigate", { title: "检验任务详情", crumb: "项目管理 / 检验任务 / 任务详情" });
+  })();
+  </script>
+</body>
+</html>
