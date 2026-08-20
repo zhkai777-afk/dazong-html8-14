@@ -118,7 +118,6 @@
         <section class="workspace" id="workspace">
           <div class="workspace-heading shore-heading">
             <div><h2>Shore Tank Measurement <small>岸罐接收计量</small></h2><p>逐罐录入期初、期末测量数据，运行计算后同步更新计量汇总。</p></div>
-            <div class="context-actions"><button type="button" class="button tertiary" id="masterBtn">岸罐基础资料</button><button type="button" class="button tertiary" id="tableBtn">罐容表版本</button></div>
           </div>
 
           <section class="shore-context-card">
@@ -436,8 +435,6 @@
     });
     $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
     $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
-    $("masterBtn").addEventListener("click", () => flash("（演示）岸罐基础资料在「基础资料」模块"));
-    $("tableBtn").addEventListener("click", () => flash("（演示）罐容表版本在「基础资料」模块"));
     $("validateBtn").addEventListener("click", () => {
       publishedTotals = totalsFor(shoreReadings);
       renderMetrics();

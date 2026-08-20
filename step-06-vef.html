@@ -65,11 +65,6 @@
         </aside>
 
         <section class="workspace" id="workspace">
-          <div class="workspace-heading">
-            <div><h2>VEF 经验系数</h2><p>维护最近 20 个历史航次，依据船岸比、剔除码和 ±0.30% 区间计算本项目 VEF。</p></div>
-            <div class="context-actions"><button type="button" class="button tertiary" id="ruleBtn">计算规则</button><button type="button" class="button secondary" id="addBtn">新增历史航次</button></div>
-          </div>
-
           <div class="metric-row" aria-label="VEF 汇总" id="vefMetrics"><!-- rendered by JS --></div>
 
           <div class="table-card vef-table"><div class="table-toolbar"><strong>最近 20 航次 · 船舶经验系数表</strong><span>剔除码 A / B / C 的航次不参与初始平均；空白或 N 为待判定航次</span></div><div class="table-scroll"><table id="vefTable">
@@ -159,9 +154,6 @@
     function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
     $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
     $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
-    $("ruleBtn").addEventListener("click", () => flash("VEF-RULE-2024.1：先筛选船岸比，再按合格航次合计比计算"));
-    $("addBtn").addEventListener("click", () => flash("（演示）新增历史航次功能在正式版提供"));
-
     renderMetrics();
     renderTable();
   </script>

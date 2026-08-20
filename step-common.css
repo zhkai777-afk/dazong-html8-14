@@ -440,3 +440,26 @@ tbody select { height: 28px; padding: 0 6px; border: 1px solid var(--border); bo
   .form-grid, .ullage-condition-grid, .settings-source-guide, .ullage-source-strip, .shore-context-grid, .calculation-basis > div, .free-water-context > div, .tank-trace-grid, .calculation-grid, .calculation-route { grid-template-columns: 1fr 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
+
+/* PC desktop specification: keep the existing layout, raise business text to its readable minimum. */
+.button { min-height: 32px; }
+.button.primary { min-height: 36px; }
+table { font-size: 12px; }
+thead th { font-size: 12px; }
+.breadcrumb, .project-state, .save-state, .step-copy small, .workspace-footer span,
+.metric-row span, .metric-row small, .table-toolbar, .excel-column-legend,
+.excel-footnotes, .shore-excel-notes, .settings-section > header p,
+.settings-source-guide p, .setting-field small, .calculation-route span,
+.calculation-route small, .legacy-standard-warning span, .settings-change-warning span,
+.ullage-source-strip dt, .shore-context-grid dt, .free-water-lineage p,
+.calculation-lineage p, .shore-formula-lineage p { font-size: 11px; }
+.step-copy em { font-size: 11px; }
+.status-pill, .source-badge { font-size: 11px; }
+.checkbox-cell span, .count-badge { font-size: 11px; }
+.setting-field .field-label > span, .settings-source-guide strong { font-size: 12px; }
+.setting-field input, .setting-field select { height: 32px; }
+.tabbar button { min-height: 32px; font-size: 12px; }
+.excel-fidelity-badge { font-size: 11px; }
+.ullage-source-strip dd, .shore-context-grid dd { font-size: 13px; }
+thead th small, tbody th small, td small { font-size: 11px; }
+.field-kind { font-size: 11px; }

@@ -80,6 +80,16 @@ a{color:var(--link); text-decoration:none;}
 .step-chip .chip-no{width:18px; height:18px; border-radius:50%; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px;}
 .step-chip.active .chip-no{background:var(--primary); color:#fff; border-color:var(--primary);}
 .step-chip.done .chip-no{background:#fff;}
+.step-group{display:flex; flex-direction:column; gap:7px; min-width:max-content;}
+.ship-context{display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 16px; border-bottom:1px solid var(--border); background:#f8fafc;}
+.ship-context-label{color:var(--text-secondary); font-size:12px; font-weight:600;}
+.ship-context button{min-height:32px; padding:0 12px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--text-secondary); font-size:12px; font-weight:600; cursor:pointer;}
+.ship-context button:hover{border-color:#91a8c0; color:var(--primary);}
+.ship-context button.active{border-color:var(--primary); background:var(--primary); color:#fff;}
+.ship-context .ship-divider{width:1px; height:20px; background:var(--border); margin:0 2px;}
+.ship-context .ship-add{border-style:dashed; color:var(--link);}
+.ship-context .ship-manage{border-color:transparent; background:transparent; color:var(--link);}
+.ship-context .ship-manage:hover{background:#eaf1f8;}
 
 /* Step nav card */
 .nav-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); position:sticky; top:0;}
@@ -455,13 +465,18 @@ var IN_FRAME = window.parent !== window;
 var STEPS = [
   {id:'meeting', no:'01', name:'首次会议', en:'Initial Meeting', type:'firstMeeting'},
   {id:'setup',   no:'02', name:'项目与报告设置', en:'Project & Report Setup', type:'generic'},
-  {id:'arrival', no:'03', name:'抵港船舱计量', en:'Arrival Tank Measurement', type:'generic'},
-  {id:'shore',   no:'04', name:'岸罐接收计量', en:'Shore Tank Measurement', type:'generic'},
-  {id:'rob',     no:'05', name:'卸货后 ROB', en:'ROB After Discharge', type:'generic'},
-  {id:'vef',     no:'06', name:'VEF 经验系数', en:'Vessel Experience Factor', type:'generic'},
-  {id:'review',  no:'07', name:'数量对比与问题复核', en:'Quantity Review', type:'generic'},
-  {id:'final',   no:'08', name:'末次会议与作业时间表', en:'Final Meeting & Time Log', type:'final'},
-  {id:'submit',  no:'09', name:'提交完成', en:'Complete Inspection', type:'submit'}
+  {id:'ship',    no:'03', name:'船舶计量', en:'Vessel Measurement', type:'group', children:[
+    {id:'arrival', name:'原始记录', en:'Original Records'},
+    {id:'calculation', name:'体积计算', en:'Volume Calculation'},
+    {id:'conversion', name:'单位换算', en:'Unit Conversion'},
+    {id:'rob', name:'ROB', en:'ROB'},
+    {id:'vef', name:'VEF 经验系数', en:'Vessel Experience Factor'}
+  ]},
+  {id:'shore',   no:'04', name:'岸罐计量', en:'Shore Tank Measurement', type:'group', children:[
+    {id:'shoreMeasurement', name:'岸罐计量', en:'Shore Tank Measurement'}
+  ]},
+  {id:'review',  no:'05', name:'数量核对', en:'Quantity Verification', type:'generic'},
+  {id:'final',   no:'06', name:'末次会议', en:'Final Meeting', type:'final'}
 ];
 
 /* First meeting groups & 23 sub-items */
@@ -537,7 +552,7 @@ var TIMELOG_DEFAULT = {
    ============================================================ */
 function defaultState(){
   var s = {taskNo:TASK.taskNo, status:'进行中', completed:false, completedTime:'', snapshotVersion:'',
-    currentStep:'meeting', fmCurrentGroup:'A', fmCurrentItem:'fm-goods',
+    currentStep:'meeting', currentSubStep:'arrival', shipVessel:'船舶A', shipVessels:['船舶A','船舶B'], shipSection:'arrival', fmCurrentGroup:'A', fmCurrentItem:'fm-goods',
     meetingInfo:{date:'2025-05-24 14:15', place:'MT SAIQ 会议室', host:'陈海峰', inspectors:['陈海峰'],
       shipRep:'Zhang Wei / Chief Officer', shoreRep:'赵海 / 仙人岛码头', clientRep:'刘洋 / 委托方',
       lang:'中英文', safety:'已完成', notes:'核对资料、计量条件、取样方案及作业计划'},
@@ -591,6 +606,19 @@ function loadState(){
     // merge with default to be safe
     var def=defaultState();
     for(var k in parsed){ def[k]=parsed[k]; }
+    // Migrate drafts saved under the former flat 9-tab navigation.
+    var legacySubSteps={arrival:'arrival',rob:'rob',vef:'vef'};
+    if(legacySubSteps[def.currentStep]){
+      def.currentSubStep=legacySubSteps[def.currentStep];
+      def.currentStep='ship';
+    }else if(def.currentStep==='shore'){
+      def.currentSubStep='shoreMeasurement';
+    }else if(def.currentStep==='submit'){
+      def.currentStep='final';
+    }
+    if(!STEPS.some(function(step){ return step.id===def.currentStep; })) def.currentStep='meeting';
+    if(def.currentStep==='ship' && ['arrival','calculation','conversion','rob','vef'].indexOf(def.currentSubStep)<0) def.currentSubStep='arrival';
+    if(def.currentStep==='shore') def.currentSubStep='shoreMeasurement';
     state=def;
     return true;
   }catch(e){ return false; }
@@ -641,10 +669,13 @@ function computeStepStatuses(){
   FM_FLAT.forEach(function(it){ if(state.fmItems[it.id].status==='SUBMITTED') submitted++; });
   var meetingDone = submitted===total;
   res.meeting = meetingDone?'COMPLETED': (submitted>0?'IN_PROGRESS':'NOT_STARTED');
-  // generic steps 02-07 : demo completion based on marker flags
-  ['setup','arrival','shore','rob','vef','review'].forEach(function(id){
+  // Reused content pages report their completion state through their owning tab.
+  ['setup','arrival','calculation','conversion','rob','vef','shoreMeasurement','review'].forEach(function(id){
     res[id]= state['_done_'+id]? 'COMPLETED' : (state['_touched_'+id]? 'IN_PROGRESS':'NOT_STARTED');
   });
+  res.ship = ['arrival','calculation','conversion','rob','vef'].every(function(id){ return res[id]==='COMPLETED'; }) ? 'COMPLETED' :
+    (['arrival','calculation','conversion','rob','vef'].some(function(id){ return res[id]==='IN_PROGRESS'||res[id]==='COMPLETED'; }) ? 'IN_PROGRESS':'NOT_STARTED');
+  res.shore = res.shoreMeasurement;
   // final
   res.final = state._done_final? 'COMPLETED' : (state._touched_final?'IN_PROGRESS':'NOT_STARTED');
   // submit
@@ -654,12 +685,13 @@ function computeStepStatuses(){
 function renderStepNav(){
   var statuses=computeStepStatuses();
   // Retained for data/state compatibility; compact layout hides this sidebar.
-  var html='<div class="nav-card"><div class="nav-card-head"><span>主步骤</span><span class="sub">'+countDoneSteps()+'/9</span></div>';
+  var html='<div class="nav-card"><div class="nav-card-head"><span>主步骤</span><span class="sub">'+countDoneSteps()+'/6</span></div>';
   STEPS.forEach(function(s){
     var active = state.currentStep===s.id?'active':'';
     var done = (statuses[s.id]==='COMPLETED')?'done':'';
     var meta='';
     if(s.id==='meeting'){ var sub=0; FM_FLAT.forEach(function(it){ if(state.fmItems[it.id].status==='SUBMITTED') sub++; }); meta='<span class="step-meta">子项 '+sub+'/23</span>'; }
+    else if(s.children){ meta='<span class="step-meta">'+s.children.map(function(child){return child.name;}).join(' · ')+'</span>'; }
     else if(statuses[s.id]==='COMPLETED'){ meta='<span class="step-meta">已完成</span>'; }
     else if(statuses[s.id]==='IN_PROGRESS'){ meta='<span class="step-meta">进行中</span>'; }
     else { meta='<span class="step-meta">待处理</span>'; }
@@ -678,7 +710,8 @@ function renderStepNav(){
       var active = state.currentStep===s.id?'active':'';
       var done = (statuses[s.id]==='COMPLETED')?'done':'';
       var noInner = statuses[s.id]==='COMPLETED'? '<span style="display:flex;width:12px;height:12px">'+ICON.check+'</span>' : s.no;
-      barHtml+='<div class="step-chip '+active+' '+done+'" data-step="'+s.id+'"><span class="chip-no">'+noInner+'</span><span>'+esc(s.name)+'</span></div>';
+      barHtml+='<div class="step-group"><div class="step-chip '+active+' '+done+'" data-step="'+s.id+'"><span class="chip-no">'+noInner+'</span><span>'+esc(s.name)+'</span></div>';
+      barHtml+='</div>';
     });
     $('#stepBarInner').innerHTML=barHtml;
     bar.classList.add('show');
@@ -699,8 +732,24 @@ function countDoneSteps(){
    RENDER: FORM (router)
    ============================================================ */
 function gotoStep(id){
-  state.currentStep=id;
-  if(id!=='meeting'){ state['_touched_'+id]=true; }
+  var parent=STEPS.filter(function(s){ return s.children && s.children.some(function(child){ return child.id===id; }); })[0];
+  if(parent){
+    state.currentStep=parent.id;
+    state.currentSubStep=id;
+    if(parent.id==='ship' && ['arrival','rob','vef'].indexOf(id)>=0) state.shipSection=id;
+    state['_touched_'+id]=true;
+  }
+  else {
+    state.currentStep=id;
+    var step=STEPS.filter(function(s){ return s.id===id; })[0];
+    // A grouped main tab always opens one of its own content pages. This
+    // prevents, for example, 岸罐计量 from retaining a previously selected
+    // 船舶计量 page when switching between the two main tabs.
+    if(step && step.children && !step.children.some(function(child){ return child.id===state.currentSubStep; })){
+      state.currentSubStep=step.children[0].id;
+    }
+    if(id!=='meeting'){ state['_touched_'+id]=true; }
+  }
   scheduleSave();
   renderAll();
 }
@@ -712,19 +761,86 @@ function renderForm(){
   }
   var step=STEPS.filter(function(s){return s.id===state.currentStep;})[0];
   if(state.currentStep==='meeting') renderMeetingForm();
+  else if(state.currentStep==='ship') renderShipWorkspace();
+  else if(step && step.children) renderEmbeddedStep({id:state.currentSubStep, name:(step.children.filter(function(child){return child.id===state.currentSubStep;})[0]||step.children[0]).name});
   else if(state.currentStep==='final') renderEmbeddedStep(step);
-  else if(state.currentStep==='submit') renderSubmitForm();
   else renderGenericStep(step);
 }
 function stepHeader(no,name,en,desc){
-  return '<div class="form-head"><div><div class="fh-no">步骤 '+no+' / 09 · <span class="en">'+esc(en)+'</span></div><h2>'+esc(name)+'</h2><div class="fh-desc">'+desc+'</div></div><div class="head-actions"></div></div>';
+  return '<div class="form-head"><div><div class="fh-no">步骤 '+no+' / 06 · <span class="en">'+esc(en)+'</span></div><h2>'+esc(name)+'</h2><div class="fh-desc">'+desc+'</div></div><div class="head-actions"></div></div>';
+}
+
+function renderShipWorkspace(){
+  var host=$('#formCol');
+  var vessels=Array.isArray(state.shipVessels) && state.shipVessels.length ? state.shipVessels : ['船舶A','船舶B'];
+  vessels=vessels.map(function(name){ return /^[A-Z]$/.test(name) ? '船舶'+name : name; });
+  state.shipVessels=vessels;
+  var vessel=vessels.indexOf(state.shipVessel)>=0 ? state.shipVessel : (vessels.indexOf('船舶'+state.shipVessel)>=0 ? '船舶'+state.shipVessel : vessels[0]);
+  state.shipVessel=vessel;
+  var section=state.shipSection||'arrival';
+  var sections=[
+    {id:'arrival', label:vessel+'前尺', page:'arrival', view:'measurement'},
+    {id:'rob', label:vessel+'后尺（ROB）', page:'arrival', view:'measurement', phase:'rob'},
+    {id:'vef', label:'VEF经验系数', page:'vef'}
+  ];
+  var nav='<div class="ship-context" aria-label="船舶计量层级导航"><span class="ship-context-label">选择船舶</span>'+
+    vessels.map(function(id){ return '<button type="button" data-vessel="'+esc(id)+'" class="'+(vessel===id?'active':'')+'">'+esc(id)+'</button>'; }).join('')+
+    '<button type="button" class="ship-add" data-add-vessel>＋ 添加船舶</button><button type="button" class="ship-manage" data-edit-vessel>编辑当前船舶</button><span class="ship-divider" aria-hidden="true"></span><span class="ship-context-label">计量环节</span>'+
+    sections.map(function(item){ return '<button type="button" data-ship-section="'+item.id+'" class="'+(section===item.id?'active':'')+'">'+item.label+'</button>'; }).join('')+
+    '</div>';
+  host.innerHTML=nav;
+  $all('[data-vessel]',host).forEach(function(button){ button.addEventListener('click',function(){ state.shipVessel=button.dataset.vessel; scheduleSave(); renderAll(); }); });
+  $('[data-add-vessel]',host).addEventListener('click',function(){ openVesselModal('add'); });
+  $('[data-edit-vessel]',host).addEventListener('click',function(){ openVesselModal('edit'); });
+  $all('[data-ship-section]',host).forEach(function(button){ button.addEventListener('click',function(){ state.shipSection=button.dataset.shipSection; scheduleSave(); renderAll(); }); });
+  var selected=sections.filter(function(item){ return item.id===section; })[0]||sections[0];
+  renderEmbeddedStep({id:selected.page, name:selected.label, view:selected.view}, host);
+}
+
+function openVesselModal(mode){
+  var editing=mode==='edit';
+  var current=state.shipVessel||'';
+  openModal(editing?'编辑船舶':'添加船舶',
+    '<div class="field"><label class="lbl" for="vesselModalName">船舶名称 <span class="req">*</span></label><input id="vesselModalName" class="control" maxlength="40" value="'+esc(editing?current:'')+'" placeholder="例如：MT SAIQ" autofocus><div class="hint">名称将显示在船舶计量的导航中。</div></div>',
+    (editing?'<button type="button" class="btn btn-danger" data-delete-vessel>删除船舶</button>':'')+'<button type="button" class="btn" data-cancel-vessel>取消</button><button type="button" class="btn btn-primary" data-save-vessel>'+ (editing?'保存修改':'添加船舶') +'</button>',
+    {onOpen:function(){
+      var nameInput=$('#vesselModalName');
+      setTimeout(function(){ nameInput.focus(); nameInput.select(); },0);
+      $('[data-cancel-vessel]').addEventListener('click',closeModal);
+      $('[data-save-vessel]').addEventListener('click',function(){
+        var name=nameInput.value.trim();
+        if(!name){ toast('请输入船舶名称','warn'); nameInput.focus(); return; }
+        var duplicate=state.shipVessels.some(function(item){ return item===name && item!==current; });
+        if(duplicate){ toast('该船舶名称已存在，请使用其他名称','warn'); nameInput.focus(); return; }
+        if(editing){
+          var index=state.shipVessels.indexOf(current);
+          if(index>=0) state.shipVessels[index]=name;
+          state.shipVessel=name;
+          toast('船舶名称已更新','success');
+        }else{
+          state.shipVessels.push(name);
+          state.shipVessel=name;
+          toast('已添加 '+name,'success');
+        }
+        scheduleSave(); closeModal(); renderAll();
+      });
+      var deleteButton=$('[data-delete-vessel]');
+      if(deleteButton) deleteButton.addEventListener('click',function(){
+        if(state.shipVessels.length<=1){ toast('至少需要保留一艘船舶','warn'); return; }
+        state.shipVessels=state.shipVessels.filter(function(item){ return item!==current; });
+        state.shipVessel=state.shipVessels[0];
+        scheduleSave(); closeModal(); toast('已删除 '+current,'success'); renderAll();
+      });
+    }});
 }
 
 /* ---------- Content-only views from the corresponding step HTML pages ---------- */
 var EMBEDDED_STEP_PAGES = {
   setup:'step-01-project-setup.html',
   arrival:'step-03-arrival-ullage.html',
-  shore:'step-04-shore-tank.html',
+  calculation:'step-03-arrival-ullage.html',
+  conversion:'step-03-arrival-ullage.html',
+  shoreMeasurement:'step-04-shore-tank.html',
   rob:'step-05-rob.html',
   vef:'step-06-vef.html',
   review:'step-07-comparison.html',
@@ -734,26 +850,33 @@ var EMBEDDED_PAGE_STEPS = {
   'step-01-project-setup.html':'setup',
   'step-02-timeline.html':'final',
   'step-03-arrival-ullage.html':'arrival',
-  'step-04-shore-tank.html':'shore',
+  'step-04-shore-tank.html':'shoreMeasurement',
   'step-05-rob.html':'rob',
   'step-06-vef.html':'vef',
   'step-07-comparison.html':'review',
   'step-08-reports.html':'submit'
 };
-function renderEmbeddedStep(step){
+function renderEmbeddedStep(step, mount){
   var page=EMBEDDED_STEP_PAGES[step.id];
   if(!page) return;
-  var host=$('#formCol');
+  var host=mount||$('#formCol');
   var frame=document.createElement('iframe');
   frame.className='embedded-step-frame';
   frame.id='embeddedStepFrame';
   frame.title=step.name+'内容';
-  host.replaceChildren(frame);
+  if(mount) host.appendChild(frame);
+  else host.replaceChildren(frame);
   frame.addEventListener('load',function(){
     var doc;
     try{ doc=frame.contentDocument; }catch(e){ return; }
     if(!doc) return;
     doc.body.classList.add('embedded-content');
+    if(step.phase==='rob'){
+      var heading=doc.querySelector('.workspace-heading h2');
+      var description=doc.querySelector('.workspace-heading p');
+      if(heading) heading.innerHTML='ROB Tank Measurement <small>卸货后船舶计量（ROB）</small>';
+      if(description) description.textContent='按与前尺一致的计量流程，录入卸货后各舱液位、温度与游离水数据，并计算船舶残余量（ROB）。';
+    }
     doc.querySelectorAll('a[href]').forEach(function(link){
       var href=(link.getAttribute('href')||'').split('/').pop().split('?')[0];
       var target=EMBEDDED_PAGE_STEPS[href];
@@ -770,6 +893,20 @@ function renderEmbeddedStep(step){
         }
       });
     });
+    // The three first vessel-tank subtabs reuse the existing arrival page.
+    // Select its native view and, for conversion, take the user straight to
+    // the quantity-conversion section after its dynamic content is rendered.
+    if(['arrival','calculation','conversion'].indexOf(step.id)>=0){
+      var activeView=step.view || (step.id==='arrival'?'measurement':'calculation');
+      var view=doc.querySelector('[data-view="'+activeView+'"]');
+      if(view) view.click();
+      if(activeView==='conversion'){
+        setTimeout(function(){
+          var conversion=doc.querySelector('.quantity-conversion-card');
+          if(conversion) conversion.scrollIntoView({block:'start'});
+        },80);
+      }
+    }
     function syncHeight(){
       var shell=doc.querySelector('.app-shell');
       var workspace=doc.querySelector('.workspace');
@@ -795,7 +932,7 @@ function renderEmbeddedStep(step){
   });
   /* Attach the load handler before assigning src. Local file pages can load
      quickly enough that adding the handler afterwards misses the event. */
-  frame.src='./'+page;
+  frame.src='./'+page+(step.phase ? '?phase='+encodeURIComponent(step.phase) : '');
 }
 
 function renderGenericStep(step){
