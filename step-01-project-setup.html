@@ -13,6 +13,29 @@
     #reportGroup label span { display: grid; gap: 1px; }
     #reportGroup label span strong { font-weight: 650; }
     #reportGroup label span small { color: var(--text-secondary); font-size: 9px; line-height: 1.25; }
+    .quantity-unit-panel { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); }
+    .quantity-unit-panel legend { padding: 0 6px; font-size: 11px; font-weight: 700; }
+    .quantity-unit-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border); }
+    .quantity-unit-option { min-height: 52px; padding: 8px 10px 8px 0; display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 7px; align-items: center; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .quantity-unit-option:nth-child(3n+2), .quantity-unit-option:nth-child(3n+3) { padding-left: 12px; border-left: 1px solid var(--border); }
+    .quantity-unit-option input { width: 15px; height: 15px; accent-color: var(--primary); }
+    .quantity-unit-option strong, .quantity-unit-option small { display: block; }
+    .quantity-unit-option strong { font-size: 11px; }
+    .quantity-unit-option small { color: var(--text-secondary); font-size: 9px; }
+    .quantity-unit-option em { color: var(--primary-strong); font-size: 10px; font-style: normal; font-weight: 700; white-space: nowrap; }
+    .calculation-method-field { grid-column: span 2; }
+    .calculation-method-readout { min-height: 36px; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: 4px; background: var(--surface-muted); display: grid; grid-template-columns: minmax(90px, .7fr) minmax(150px, 1.3fr) auto; gap: 10px; align-items: center; }
+    .calculation-method-readout strong { color: var(--primary-strong); font: 700 13px ui-monospace, monospace; }
+    .calculation-method-readout span { min-width: 0; color: var(--text); font-size: 11px; }
+    .calculation-method-readout em { color: #075d49; font-size: 10px; font-style: normal; font-weight: 700; text-align: right; }
+    .calculation-method-readout.pending { border-color: var(--warning); background: var(--warning-soft); }
+    .calculation-method-readout.pending strong, .calculation-method-readout.pending em { color: #744602; }
+    .calculation-method-field small.needs-recalc { color: #8a5410; font-weight: 650; }
+    @media (max-width: 920px) { .quantity-unit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .quantity-unit-option:nth-child(n) { padding-left: 0; border-left: 0; } .quantity-unit-option:nth-child(2n) { padding-left: 12px; border-left: 1px solid var(--border); } }
+    @media (max-width: 920px) { .calculation-method-field { grid-column: span 2; } .calculation-method-readout { grid-template-columns: 1fr; gap: 3px; } .calculation-method-readout em { text-align: left; } }
+    .vessel-picker { min-height: 36px; padding: 6px 9px; border: 1px solid var(--border-strong); border-radius: 4px; background: white; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+    .vessel-picker label { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; white-space: nowrap; cursor: pointer; }
+    .vessel-picker input { width: 15px; height: 15px; accent-color: var(--primary); }
     @media (max-width: 920px) { #reportGroup { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   </style>
 </head>
@@ -33,7 +56,7 @@
         <button type="button"><span>检验任务<small>Inspection Tasks</small></span><em>4</em></button>
         <button type="button" class="selected"><span>作业台<small>Workbench</small></span><em>当前</em></button>
         <button type="button"><span>报告中心<small>Reports</small></span><em>8</em></button>
-        <button type="button"><span>基础资料<small>Master Data</small></span><em>24</em></button>
+        <button type="button" onclick="location.href='基础数据管理.html'"><span>基础资料<small>Master Data</small></span><em>24</em></button>
       </nav>
 
       <div class="offline-card">
@@ -89,11 +112,6 @@
         </aside>
 
         <section class="workspace" id="workspace">
-          <div class="workspace-heading settings-heading">
-            <div><h2>项目与报告设置</h2><p>先确定公共信息、计算口径和报告范围，再进入现场计量。</p></div>
-            <div class="context-actions"><button type="button" class="button tertiary" id="copyBtn">从历史项目复制</button><button type="button" class="button secondary" id="masterBtn">管理基础资料</button></div>
-          </div>
-
           <div class="settings-change-warning" role="status" id="changeWarning" hidden><strong>设置已修改，尚未应用</strong><span>正式软件中，船舶、货物类别、密度类型或标准版本变化后，应把已有计算标记为“需要重新计算”。</span></div>
 
           <form class="settings-form" id="settingsForm">
@@ -114,7 +132,7 @@
               <div class="form-grid">
                 <label class="setting-field"><span class="field-label"><span>委托方（中文）<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="clientName"><option>中国石油国际事业有限公司</option><option>中国联合石油有限责任公司</option><option>示例能源贸易有限公司</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>委托方（英文）</span><em class="source-badge master">基础资料</em></span><input id="clientNameEn" value="PETROCHINA INTERNATIONAL CO., LTD." /></label>
-                <label class="setting-field"><span class="field-label"><span>船舶<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="vesselName"><option>MT SAIQ</option><option>MT OCEAN CREST</option><option>MT EASTERN STAR</option></select></label>
+                <div class="setting-field"><span class="field-label"><span>船舶<b>*</b></span><em class="source-badge master">基础资料</em></span><div class="vessel-picker" id="vesselName" role="group" aria-label="船舶，可多选"><label><input type="checkbox" value="MT SAIQ" checked />MT SAIQ</label><label><input type="checkbox" value="MT OCEAN CREST" />MT OCEAN CREST</label><label><input type="checkbox" value="MT EASTERN STAR" />MT EASTERN STAR</label></div></div>
                 <label class="setting-field"><span class="field-label"><span>港口<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="portName"><option>营口港</option><option>青岛港</option><option>大连港</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>码头 / 油库<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="terminalName"><option>仙人岛原油码头</option><option>董家口原油码头</option><option>新港油库</option></select></label>
               </div>
@@ -123,13 +141,16 @@
             <section class="settings-section">
               <header><div><span>03</span><h3>货物与计算参数</h3></div><p>关键字段变化需要重新计算</p></header>
               <div class="form-grid">
-                <label class="setting-field"><span class="field-label"><span>货物名称（中文）<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoName"><option>阿曼出口混合原油</option><option>上扎库姆原油</option><option>0# 车用柴油</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>货物类型<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoType"><option value="LIQUID_CHEMICALS">液体化学品</option><option value="CLEAN_OIL" selected>清洁油</option><option value="SLOP_OIL">污油</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>货物子类型<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoSubType"></select></label>
+                <label class="setting-field"><span class="field-label"><span>货物名称（中文）<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoName"></select></label>
                 <label class="setting-field"><span class="field-label"><span>货物名称（英文）</span><em class="source-badge master">基础资料</em></span><input id="cargoNameEn" value="OMAN EXPORT BLEND CRUDE OIL" readonly /></label>
-                <label class="setting-field"><span class="field-label"><span>油品类别<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="cargoCategory"><option value="A">A · 原油</option><option value="B">B · 成品油</option><option value="C">C · 特殊/未知应用</option><option value="D">D · 润滑油</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>密度类型<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="densityType"><option value="DENSITY_15C">密度 @15℃</option><option value="DENSITY_20C">密度 @20℃</option><option value="API">API Gravity @60℉</option><option value="SG_60F">相对密度 SG 60/60℉</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>密度值<b>*</b></span><em class="source-badge project">项目填写</em></span><div class="compound-input" id="densityCompound"><input id="densityValue" type="number" step="0.0001" value="0.8598" aria-label="密度值" /><select id="densityUnit" aria-label="密度单位"></select></div><small id="densityHelper">当前解释为：15℃基准密度</small></label>
                 <label class="setting-field"><span class="field-label"><span>VCF 标准<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="vcfStandard"><option>ASTM D1250 / API MPMS 11.1</option><option>GB/T 1885</option><option>ASTM-IP Petroleum Measurement Tables</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>VCF 版本<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="vcfVersion"></select></label>
+                <label class="setting-field" id="chemicalMethodField" hidden><span class="field-label"><span>化学品换算方法<b>*</b></span></span><select id="chemicalConversionMethod"><option value="">请选择 TEC 或 DCF</option><option value="TEC">TEC</option><option value="DCF">DCF</option></select><small>该货物未设置预设方法，确认后才可进行正式计算。</small></label>
+                <div class="setting-field calculation-method-field" id="vcfMethodField"><span class="field-label"><span>体积换算方法 / VCF计算表</span></span><div class="calculation-method-readout" id="vcfMethodReadout" role="status" aria-live="polite"><strong id="vcfMethodCode">T-54A</strong><span id="vcfMethodDescription">15℃密度 / 原油</span><em id="vcfMethodStatus">系统自动匹配</em></div><small id="vcfMethodHint">系统根据货物及密度类型自动匹配。</small></div>
                 <label class="setting-field"><span class="field-label"><span>WCF 标准</span><em class="source-badge rule">系统规则</em></span><select id="wcfStandard"><option>API MPMS 11.5 (2013)</option><option>ASTM D1250 (1980)</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>沉淀物和水 S&amp;W %</span><em class="source-badge project">项目填写</em></span><input type="number" min="0" max="100" step="0.01" id="sedimentWaterPct" value="0.12" /></label>
                 <label class="setting-field"><span class="field-label"><span>允许船岸差率 %</span><em class="source-badge rule">系统规则</em></span><input type="number" min="0" step="0.001" id="allowedVariancePct" value="0.3" /></label>
@@ -154,12 +175,16 @@
                 <label class="setting-field"><span class="field-label"><span>报告语言</span><em class="source-badge project">项目填写</em></span><select id="reportLanguage"><option value="ZH_EN">中英文</option><option value="ZH">仅中文</option><option value="EN">仅英文</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>报告类型</span><em class="source-badge project">项目填写</em></span><select id="reportType"><option value="FIELD">现场报告</option><option value="FINAL">正式报告</option></select></label>
               </div>
-              <fieldset class="choice-group"><legend>报告数量单位 <span class="source-badge rule">系统规则</span></legend><div id="unitGroup">
-                <label><input type="checkbox" value="M3_15C" checked /><span>m³ @15℃</span></label>
-                <label><input type="checkbox" value="M3_20C" /><span>m³ @20℃</span></label>
-                <label><input type="checkbox" value="BBL_60F" /><span>bbl @60℉</span></label>
-                <label><input type="checkbox" value="MT_AIR" checked /><span>公吨（空气中）</span></label>
-                <label><input type="checkbox" value="LT_AIR" /><span>长吨（空气中）</span></label>
+              <fieldset class="quantity-unit-panel"><legend>请选择需要的数量单位 <span class="source-badge rule">系统规则</span></legend><div class="quantity-unit-list" id="unitGroup">
+                <label class="quantity-unit-option"><input type="checkbox" value="bbl60" checked /><span><strong>美制桶（60℉）</strong><small>US Bbls@60℉</small></span><em>US Bbl@60℉</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="m315" checked /><span><strong>立方米（15℃）</strong><small>Cubic Meters (15℃)</small></span><em>m³@15℃</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="mtair" checked /><span><strong>公吨（空气中）</strong><small>MT in Air</small></span><em>MT in Air</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="ltair" checked /><span><strong>长吨（空气中）</strong><small>LT in Air</small></span><em>LT in Air</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="bblobserved" /><span><strong>观测温度下美制桶</strong><small>US Bbls Observed</small></span><em>US Bbl Observed</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="m320" /><span><strong>立方米（20℃）</strong><small>Cubic Meters (20℃)</small></span><em>m³@20℃</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="m330" /><span><strong>立方米（30℃）</strong><small>Cubic Meters (30℃)</small></span><em>m³@30℃</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="mtvac" /><span><strong>公吨（真空中）</strong><small>MT in Vacuo</small></span><em>MT in Vacuo</em></label>
+                <label class="quantity-unit-option"><input type="checkbox" value="ltvac" /><span><strong>长吨（真空中）</strong><small>LT in Vacuo</small></span><em>LT in Vacuo</em></label>
               </div></fieldset>
               <fieldset class="choice-group"><legend>报告组成</legend><div id="reportGroup">
                 <label><input type="checkbox" value="COVER" checked /><span><strong>封面</strong><small>Cover Page</small></span></label>
@@ -193,8 +218,7 @@
           </form>
 
           <footer class="workspace-footer">
-            <div><strong>下一步：作业时间线</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
-            <a class="button primary" href="step-02-timeline.html">保存并进入下一步</a>
+            <button type="button" class="button" data-save-data>保存数据</button>
           </footer>
         </section>
       </div>
@@ -213,21 +237,93 @@
       "GB/T 1885": ["1998"],
       "ASTM-IP Petroleum Measurement Tables": ["1952"],
     };
-    const cargoCategories = { "阿曼出口混合原油": "A", "上扎库姆原油": "A", "0# 车用柴油": "B" };
+    const defaultCargoCatalog = {
+      LIQUID_CHEMICALS: {
+        label: "液体化学品",
+        subtypes: {
+          CHEMICALS: { label: "化学品", cargos: [
+            { name: "化学品（TEC）", nameEn: "CHEMICALS (TEC)", category: "C · 液体化学品", calculationMethod: "TEC" },
+            { name: "化学品（DCF）", nameEn: "CHEMICALS (DCF)", category: "C · 液体化学品", calculationMethod: "DCF" },
+          ] },
+          AROMATICS_CYCLOHEXANE: { label: "芳香烃及环己烷", cargos: [
+            { name: "芳香烃及环己烷", nameEn: "AROMATICS AND CYCLOHEXANE", category: "C · 液体化学品", calculationMethod: "ASTM_D1555" },
+          ] },
+        },
+      },
+      CLEAN_OIL: {
+        label: "清洁油",
+        subtypes: {
+          NAPHTHA_GASOLINE_JET: { label: "石脑油 / 汽油 / 喷气燃料", cargos: [{ name: "石脑油 / 汽油 / 喷气燃料", nameEn: "NAPHTHA / GASOLINE / JET FUEL", category: "B · 成品油", calculationMethod: "API_TABLE", calculationCategory: "B" }] },
+          DIESEL: { label: "柴油", cargos: [{ name: "柴油", nameEn: "DIESEL", category: "B · 成品油", calculationMethod: "API_TABLE", calculationCategory: "B" }] },
+          LUBRICANT: { label: "润滑油", cargos: [{ name: "润滑油", nameEn: "LUBRICATING OIL", category: "D · 润滑油", calculationMethod: "API_TABLE", calculationCategory: "D" }] },
+          CRUDE_CONDENSATE: { label: "原油 / 凝析油", cargos: [
+            { name: "原油 / 凝析油", nameEn: "CRUDE OIL / CONDENSATE", category: "A · 原油", calculationMethod: "API_TABLE", calculationCategory: "A" },
+            { name: "阿曼出口混合原油", nameEn: "OMAN EXPORT BLEND CRUDE OIL", category: "A · 原油", calculationMethod: "API_TABLE", calculationCategory: "A" },
+            { name: "上扎库姆原油", nameEn: "UPPER ZAKUM CRUDE OIL", category: "A · 原油", calculationMethod: "API_TABLE", calculationCategory: "A" },
+          ] },
+        },
+      },
+      SLOP_OIL: {
+        label: "污油",
+        subtypes: {
+          FUEL_OIL: { label: "燃料油", cargos: [{ name: "燃料油", nameEn: "FUEL OIL", category: "B · 成品油", calculationMethod: "API_TABLE", calculationCategory: "B" }] },
+          ASPHALT_TAR: { label: "沥青 / 柏油", cargos: [{ name: "沥青 / 柏油", nameEn: "ASPHALT / TAR", category: "D · 重油", calculationMethod: "ASTM_D4311" }] },
+        },
+      },
+    };
+
+    const cargoCatalog = (() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem("offlineSurveyCargoMaster"));
+        return saved && typeof saved === "object" && Object.keys(saved).length ? saved : defaultCargoCatalog;
+      } catch (_) { return defaultCargoCatalog; }
+    })();
 
     const settings = {
       jobNo: "210225050087", reportDate: "2025-05-26", inspectionStart: "2025-05-24T08:20", inspectionEnd: "2025-05-26T18:00",
       operationType: "DISCHARGE", voyageNo: "SAIQ-2505", clientName: "中国石油国际事业有限公司", clientNameEn: "PETROCHINA INTERNATIONAL CO., LTD.",
-      vesselName: "MT SAIQ", portName: "营口港", terminalName: "仙人岛原油码头", cargoName: "阿曼出口混合原油", cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL",
-      cargoCategory: "A", densityType: "DENSITY_15C", densityValue: 0.8598, densityUnit: "g/cm³", vcfStandard: "ASTM D1250 / API MPMS 11.1",
+      vesselName: "MT SAIQ", vesselNames: ["MT SAIQ"], portName: "营口港", terminalName: "仙人岛原油码头", cargoType: "CLEAN_OIL", cargoSubType: "CRUDE_CONDENSATE", cargoName: "阿曼出口混合原油", cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL",
+      densityType: "DENSITY_15C", densityValue: 0.8598, densityUnit: "g/cm³", vcfStandard: "ASTM D1250 / API MPMS 11.1", chemicalConversionMethod: "",
       vcfVersion: "2004", wcfStandard: "API MPMS 11.5 (2013)", sedimentWaterPct: 0.12, allowedVariancePct: 0.3,
+      calculationNeedsRecalc: false,
       seaState: "SLIGHT",
       liquidLevelTool: "电子液位计", freeWaterTool: "试水膏", waterPasteBrand: "Kolor Kut", densitySource: "实验室化验报告",
-      reportLanguage: "ZH_EN", reportType: "FINAL", quantityUnits: ["M3_15C", "MT_AIR"], selectedReports: ["COVER", "DISCHARGE_SUMMARY", "QUANTITY", "ULLAGE_SLOP_A_DISCHARGE_B4", "SHORE_SLOP_A_DISCHARGE", "ROB", "SAMPLE", "TIME", "VEF", "OIL_WATER", "BUNKER"],
+      reportLanguage: "ZH_EN", reportType: "FINAL", quantityUnits: ["bbl60", "m315", "mtair", "ltair"], selectedReports: ["COVER", "DISCHARGE_SUMMARY", "QUANTITY", "ULLAGE_SLOP_A_DISCHARGE_B4", "SHORE_SLOP_A_DISCHARGE", "ROB", "SAMPLE", "TIME", "VEF", "OIL_WATER", "BUNKER"],
     };
 
     let changed = false;
     const $ = (id) => document.getElementById(id);
+    const vesselStorageKey = "offlineSurveySelectedVessels";
+    const quantityUnitStorageKey = "offlineSurveyQuantityUnits";
+
+    function syncVesselSelection(persist = true) {
+      const selected = [...$("vesselName").querySelectorAll("input:checked")].map((input) => input.value);
+      settings.vesselNames = selected;
+      settings.vesselName = selected.join(" / ");
+      if (persist) localStorage.setItem(vesselStorageKey, JSON.stringify(selected));
+    }
+
+    function restoreVesselSelection() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(vesselStorageKey));
+        if (Array.isArray(saved) && saved.length) {
+          $("vesselName").querySelectorAll("input").forEach((input) => { input.checked = saved.includes(input.value); });
+        }
+      } catch (_) { /* 保留默认船舶选择 */ }
+      syncVesselSelection(false);
+    }
+
+    function persistQuantityUnits() {
+      localStorage.setItem(quantityUnitStorageKey, JSON.stringify({ units: settings.quantityUnits }));
+    }
+
+    function restoreQuantityUnits() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(quantityUnitStorageKey));
+        if (Array.isArray(saved?.units) && saved.units.length) settings.quantityUnits = saved.units;
+      } catch (_) { /* 保留默认单位设置 */ }
+      $("unitGroup").querySelectorAll("input").forEach((input) => { input.checked = settings.quantityUnits.includes(input.value); });
+    }
 
     function syncDensityUnitOptions() {
       const rule = densityRules[settings.densityType];
@@ -248,37 +344,143 @@
       }
     }
 
-    function updateCalcRoute() {
+    function syncCargoDetails() {
+      const cargos = cargoCatalog[settings.cargoType].subtypes[settings.cargoSubType].cargos;
+      if (!cargos.length) {
+        settings.cargoName = "";
+        settings.cargoNameEn = "";
+        $("cargoNameEn").value = "";
+        return;
+      }
+      const item = cargos.find((cargo) => cargo.name === $("cargoName").value) || cargos[0];
+      settings.cargoName = item.name;
+      settings.cargoNameEn = item.nameEn;
+      $("cargoNameEn").value = item.nameEn;
+    }
+
+    function getSelectedCargo() {
+      const subtype = cargoCatalog[settings.cargoType]?.subtypes?.[settings.cargoSubType];
+      return subtype?.cargos?.find((cargo) => cargo.name === settings.cargoName) || null;
+    }
+
+    function normalizeCalculationMethod(method) {
+      const value = String(method || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
+      return ({ "API": "API_TABLE", "API_TABLE": "API_TABLE", "TEC": "TEC", "DCF": "DCF", "ASTM_D1555": "ASTM_D1555", "D1555": "ASTM_D1555", "ASTM_D4311/D4311M": "ASTM_D4311", "ASTM_D4311_D4311M": "ASTM_D4311", "ASTM_D4311": "ASTM_D4311" })[value] || "";
+    }
+
+    function resolveCalculationRoute() {
+      const cargo = getSelectedCargo();
+      const subtype = settings.cargoSubType;
+      const categoryFromSubtype = { NAPHTHA_GASOLINE_JET: "B", DIESEL: "B", LUBRICANT: "D", CRUDE_CONDENSATE: "A", FUEL_OIL: "B" };
+      const categoryFromCargo = /A\s*·|原油|凝析油/.test(cargo?.category || "") ? "A" : /D\s*·|润滑油/.test(cargo?.category || "") ? "D" : /B\s*·|成品油|燃料油|柴油|石脑油|汽油|喷气/.test(cargo?.category || "") ? "B" : "";
+      let method = normalizeCalculationMethod(cargo?.calculationMethod);
+      if (!method && /（TEC）|\(TEC\)/i.test(cargo?.name || "")) method = "TEC";
+      if (!method && /（DCF）|\(DCF\)/i.test(cargo?.name || "")) method = "DCF";
+      if (!method) method = ({ AROMATICS_CYCLOHEXANE: "ASTM_D1555", NAPHTHA_GASOLINE_JET: "API_TABLE", DIESEL: "API_TABLE", LUBRICANT: "API_TABLE", CRUDE_CONDENSATE: "API_TABLE", FUEL_OIL: "API_TABLE", ASPHALT_TAR: "ASTM_D4311" })[subtype] || "";
+      if (!method && subtype === "CHEMICALS") method = normalizeCalculationMethod(settings.chemicalConversionMethod);
+
+      const density = densityRules[settings.densityType];
+      const densityLabel = { DENSITY_15C: "15℃密度", DENSITY_20C: "20℃密度", API: "API@60℉", SG_60F: "SG@60℉/60℉" }[settings.densityType];
+      const category = cargo?.calculationCategory || categoryFromSubtype[subtype] || categoryFromCargo;
+      const categoryLabel = { A: "原油", B: "成品油", D: "润滑油" }[category] || "";
+      const requiresChemicalMethod = subtype === "CHEMICALS" && !normalizeCalculationMethod(cargo?.calculationMethod) && !/（TEC）|\(TEC\)|（DCF）|\(DCF\)/i.test(cargo?.name || "");
+
+      if (!method) return { code: "待确认", description: "普通化学品需确认 TEC 或 DCF", status: "需要确认", pending: true, requiresChemicalMethod };
+      if (method === "API_TABLE") {
+        if (!category) return { code: "待确认", description: "缺少货物内部类别（A/B/D）", status: "需要确认", pending: true, requiresChemicalMethod: false };
+        return { code: `T-${density.tableFamily}${category}`, description: `${densityLabel} / ${categoryLabel}`, status: "系统自动匹配", method, category, pending: false, requiresChemicalMethod: false };
+      }
+      const direct = {
+        TEC: ["TEC", "普通化学品 / TEC"],
+        DCF: ["DCF", "普通化学品 / DCF"],
+        ASTM_D1555: ["ASTM D1555", "芳香烃及环己烷"],
+        ASTM_D4311: ["ASTM D4311/D4311M", "沥青 / 柏油"],
+      }[method];
+      return { code: direct[0], description: direct[1], status: "系统自动匹配", method, pending: false, requiresChemicalMethod: false };
+    }
+
+    function syncCargoOptions(preferredName = "") {
+      const cargos = cargoCatalog[settings.cargoType].subtypes[settings.cargoSubType].cargos;
+      if (!cargos.length) {
+        $("cargoName").innerHTML = '<option value="">请先在基础数据管理中维护货物</option>';
+        syncCargoDetails();
+        return;
+      }
+      const selectedName = cargos.some((cargo) => cargo.name === preferredName) ? preferredName : cargos[0].name;
+      $("cargoName").innerHTML = cargos.map((cargo) => `<option${cargo.name === selectedName ? " selected" : ""}>${cargo.name}</option>`).join("");
+      syncCargoDetails();
+    }
+
+    function syncCargoSubTypeOptions(preferredSubType = "", preferredName = "") {
+      const subtypes = cargoCatalog[settings.cargoType].subtypes;
+      const selectedSubType = subtypes[preferredSubType] ? preferredSubType : Object.keys(subtypes)[0];
+      settings.cargoSubType = selectedSubType;
+      $("cargoSubType").innerHTML = Object.entries(subtypes).map(([value, subtype]) => `<option value="${value}"${value === selectedSubType ? " selected" : ""}>${subtype.label}</option>`).join("");
+      syncCargoOptions(preferredName);
+    }
+
+    function syncCargoTypeOptions(preferredType = "", preferredSubType = "", preferredName = "") {
+      const selectedType = cargoCatalog[preferredType] ? preferredType : Object.keys(cargoCatalog)[0];
+      settings.cargoType = selectedType;
+      $("cargoType").innerHTML = Object.entries(cargoCatalog).map(([value, type]) => `<option value="${value}"${value === selectedType ? " selected" : ""}>${type.label || value}</option>`).join("");
+      syncCargoSubTypeOptions(preferredSubType, preferredName);
+    }
+
+    function markCalculationNeedsRecalc(reason) {
+      settings.calculationNeedsRecalc = true;
+      try {
+        localStorage.setItem("offlineSurveyCalculationState", JSON.stringify({ status: "NEEDS_RECALC", fields: ["VCF", "GSV", "NSV", "WEIGHT"], reason, updatedAt: new Date().toISOString() }));
+      } catch (_) { /* 离线存储不可用时保留本页状态 */ }
+    }
+
+    function updateCalcRoute(reason = "") {
       const rule = densityRules[settings.densityType];
+      const route = resolveCalculationRoute();
+      settings.calculationRoute = route;
+      if (reason) markCalculationNeedsRecalc(reason);
       $("densityHelper").textContent = settings.densityValue === "" || settings.densityValue === null ? `请重新输入${rule.label}的原始检验值` : `当前解释为：${rule.inputBasis}`;
       $("densityCompound").classList.toggle("invalid", settings.densityValue === "" || settings.densityValue === null);
       $("legacyWarning").hidden = !(settings.vcfVersion !== "2004" || settings.vcfStandard !== "ASTM D1250 / API MPMS 11.1");
+      $("chemicalMethodField").hidden = !route.requiresChemicalMethod;
+      $("chemicalConversionMethod").value = settings.chemicalConversionMethod;
+      $("vcfMethodCode").textContent = route.code;
+      $("vcfMethodDescription").textContent = route.description;
+      $("vcfMethodStatus").textContent = route.status;
+      $("vcfMethodReadout").classList.toggle("pending", route.pending);
+      const hint = $("vcfMethodHint");
+      hint.classList.toggle("needs-recalc", Boolean(settings.calculationNeedsRecalc && !route.pending));
+      hint.textContent = route.pending ? "请确认化学品换算方法；在确认前，不能保存并进入正式计算。" : settings.calculationNeedsRecalc ? "货物、密度基础或标准版本已变化：VCF、GSV、NSV 和重量需要重新计算。" : "系统根据最具体货物记录、密度类型、VCF 标准和版本自动匹配。";
     }
 
     function revalidate() {
       const densityRule = densityRules[settings.densityType];
       const densityComplete = settings.densityValue !== "" && settings.densityValue !== null && Number(settings.densityValue) > 0 && densityRule.units.includes(settings.densityUnit);
       const vcfComplete = (vcfStandardVersions[settings.vcfStandard] || []).includes(settings.vcfVersion);
-      const requiredComplete = Boolean(settings.jobNo && settings.reportDate && settings.vesselName && settings.cargoName && settings.clientName && densityComplete && vcfComplete && settings.quantityUnits.length > 0);
+      const routeComplete = Boolean(settings.calculationRoute && !settings.calculationRoute.pending);
+      const requiredComplete = Boolean(settings.jobNo && settings.reportDate && settings.vesselName && settings.cargoName && settings.clientName && densityComplete && vcfComplete && routeComplete && settings.quantityUnits.length > 0);
       const applyBtn = $("applyBtn");
       applyBtn.disabled = !(requiredComplete && changed);
       const msg = $("settingsFooterMsg");
       if (changed) {
         if (!requiredComplete) msg.className = "form-error";
         else msg.className = "";
-        msg.textContent = requiredComplete ? "应用后，顶部摘要、报告预览和后续计算将使用本项目设置。" : "请补齐必填信息、有效密度组合、VCF标准版本和至少一个报告数量单位。";
+        msg.textContent = requiredComplete ? "应用后，顶部摘要、报告预览和后续计算将使用本项目设置。" : "请补齐必填信息、有效密度组合、已确认的体积换算方法、VCF标准版本和至少一个报告数量单位。";
       }
     }
 
     function markChanged() { changed = true; $("changeWarning").hidden = false; revalidate(); }
 
     // 绑定文本/数字输入
-    ["jobNo", "reportDate", "inspectionStart", "inspectionEnd", "voyageNo", "clientNameEn", "vesselName", "portName", "terminalName", "cargoNameEn", "wcfStandard", "sedimentWaterPct", "allowedVariancePct", "seaState", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => {
+    ["jobNo", "reportDate", "inspectionStart", "inspectionEnd", "voyageNo", "clientNameEn", "portName", "terminalName", "cargoNameEn", "wcfStandard", "sedimentWaterPct", "allowedVariancePct", "seaState", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => {
       $(id).addEventListener("input", (e) => { settings[id] = e.target.value; markChanged(); });
       $(id).addEventListener("change", (e) => { settings[id] = e.target.value; markChanged(); });
     });
+    $("vesselName").addEventListener("change", () => { syncVesselSelection(); markChanged(); });
+    window.addEventListener("storage", (event) => {
+      if (event.key === "offlineSurveyCargoMaster") window.location.reload();
+    });
     ["densityValue"].forEach((id) => {
-      $(id).addEventListener("input", (e) => { settings[id] = e.target.value === "" ? "" : Number(e.target.value); updateCalcRoute(); markChanged(); });
+      $(id).addEventListener("input", (e) => { settings[id] = e.target.value === "" ? "" : Number(e.target.value); updateCalcRoute("密度值已变化"); markChanged(); });
     });
 
     // 联动选择
@@ -293,28 +495,31 @@
       if (first) { settings.terminalName = first; $("terminalName").value = first; }
       markChanged();
     });
-    $("cargoName").addEventListener("change", (e) => {
-      settings.cargoName = e.target.value;
-      const en = { "阿曼出口混合原油": "OMAN EXPORT BLEND CRUDE OIL", "上扎库姆原油": "UPPER ZAKUM CRUDE OIL", "0# 车用柴油": "NO. 0 AUTOMOTIVE DIESEL" }[e.target.value];
-      const cat = cargoCategories[e.target.value] || "A";
-      settings.cargoNameEn = en || ""; $("cargoNameEn").value = settings.cargoNameEn;
-      settings.cargoCategory = cat; $("cargoCategory").value = cat;
-      updateCalcRoute(); markChanged();
+    $("cargoType").addEventListener("change", (e) => {
+      settings.cargoType = e.target.value;
+      settings.chemicalConversionMethod = "";
+      syncCargoSubTypeOptions(); updateCalcRoute("货物类型已变化"); markChanged();
     });
-    $("cargoCategory").addEventListener("change", (e) => { settings.cargoCategory = e.target.value; updateCalcRoute(); markChanged(); });
+    $("cargoSubType").addEventListener("change", (e) => {
+      settings.cargoSubType = e.target.value;
+      settings.chemicalConversionMethod = "";
+      syncCargoOptions(); updateCalcRoute("货物子类型已变化"); markChanged();
+    });
+    $("cargoName").addEventListener("change", () => { settings.chemicalConversionMethod = ""; syncCargoDetails(); updateCalcRoute("货物基础数据已变化"); markChanged(); });
     $("densityType").addEventListener("change", (e) => {
       settings.densityType = e.target.value;
       settings.densityUnit = densityRules[e.target.value].units[0];
       settings.densityValue = ""; $("densityValue").value = "";
-      syncDensityUnitOptions(); updateCalcRoute(); markChanged();
+      syncDensityUnitOptions(); updateCalcRoute("密度基础已变化，原密度值已清空"); markChanged();
     });
-    $("densityUnit").addEventListener("change", (e) => { settings.densityUnit = e.target.value; updateCalcRoute(); markChanged(); });
+    $("densityUnit").addEventListener("change", (e) => { settings.densityUnit = e.target.value; settings.densityValue = ""; $("densityValue").value = ""; updateCalcRoute("密度单位已变化，原密度值已清空"); markChanged(); });
     $("vcfStandard").addEventListener("change", (e) => {
       settings.vcfStandard = e.target.value;
       settings.vcfVersion = vcfStandardVersions[e.target.value][0];
-      syncVcfVersionOptions(); updateCalcRoute(); markChanged();
+      syncVcfVersionOptions(); updateCalcRoute("VCF 标准已变化"); markChanged();
     });
-    $("vcfVersion").addEventListener("change", (e) => { settings.vcfVersion = e.target.value; updateCalcRoute(); markChanged(); });
+    $("vcfVersion").addEventListener("change", (e) => { settings.vcfVersion = e.target.value; updateCalcRoute("VCF 版本已变化"); markChanged(); });
+    $("chemicalConversionMethod").addEventListener("change", (e) => { settings.chemicalConversionMethod = e.target.value; updateCalcRoute("化学品换算方法已确认"); markChanged(); });
 
     // 选择组
     function bindChoiceGroup(groupId, field) {
@@ -323,12 +528,12 @@
         const arr = settings[field];
         if (cb.checked) { if (!arr.includes(cb.value)) arr.push(cb.value); }
         else settings[field] = arr.filter((v) => v !== cb.value);
+        if (field === "quantityUnits") persistQuantityUnits();
         updateCalcRoute(); markChanged();
       });
     }
     bindChoiceGroup("unitGroup", "quantityUnits");
     bindChoiceGroup("reportGroup", "selectedReports");
-
     $("settingsForm").addEventListener("submit", (e) => {
       e.preventDefault();
       changed = false; $("changeWarning").hidden = true; revalidate();
@@ -341,14 +546,16 @@
     function flash(message) { saveState.textContent = message; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
     $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
     $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
-    $("copyBtn").addEventListener("click", () => window.alert("历史项目复制应只复制公共信息和设置，不复制测量读数、计算结果与签发记录。"));
-    $("masterBtn").addEventListener("click", () => flash("（演示）基础资料管理在「基础资料」模块"));
 
     // 初始化
+    restoreVesselSelection();
+    restoreQuantityUnits();
+    syncCargoTypeOptions(settings.cargoType, settings.cargoSubType, settings.cargoName);
     syncDensityUnitOptions();
     syncVcfVersionOptions();
     updateCalcRoute();
     revalidate();
   </script>
+  <script src="save-guard.js"></script>
 </body>
 </html>

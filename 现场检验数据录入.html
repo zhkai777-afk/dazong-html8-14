@@ -69,6 +69,7 @@ a{color:var(--link); text-decoration:none;}
 .embedded .form-head{top:0; border-radius:0; position:static;}
 .embedded .form-card{border-radius:0; border-left:0; border-right:0; border-top:0;}
 .embedded-step-frame{display:block; width:100%; height:calc(100dvh - 48px); min-height:720px; border:0; background:var(--background);}
+.first-meeting-frame{min-height:2400px;}
 
 .step-bar{display:none; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 16px;}
 .step-bar.show{display:block;}
@@ -552,7 +553,7 @@ var TIMELOG_DEFAULT = {
    ============================================================ */
 function defaultState(){
   var s = {taskNo:TASK.taskNo, status:'进行中', completed:false, completedTime:'', snapshotVersion:'',
-    currentStep:'meeting', currentSubStep:'arrival', shipVessel:'船舶A', shipVessels:['船舶A','船舶B'], shipSection:'arrival', fmCurrentGroup:'A', fmCurrentItem:'fm-goods',
+    currentStep:'meeting', currentSubStep:'arrival', shipVessel:'MT SAIQ', shipVessels:['MT SAIQ'], shipSection:'arrival', fmCurrentGroup:'A', fmCurrentItem:'fm-goods',
     meetingInfo:{date:'2025-05-24 14:15', place:'MT SAIQ 会议室', host:'陈海峰', inspectors:['陈海峰'],
       shipRep:'Zhang Wei / Chief Officer', shoreRep:'赵海 / 仙人岛码头', clientRep:'刘洋 / 委托方',
       lang:'中英文', safety:'已完成', notes:'核对资料、计量条件、取样方案及作业计划'},
@@ -606,6 +607,14 @@ function loadState(){
     // merge with default to be safe
     var def=defaultState();
     for(var k in parsed){ def[k]=parsed[k]; }
+    // The initial vessel was renamed and simplified to a single ship. Only
+    // migrate the former untouched demo vessels, leaving user-created ships
+    // and saved measurements intact.
+    if(Array.isArray(def.shipVessels) && def.shipVessels.length===2 &&
+      def.shipVessels[0]==='船舶A' && def.shipVessels[1]==='船舶B'){
+      def.shipVessels=['MT SAIQ'];
+      def.shipVessel='MT SAIQ';
+    }
     // Migrate drafts saved under the former flat 9-tab navigation.
     var legacySubSteps={arrival:'arrival',rob:'rob',vef:'vef'};
     if(legacySubSteps[def.currentStep]){
@@ -772,7 +781,7 @@ function stepHeader(no,name,en,desc){
 
 function renderShipWorkspace(){
   var host=$('#formCol');
-  var vessels=Array.isArray(state.shipVessels) && state.shipVessels.length ? state.shipVessels : ['船舶A','船舶B'];
+  var vessels=Array.isArray(state.shipVessels) && state.shipVessels.length ? state.shipVessels : ['MT SAIQ'];
   vessels=vessels.map(function(name){ return /^[A-Z]$/.test(name) ? '船舶'+name : name; });
   state.shipVessels=vessels;
   var vessel=vessels.indexOf(state.shipVessel)>=0 ? state.shipVessel : (vessels.indexOf('船舶'+state.shipVessel)>=0 ? '船舶'+state.shipVessel : vessels[0]);
@@ -1056,19 +1065,37 @@ function renderMeetingForm(){
      outer workbench so the 9-step navigation and task context remain intact. */
   var host=$('#formCol');
   var frame=document.createElement('iframe');
-  frame.className='embedded-step-frame';
+  frame.className='embedded-step-frame first-meeting-frame';
   frame.id='firstMeetingFrame';
   frame.title='首次会议内容';
   frame.addEventListener('load',function(){
     try{
       var doc=frame.contentDocument;
       if(!doc) return;
+      var contentPage=doc.querySelector('.page');
+      var contentCard=doc.querySelector('.card');
       var syncHeight=function(){
-        var h=Math.max(doc.body.scrollHeight,doc.documentElement.scrollHeight,720);
+        var h=Math.max(
+          doc.body.scrollHeight, doc.body.offsetHeight,
+          doc.documentElement.scrollHeight, doc.documentElement.offsetHeight,
+          contentPage ? contentPage.scrollHeight : 0, contentCard ? contentCard.scrollHeight : 0,
+          2400
+        );
         frame.style.height=Math.ceil(h)+'px';
       };
       requestAnimationFrame(function(){ syncHeight(); requestAnimationFrame(syncHeight); });
-      if(window.ResizeObserver){ var ro=new ResizeObserver(syncHeight); ro.observe(doc.body); frame._contentResizeObserver=ro; }
+      [80,300,800].forEach(function(delay){ setTimeout(syncHeight,delay); });
+      if(window.ResizeObserver){
+        var ro=new ResizeObserver(syncHeight);
+        ro.observe(doc.body); ro.observe(doc.documentElement);
+        if(contentPage) ro.observe(contentPage);
+        frame._contentResizeObserver=ro;
+      }
+      if(window.MutationObserver){
+        var mo=new MutationObserver(syncHeight);
+        mo.observe(doc.body,{childList:true,subtree:true});
+        frame._contentMutationObserver=mo;
+      }
     }catch(e){}
   });
   host.replaceChildren(frame);

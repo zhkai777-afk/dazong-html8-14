@@ -65,24 +65,22 @@
         </aside>
 
         <section class="workspace" id="workspace">
-          <div class="workspace-heading">
-            <div><p class="eyebrow">步骤 07</p><h2>数量对比</h2><p>集中复核 VEF 修正后船卸量、岸收量、差量和项目允许偏差。</p></div>
-            <div class="context-actions"><button type="button" class="button tertiary" id="recalcBtn">重新汇总</button></div>
-          </div>
-
           <div class="metric-row" id="cmpMetrics"><!-- rendered by JS --></div>
 
           <section class="variance-card">
-            <header><div><p class="eyebrow">数量平衡</p><h3>船岸数量差异</h3></div><span class="status-pill" id="limitPill">偏差内</span></header>
+            <header><div><p class="eyebrow">数量平衡</p><h3>船岸数量差异</h3></div></header>
             <div class="balance-equation" id="balanceEquation"><!-- rendered by JS --></div>
             <div class="trace-strip" id="traceStrip"><!-- rendered by JS --></div>
-            <p>抵港船舶计量已恢复 17 / 17 舱及 P.Line；ROB 当前仍为 8 / 17 舱，因此本页只用于验证计算链路，不作为最终签发值。</p>
           </section>
 
-          <footer class="workspace-footer">
-            <div><strong>下一步：报告包</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
-            <a class="button primary" href="step-08-reports.html">保存并进入下一步</a>
-          </footer>
+          <section class="comparison-detail-card" aria-labelledby="comparisonDetailTitle">
+            <header>
+              <div><p class="eyebrow">数量明细</p><h3 id="comparisonDetailTitle">卸货港使用的体积修正系数表</h3></div>
+              <span>T-6A · 2004</span>
+            </header>
+            <p class="comparison-detail-note">数量以 GSV（60°F / 15℃）为基础换算；净量按项目 S&amp;W 0.120% 扣减。提单及装港数量采用项目登记值。</p>
+            <div class="comparison-detail-scroll" id="comparisonDetail"><!-- rendered by JS --></div>
+          </section>
         </section>
       </div>
     </section>
@@ -153,6 +151,12 @@
     const variance = shoreReceived - shipDischarged;
     const variancePct = shipDischarged === 0 ? 0 : variance / shipDischarged * 100;
     const withinLimit = Math.abs(variancePct) <= 0.3;
+    const projectDensity = 0.8598;
+    const sedimentWaterPct = 0.120;
+    const billOfLadingMt = 951230.200;
+    const loadingPortMt = 949805.500;
+    const bblPerM3 = 6.28981077;
+    const metricTonPerLongTon = 1.0160469088;
 
     const $ = (id) => document.getElementById(id);
     function render() {
@@ -166,18 +170,73 @@
         <div><span>船卸 GSV</span><strong>${fmt(shipDischarged, 2)}</strong></div><b>=</b>
         <div class="result"><span>差量</span><strong>${fmt(variance, 2)} m³</strong></div>`;
       $("traceStrip").innerHTML = `<span>抵港 GSV ${fmt(arrivalGsv, 2)}</span><b>−</b><span>ROB ${fmt(robGsv, 2)}</span><b>÷</b><span>VEF ${averageVef.toFixed(5)}</span><b>=</b><strong>船卸 ${fmt(shipDischarged, 2)} m³</strong>`;
-      const pill = $("limitPill");
-      pill.textContent = withinLimit ? "偏差内" : "需复核";
-      pill.className = `status-pill ${withinLimit ? "success" : "warning"}`;
+      renderDetail();
+    }
+
+    function renderDetail() {
+      const netFactor = 1 - sedimentWaterPct / 100;
+      const volumeFromMt = (mt) => mt / projectDensity;
+      const formatValue = (value, digits = 3) => Number.isFinite(value) ? fmt(value, digits) : "—";
+      let selectedUnits = new Set(["bbl60", "m315", "mtair", "ltair"]);
+      try { const saved = JSON.parse(localStorage.getItem("offlineSurveyQuantityUnits")); if (Array.isArray(saved?.units) && saved.units.length) selectedUnits = new Set(saved.units); } catch (_) {}
+      const unitColumns = [
+        ["bbl60", "美制桶", "@60°F", (m3) => formatValue(m3 * bblPerM3, 2)],
+        ["bblobserved", "美制桶", "观测温度", (m3) => formatValue(m3 * bblPerM3, 2)],
+        ["m315", "立方米", "@15℃", (m3) => formatValue(m3, 3)],
+        ["m320", "立方米", "@20℃", (m3) => formatValue(m3 * 1.0072, 3)],
+        ["m330", "立方米", "@30℃", (m3) => formatValue(m3 * 1.0251, 3)],
+        ["mtair", "公吨", "空气中", (m3) => formatValue(m3 * projectDensity, 3)],
+        ["mtvac", "公吨", "真空中", (m3) => formatValue(m3 * projectDensity * 1.0011, 3)],
+        ["ltair", "长吨", "空气中", (m3) => formatValue(m3 * projectDensity / metricTonPerLongTon, 3)],
+        ["ltvac", "长吨", "真空中", (m3) => formatValue(m3 * projectDensity * 1.0011 / metricTonPerLongTon, 3)],
+      ].filter(([id]) => selectedUnits.has(id));
+      const unitValues = (m3, factor) => {
+        const adjustedM3 = m3 * factor;
+        return unitColumns.map(([, , , convert]) => convert(adjustedM3));
+      };
+      const rows = (factor) => {
+        const bill = volumeFromMt(billOfLadingMt);
+        const loaded = volumeFromMt(loadingPortMt);
+        const arrival = arrivalGsv;
+        const loadingVariance = loaded - arrival;
+        const discharged = shipDischarged;
+        const received = shoreReceived;
+        const portVariance = received - discharged;
+        const detailRow = (label, m3, className = "") => `<tr class="${className}"><th scope="row">${label}</th>${unitValues(m3, factor).map(value => `<td>${value}</td>`).join("")}</tr>`;
+        const percentRow = (label, value) => `<tr class="percentage-row"><th scope="row">${label}</th><td colspan="${Math.max(unitColumns.length, 1)}">${formatValue(value, 3)}%</td></tr>`;
+        return [
+          detailRow("提单", bill),
+          detailRow("装货后船舶数量", loaded),
+          detailRow("船舶抵港数量", arrival, "subtotal-row"),
+          detailRow("装卸港船舶数量差异", loadingVariance, "variance-row"),
+          percentRow("差异百分比", arrival === 0 ? 0 : loadingVariance / arrival * 100),
+          ...(factor === 1 ? [detailRow("卸货后船舶底量（ROB）", robGsv)] : []),
+          detailRow("船舶卸货数量", discharged, "subtotal-row"),
+          detailRow("岸罐接收数量", received, "subtotal-row"),
+          detailRow("卸货港岸/船数量差异", portVariance, "variance-row"),
+          percentRow("差异百分比", variancePct),
+        ].join("");
+      };
+      const table = (title, factor, id) => `
+        <section class="quantity-detail-section" aria-labelledby="${id}">
+          <h4 id="${id}">${title}</h4>
+          <table class="quantity-detail-table">
+            <thead><tr><th scope="col">项目</th>${unitColumns.map(([, label, sublabel]) => `<th scope="col">${label}<br><small>${sublabel}</small></th>`).join("")}</tr></thead>
+            <tbody>${rows(factor)}</tbody>
+          </table>
+        </section>`;
+      $("comparisonDetail").innerHTML = table("毛量", 1, "grossQuantityTitle") + table("净量", netFactor, "netQuantityTitle");
     }
 
     const saveState = $("saveState");
     function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
     $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
     $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
-    $("recalcBtn").addEventListener("click", () => flash(`已重新汇总：差率 ${fmt(variancePct, 3)}%（演示）`));
-
+    window.addEventListener("storage", (event) => {
+      if (event.key === "offlineSurveyQuantityUnits") render();
+    });
     render();
   </script>
+  <script src="save-guard.js"></script>
 </body>
 </html>

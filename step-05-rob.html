@@ -70,8 +70,7 @@
           <div id="panel-entry"><!-- rendered by JS --></div>
 
           <footer class="workspace-footer">
-            <div><strong>下一步：VEF 经验系数</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
-            <a class="button primary" href="step-06-vef.html">保存并进入下一步</a>
+            <button type="button" class="button" data-save-data>保存数据</button>
           </footer>
         </section>
       </div>
@@ -157,5 +156,6 @@
     renderMetrics();
     renderEntry();
   </script>
+  <script src="save-guard.js"></script>
 </body>
 </html>

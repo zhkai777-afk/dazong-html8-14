@@ -8,6 +8,43 @@
   <style>
     .shore-heading .context-actions { align-self: center; }
     .shore-context-card header { display: none; }
+    .shore-context-card { margin-top: 0; }
+    .workspace-mode-tabs { display: flex; gap: 0; width: 100%; margin: 0 0 16px; padding: 0; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; }
+    .workspace-mode-tabs button { position: relative; min-height: 48px; padding: 0 24px; border: 0; border-radius: 0; background: transparent; color: var(--text-secondary); font-size: 14px; font-weight: 700; cursor: pointer; }
+    .workspace-mode-tabs button:hover { color: var(--primary-strong); background: rgba(255, 255, 255, .42); }
+    .workspace-mode-tabs button[aria-selected="true"] { color: var(--primary-strong); background: transparent; box-shadow: none; }
+    .workspace-mode-tabs button[aria-selected="true"]::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--primary); content: ""; }
+    .workspace-mode-tabs button:focus-visible { outline: 3px solid rgba(18, 91, 164, .28); outline-offset: 2px; }
+    .sample-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
+    .sample-card-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--surface-muted); }
+    .sample-card-header strong { display: block; font-size: 15px; }
+    .sample-card-header small { display: block; margin-top: 3px; color: var(--text-secondary); font-size: 12px; }
+    .sample-add-btn { min-height: 38px; padding: 0 13px; border: 1px solid var(--primary); border-radius: 5px; color: #fff; background: var(--primary); font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .sample-table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    .sample-table th, .sample-table td { padding: 9px 10px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 13px; text-align: left; vertical-align: middle; }
+    .sample-table th { background: #f5f8fb; color: var(--text); font-weight: 700; }
+    .sample-table th:last-child, .sample-table td:last-child { border-right: 0; }
+    .sample-table tr:last-child td { border-bottom: 0; }
+    .sample-table input, .sample-table select { box-sizing: border-box; width: 100%; min-height: 36px; padding: 5px 8px; border: 1px solid #d8e1eb; border-radius: 4px; background: #fff; color: var(--text); font: inherit; }
+    .sample-table .sample-remove { min-height: 34px; padding: 0 9px; border: 1px solid #d8e1eb; border-radius: 4px; color: #8f3131; background: #fff; font-size: 12px; cursor: pointer; }
+    .sample-reference-trigger { display: inline-flex; width: 26px; height: 26px; margin-left: 5px; padding: 0; border: 1px solid transparent; border-radius: 50%; vertical-align: middle; align-items: center; justify-content: center; color: var(--primary); background: transparent; cursor: pointer; }
+    .sample-reference-trigger:hover { border-color: #b7cee1; background: #eef5fb; }
+    .sample-reference-trigger:focus-visible { outline: 3px solid rgba(18, 91, 164, .28); outline-offset: 2px; }
+    .sample-reference-trigger svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+    .sample-weather { display: flex; gap: 10px; align-items: center; padding: 14px 16px; border-top: 1px solid var(--border); background: #fbfcfe; font-size: 13px; }
+    .sample-weather label { font-weight: 700; white-space: nowrap; }
+    .sample-weather input { min-height: 36px; width: min(360px, 100%); padding: 5px 8px; border: 1px solid #d8e1eb; border-radius: 4px; font: inherit; }
+    dialog.sample-reference-dialog { width: min(600px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 18px 50px rgba(15, 35, 60, .22); }
+    dialog.sample-reference-dialog::backdrop { background: rgba(20, 34, 52, .36); }
+    .sample-reference-dialog header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 1px solid var(--border); }
+    .sample-reference-dialog h3 { margin: 0; font-size: 16px; }
+    .sample-reference-dialog header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+    .sample-reference-dialog .dialog-close { min-width: 36px; min-height: 36px; padding: 0; border: 1px solid var(--border); border-radius: 5px; color: var(--text); background: #fff; font-size: 20px; line-height: 1; cursor: pointer; }
+    .sample-reference-dialog table { width: 100%; border-collapse: collapse; }
+    .sample-reference-dialog th, .sample-reference-dialog td { padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: left; }
+    .sample-reference-dialog th { background: var(--surface-muted); }
+    .sample-reference-dialog tr:last-child td { border-bottom: 0; }
+    @media (max-width: 620px) { .workspace-mode-tabs button { flex: 1; padding: 0 12px; } .sample-card-header { align-items: flex-start; flex-direction: column; } .sample-weather { align-items: flex-start; flex-direction: column; } }
     .tank-tabs { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-muted); }
     .tank-tabs [role="tab"] { min-height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); font-weight: 650; white-space: nowrap; cursor: pointer; }
     .tank-tabs [role="tab"][aria-selected="true"] { color: #fff; background: var(--primary); border-color: var(--primary); }
@@ -29,7 +66,6 @@
     .measurement-datetime { display: flex; justify-content: center; gap: 8px; }
     .measurement-datetime input { width: min(145px, 100%); }
     .shore-formula-cell strong { font-size: 14px; font-variant-numeric: tabular-nums; }
-    .shore-excel-card .shore-excel-notes { padding: 12px 16px; gap: 6px; font-size: 13px; line-height: 1.55; }
     .shore-receipt-summary { margin-top: 12px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
     .shore-receipt-summary header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--surface-muted); border-bottom: 1px solid var(--border); }
     .shore-receipt-summary header strong { font-size: 14px; }
@@ -38,6 +74,40 @@
     .shore-receipt-summary th, .shore-receipt-summary td { padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
     .shore-receipt-summary th { text-align: left; }
     .shore-receipt-summary tr:last-child th, .shore-receipt-summary tr:last-child td { border-bottom: 0; }
+    .shore-receipt-summary .receipt-tank-heading, .shore-receipt-summary .receipt-total-heading { text-align: center; font-weight: 700; }
+    .shore-receipt-summary .receipt-subheading { text-align: center; }
+    .shore-receipt-summary .receipt-label { min-width: 180px; }
+    .shore-receipt-summary .receipt-total-table { width: min(620px, 100%); }
+    .shore-quantity-overview { margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
+    .shore-quantity-overview header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 16px; background: var(--surface-muted); border-bottom: 1px solid var(--border); }
+    .shore-quantity-overview header strong { font-size: 14px; }
+    .shore-quantity-overview header span { font-size: 12px; color: var(--text-secondary); }
+    .shore-quantity-overview table { width: 100%; border-collapse: collapse; }
+    .shore-quantity-overview th, .shore-quantity-overview td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+    .shore-quantity-overview th { text-align: left; }
+    .shore-quantity-overview tr:last-child > * { border-bottom: 0; }
+    .shore-quantity-overview .quantity-total { background: var(--accent-soft); font-weight: 700; }
+    .shore-entry-layout { display: grid; grid-template-columns: 230px minmax(640px, 1fr) 220px; gap: 14px; align-items: start; }
+    .tank-navigator, .current-tank-result { border: 1px solid var(--border); border-radius: var(--radius); background: #fff; overflow: hidden; }
+    .tank-navigator header, .current-tank-result header { padding: 12px 14px; background: var(--surface-muted); border-bottom: 1px solid var(--border); }
+    .tank-navigator header strong, .current-tank-result header strong { display: block; font-size: 13px; }
+    .tank-navigator header small, .current-tank-result header small { display: block; margin-top: 2px; color: var(--text-secondary); font-size: 11px; }
+    .tank-list { max-height: 620px; overflow-y: auto; padding: 8px; }
+    .tank-list button { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 44px; margin-bottom: 5px; padding: 8px 10px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+    .tank-list button strong { font-size: 13px; }
+    .tank-list button small { font-size: 10px; color: var(--text-secondary); }
+    .tank-list button[aria-current="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-strong); }
+    .tank-navigator .add-tank { width: calc(100% - 16px); min-height: 40px; margin: 0 8px 8px; border: 1px dashed var(--primary); border-radius: 5px; color: var(--primary); background: #fff; font-weight: 700; cursor: pointer; }
+    .shore-editor { min-width: 0; }
+    .shore-editor .shore-matrix-table { width: 100%; min-width: 0; }
+    .shore-editor .tank-entry-toolbar { margin-top: 0; }
+    .current-tank-result { position: sticky; top: 12px; }
+    .current-tank-result dl { margin: 0; padding: 8px 14px; border-bottom: 1px solid var(--border); }
+    .current-tank-result dl:last-child { border-bottom: 0; }
+    .current-tank-result dt { font-size: 11px; color: var(--text-secondary); }
+    .current-tank-result dd { margin: 4px 0 0; font: 700 14px ui-monospace, monospace; color: var(--primary-strong); }
+    @media (max-width: 1250px) { .shore-entry-layout { grid-template-columns: 220px minmax(0, 1fr); } .current-tank-result { grid-column: 1 / -1; position: static; display: grid; grid-template-columns: repeat(4, 1fr); } .current-tank-result header { grid-column: 1 / -1; } .current-tank-result dl { border-bottom: 0; border-right: 1px solid var(--border); } }
+    @media (max-width: 800px) { .shore-entry-layout { display: block; } .tank-navigator, .current-tank-result { margin-bottom: 12px; } .tank-list { max-height: 220px; } .current-tank-result { display: block; } .current-tank-result dl { border-right: 0; border-bottom: 1px solid var(--border); } .shore-quantity-overview .optional-unit { display: none; } }
     .shore-actions { align-items: center; padding: 0 14px; margin-bottom: 14px; }
     .tank-edit-btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 5px; background: #fff; color: var(--primary); font-size: 12px; font-weight: 650; cursor: pointer; }
     dialog.tank-dialog { width: min(480px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 18px 50px rgba(15, 35, 60, .22); }
@@ -116,10 +186,12 @@
         </aside>
 
         <section class="workspace" id="workspace">
-          <div class="workspace-heading shore-heading">
-            <div><h2>Shore Tank Measurement <small>岸罐接收计量</small></h2><p>逐罐录入期初、期末测量数据，运行计算后同步更新计量汇总。</p></div>
+          <div class="workspace-mode-tabs" role="tablist" aria-label="岸罐作业内容">
+            <button type="button" role="tab" id="measurementTab" aria-selected="true" aria-controls="measurementPanel">岸罐计量</button>
+            <button type="button" role="tab" id="samplesTab" aria-selected="false" aria-controls="samplesPanel">检验样品</button>
           </div>
 
+          <div id="measurementPanel" role="tabpanel" aria-labelledby="measurementTab">
           <section class="shore-context-card">
             <div class="shore-context-grid" id="shoreContext"><!-- rendered by JS --></div>
           </section>
@@ -132,10 +204,14 @@
           </div>
 
           <div id="panel-entry"><!-- rendered by JS --></div>
+          </div>
+
+          <div id="samplesPanel" role="tabpanel" aria-labelledby="samplesTab" hidden>
+            <div id="samplePanel"><!-- rendered by JS --></div>
+          </div>
 
           <footer class="workspace-footer">
-            <div><strong>下一步：卸货后 ROB</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
-            <a class="button primary" href="step-05-rob.html">保存并进入下一步</a>
+            <button type="button" class="button" data-save-data>保存数据</button>
           </footer>
         </section>
       </div>
@@ -162,6 +238,19 @@
         <label class="field-label">记录类型<select id="editTankType"><option value="TANK">岸罐</option><option value="PIPELINE">管线记录</option></select></label>
         <footer><button type="button" id="cancelEditTank">取消</button><button type="submit" class="primary">保存信息</button></footer>
       </form>
+    </dialog>
+
+    <dialog class="sample-reference-dialog" id="sampleReferenceDialog" aria-labelledby="sampleReferenceTitle">
+      <header>
+        <div><h3 id="sampleReferenceTitle">样品类型中英对照表</h3><p>用于选择“样品类别”时核对术语。</p></div>
+        <button type="button" class="dialog-close" id="closeSampleReference" aria-label="关闭样品类型对照表">×</button>
+      </header>
+      <table>
+        <thead><tr><th>English</th><th>中文</th></tr></thead>
+        <tbody>
+          <tr><td>Tank Composite</td><td>单罐组合样</td></tr><tr><td>Running</td><td>例行样</td></tr><tr><td>All-levels</td><td>全层样</td></tr><tr><td>Spot</td><td>点样</td></tr><tr><td>Upper</td><td>上部样</td></tr><tr><td>Middle</td><td>中部样</td></tr><tr><td>Lower</td><td>下部样</td></tr><tr><td>Bottom</td><td>底部样</td></tr><tr><td>1st Foot</td><td>一英尺样</td></tr>
+        </tbody>
+      </table>
     </dialog>
   </main>
 
@@ -222,16 +311,69 @@
     };
 
     const fieldSections = [
-      { title: "基础测量数据", fields: [["measurementDateTime", "测量日期与时间", "作业日期 / 测量时间", "", "input"], ["density", "密度（15℃）", "克/立方厘米", "g/cm³", "input"], ["sandWaterPct", "水分和杂质", "体积百分比", "% (V/V)", "input"], ["referenceHeight", "参考高度", "米", "m", "input"], ["observedReferenceHeight", "实测参考高度", "米", "m", "input"], ["floatingRoofWeight", "浮顶重量（空气中）", "公吨", "MT", "input"], ["gaugeResult", "货物高度", "检尺结果", "m", "input"], ["waterHeight", "游离水高度", "米", "m", "input"], ["oilTemp", "货物温度（平均温度）", "摄氏度", "℃", "input"], ["ambientTemp", "环境温度（平均温度）", "摄氏度", "℃", "input"]] },
-      { title: "体积计算", fields: [["tov", "总观测体积", "立方米", "m³", "formula"], ["freeWaterVolume", "游离水体积", "立方米", "m³", "input"], ["shellCorrection", "罐壁温度修正", "修正系数", "", "input"], ["pipelineVolume", "管线体积", "立方米", "m³", "input"], ["floatingRoofCorrectionBbl", "浮顶修正", "美制桶", "bbl", "formula"], ["grossObservedBbl", "净观测量", "美制桶", "bbl", "formula"], ["grossObservedBbl", "净收量－净观测体积", "美制桶", "bbl", "formula"]] },
-      { title: "标准体积与重量", fields: [["vcf", "体积修正系数表", "T-6A（2004版）", "", "input"], ["grossStandardBbl", "总标准体积", "美制桶", "bbl", "formula"], ["netStandardBbl", "净收量＝总标准体积", "美制桶", "bbl", "formula"], ["api60", "API（60℉）", "°API", "°API", "formula"], ["wcf", "重量转换系数（空气中）", "T-11", "", "input"], ["grossWeight", "总标准重量（空气中）", "长吨", "LT", "formula"], ["netWeight", "净标准重量（空气中）", "长吨", "LT", "formula"]] },
+      { title: "", fields: [["date", "日期", "", "", "input"], ["time", "时间", "", "", "input"], ["density", "密度（15℃）", "克/立方厘米", "g/cm³", "input"], ["sandWaterPct", "水分和杂质", "% (V/V)", "% (V/V)", "input"], ["referenceHeight", "参考高度", "米", "m", "input", true], ["observedReferenceHeight", "实测参考高度", "米", "m", "input"], ["floatingRoofWeight", "浮顶重量（空气中）", "公吨", "MT", "input", true], ["gaugeResult", "货物液位", "米", "m", "input"], ["waterHeight", "游离水液深", "米", "m", "input"], ["oilTemp", "货物温度（平均温度）", "℃", "℃", "input"], ["ambientTemp", "环境温度（平均温度）", "℃", "℃", "input"]] },
+      { title: "", fields: [["tov", "总观测体积", "立方米", "m³", "formula"], ["freeWaterVolume", "游离水体积", "立方米", "m³", "input"], ["shellCorrection", "罐壁温度修正", "", "", "input"], ["pipelineVolume", "管线体积", "立方米", "m³", "input"], ["floatingRoofCorrectionBbl", "浮顶修正", "美制桶", "bbl", "formula"], ["grossObservedBbl", "净表观体积", "美制桶", "bbl", "formula"], ["receiptNetObserved", "罐收量--净表观体积", "美制桶", "bbl", "formula", true]] },
+      { title: "", fields: [["vcf", "体积修正系数表", "T-6A（2004版）", "", "input"], ["grossStandardBbl", "总标准体积", "美制桶", "bbl", "formula"], ["receiptGrossStandard", "罐收量--总标准体积", "美制桶", "bbl", "formula", true], ["netStandardBbl", "净标准体积", "美制桶", "bbl", "formula"], ["receiptNetStandard", "罐收量--净标准体积", "美制桶", "bbl", "formula", true], ["api60", "API（60°F）", "°API", "°API", "formula"], ["wcf", "#VALUE!", "", "", "input"], ["grossWeight", "总标准重量（空气中）", "长吨", "LT", "formula"], ["receiptGrossWeight", "罐收量--总标准重量（空气中）", "长吨", "LT", "formula", true], ["netWeight", "净标准重量（空气中）", "长吨", "LT", "formula"], ["receiptNetWeight", "罐收量--净标准重量（空气中）", "长吨", "LT", "formula", true]] },
     ];
 
     const masterTankOptions = ["01TK-201", "01TK-202", "01TK-206", "02TK-101", "04TK-706", "04TK-708", "04TK-709"];
     let selectedTankId = 1;
     let calculationMode = "RECEIVED";
     let publishedTotals = null;
+    let activeWorkspaceTab = "measurement";
+    let sampleWeather = "FINE";
+    let nextSampleId = 9;
+    const sampleEntries = [
+      { id: 1, status: "卸货前", source: "Shore Tank 01TK-201", category: "组合样", quantity: "1", volume: "2L", allocation: "分析样品", seal: "CCIC 21323236" },
+      { id: 2, status: "卸货后", source: "Shore Tank 01TK-201", category: "单罐组合样", quantity: "1", volume: "2L", allocation: "CCIC 保留", seal: "CCIC 21323237" },
+      { id: 3, status: "卸货后", source: "Shore Tank 01TK-206", category: "组合样", quantity: "1", volume: "2L", allocation: "分析样品", seal: "CCIC 21323238" },
+      { id: 4, status: "卸货后", source: "Shore Tank 01TK-206", category: "组合样", quantity: "1", volume: "2L", allocation: "CCIC 保留", seal: "CCIC 21323239" },
+      { id: 5, status: "卸货后", source: "Shore Tank 04TK-706", category: "组合样", quantity: "1", volume: "2L", allocation: "分析样品", seal: "CCIC 21323240" },
+      { id: 6, status: "卸货后", source: "Shore Tank 04TK-706", category: "组合样", quantity: "1", volume: "2L", allocation: "CCIC 保留", seal: "CCIC 21323241" },
+      { id: 7, status: "卸货后", source: "Shore Tank 04TK-708", category: "组合样", quantity: "1", volume: "2L", allocation: "分析样品", seal: "CCIC 21323242" },
+      { id: 8, status: "卸货后", source: "Shore Tank 04TK-708", category: "组合样", quantity: "1", volume: "2L", allocation: "CCIC 保留", seal: "CCIC 21323243" },
+    ];
     const $ = (id) => document.getElementById(id);
+    const escapeHTML = (value) => String(value).replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[char]));
+
+    function optionList(values, selected) {
+      return values.map((value) => `<option value="${escapeHTML(value)}"${value === selected ? " selected" : ""}>${escapeHTML(value)}</option>`).join("");
+    }
+
+    function renderWorkspaceTab() {
+      const measurement = activeWorkspaceTab === "measurement";
+      $("measurementPanel").hidden = !measurement;
+      $("samplesPanel").hidden = measurement;
+      $("measurementTab").setAttribute("aria-selected", String(measurement));
+      $("samplesTab").setAttribute("aria-selected", String(!measurement));
+    }
+
+    function renderSamples() {
+      const sampleSources = shoreReadings.filter((row) => row.assetType === "TANK").map((row) => `Shore Tank ${row.tank}`);
+      const rows = sampleEntries.map((sample) => `<tr>
+        <td><select data-sample-field="status" data-sample-id="${sample.id}" aria-label="取样状态">${optionList(["卸货前", "卸货后"], sample.status)}</select></td>
+        <td><select data-sample-field="source" data-sample-id="${sample.id}" aria-label="样品来源">${optionList(sampleSources, sample.source)}</select></td>
+        <td><select data-sample-field="category" data-sample-id="${sample.id}" aria-label="样品类别">${optionList(["组合样", "单罐组合样", "例行样", "全层样", "点样", "上部样", "中部样", "下部样", "底部样", "一英尺样"], sample.category)}</select></td>
+        <td><input type="number" min="1" step="1" value="${escapeHTML(sample.quantity)}" data-sample-field="quantity" data-sample-id="${sample.id}" aria-label="个数"></td>
+        <td><input type="text" value="${escapeHTML(sample.volume)}" data-sample-field="volume" data-sample-id="${sample.id}" aria-label="容积"></td>
+        <td><select data-sample-field="allocation" data-sample-id="${sample.id}" aria-label="样品分配">${optionList(["分析样品", "CCIC 保留", "船方留样", "岸方留样"], sample.allocation)}</select></td>
+        <td><input type="text" value="${escapeHTML(sample.seal)}" data-sample-field="seal" data-sample-id="${sample.id}" aria-label="封号"></td>
+        <td><button type="button" class="sample-remove" data-remove-sample="${sample.id}">删除</button></td>
+      </tr>`).join("");
+      $("samplePanel").innerHTML = `<section class="sample-card"><header class="sample-card-header"><div><strong>检验样品</strong><small>按取样状态登记样品信息；下拉字段与样品类型对照保持一致。</small></div><button type="button" class="sample-add-btn" id="addSampleBtn">＋ 新增样品</button></header><div class="table-scroll"><table class="sample-table"><thead><tr><th>取样状态</th><th>样品来源</th><th>样品类别<button type="button" class="sample-reference-trigger" id="sampleReferenceBtn" aria-label="查看样品类型中英对照表" title="查看样品类型中英对照表"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 10v6M12 7h.01"></path></svg></button></th><th>个数</th><th>容积</th><th>样品分配</th><th>封号</th><th aria-label="操作"></th></tr></thead><tbody>${rows}</tbody></table></div><div class="sample-weather"><label for="sampleWeather">取样时的天气状况</label><input id="sampleWeather" type="text" value="${escapeHTML(sampleWeather)}" placeholder="例如：FINE"></div></section>`;
+      $("addSampleBtn").addEventListener("click", () => {
+        sampleEntries.push({ id: nextSampleId++, status: "卸货后", source: "", category: "组合样", quantity: "1", volume: "2L", allocation: "分析样品", seal: "" });
+        renderSamples();
+        flash("已新增一条样品记录");
+      });
+      $("sampleReferenceBtn").addEventListener("click", () => $("sampleReferenceDialog").showModal());
+      $("samplePanel").querySelectorAll("[data-remove-sample]").forEach((button) => button.addEventListener("click", () => {
+        const index = sampleEntries.findIndex((sample) => sample.id === Number(button.dataset.removeSample));
+        if (index >= 0) sampleEntries.splice(index, 1);
+        renderSamples();
+        flash("样品记录已删除");
+      }));
+    }
 
     const difference = (open, close) => calculationMode === "DELIVERY" ? open - close : calculationMode === "INVENTORY" ? close : close - open;
     function totalsFor(rows) {
@@ -275,6 +417,23 @@
       return `<td><input type="number" step="${step}" value="${value}" data-field="${key}" data-phase="${phase}" data-id="${row.id}" /></td>`;
     }
 
+    function renderMergedCell(row, key, kind) {
+      if (kind === "formula") {
+        const open = shoreComputed(row.open), close = shoreComputed(row.close);
+        const receiptValues = {
+          receiptNetObserved: close.grossObservedBbl - open.grossObservedBbl,
+          receiptGrossStandard: close.grossStandardBbl - open.grossStandardBbl,
+          receiptNetStandard: close.netStandardBbl - open.netStandardBbl,
+          receiptGrossWeight: close.grossWeight - open.grossWeight,
+          receiptNetWeight: close.netWeight - open.netWeight,
+        };
+        return `<td class="shore-formula-cell" colSpan="2"><strong>${fmt(receiptValues[key], 3)}</strong></td>`;
+      }
+      const value = row.open[key];
+      const step = ["density", "linearExpansionCoeff", "thermalExpansionCoefficient60F", "vcf", "wcf"].includes(key) ? "0.000001" : "0.001";
+      return `<td colSpan="2"><input type="number" step="${step}" value="${value}" data-merged-field="${key}" data-id="${row.id}" /></td>`;
+    }
+
     function createTank(tank, assetType) {
       const id = Math.max(...shoreReadings.map((row) => row.id)) + 1;
       shoreReadings.push({
@@ -304,34 +463,34 @@
       const row = shoreReadings.find((item) => item.id === selectedTankId) || shoreReadings[0];
       selectedTankId = row.id;
       const body = fieldSections.map((section) => {
-        const fieldRows = section.fields.map(([key, en, zh, unit, kind]) => {
-          const cells = renderCell(row, "open", key, kind) + renderCell(row, "close", key, kind);
+        const fieldRows = section.fields.map(([key, en, zh, unit, kind, merged]) => {
+          const cells = merged ? renderMergedCell(row, key, kind) : renderCell(row, "open", key, kind) + renderCell(row, "close", key, kind);
           return `<tr><th scope="row"><strong>${en}</strong><small>${zh}${unit ? ` · ${unit}` : ""}</small></th>${cells}</tr>`;
         }).join("");
-        return `<tr class="shore-section-row"><th colSpan="3">${section.title}</th></tr>${fieldRows}`;
+        return section.title ? `<tr class="shore-section-row"><th colSpan="3">${section.title}</th></tr>${fieldRows}` : fieldRows;
       }).join("");
-      const tabs = shoreReadings.map((item) => `<button type="button" role="tab" data-tank-id="${item.id}" aria-selected="${item.id === selectedTankId}">${item.tank}</button>`).join("");
       const open = shoreComputed(row.open), close = shoreComputed(row.close);
-      const summaryRows = [
-        ["美制桶（60℉）", "bbl", close.grossStandardBbl - open.grossStandardBbl, close.netStandardBbl - open.netStandardBbl],
-        ["立方米（15℃）", "m³", close.gsv - open.gsv, close.nsv - open.nsv],
-        ["公吨（空气中）", "MT", close.grossWeight - open.grossWeight, close.netWeight - open.netWeight],
-        ["长吨（空气中）", "LT", (close.grossWeight - open.grossWeight) * 0.9842065276, (close.netWeight - open.netWeight) * 0.9842065276],
-      ].map(([name, unit, gross, net]) => `<tr><th>${name}</th><td>${unit}</td><td>${fmt(gross, 3)}</td><td>${fmt(net, 3)}</td></tr>`).join("");
+      const receiptTanks = shoreReadings.filter((item) => item.assetType === "TANK");
+      const tankNav = shoreReadings.map((item) => {
+        const start = shoreComputed(item.open), end = shoreComputed(item.close);
+        const received = end.nsv - start.nsv;
+        return `<button type="button" data-tank-id="${item.id}" aria-current="${item.id === selectedTankId}"><span><strong>${item.tank}</strong><small>${item.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</small></span><small>${fmt(received, 0)} m³</small></button>`;
+      }).join("");
+      const overviewRows = receiptTanks.map((item) => {
+        const start = shoreComputed(item.open), end = shoreComputed(item.close);
+        return `<tr><th>${item.tank}</th><td>${fmt(end.gsv - start.gsv, 3)}</td><td>${fmt(end.nsv - start.nsv, 3)}</td><td>${fmt(end.grossWeight - start.grossWeight, 3)}</td><td>${fmt(end.netWeight - start.netWeight, 3)}</td><td>${end.gsv > start.gsv ? "已计算" : "待录入"}</td></tr>`;
+      }).join("");
+      const overviewTotals = receiptTanks.reduce((sum, item) => {
+        const start = shoreComputed(item.open), end = shoreComputed(item.close);
+        return { gsv: sum.gsv + end.gsv - start.gsv, nsv: sum.nsv + end.nsv - start.nsv, gross: sum.gross + end.grossWeight - start.grossWeight, net: sum.net + end.netWeight - start.netWeight };
+      }, { gsv: 0, nsv: 0, gross: 0, net: 0 });
       $("panel-entry").innerHTML = `
-        <div class="tank-tabs" role="tablist" aria-label="岸罐数据录入页签">
-          ${tabs}<button type="button" class="add-tank" id="addTankBtn">＋ 新增岸罐</button>
-        </div>
-        <div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>按照原表顺序录入期初、期末数据；绿色项目由系统自动计算。</span></div><div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span><button type="button" class="tank-edit-btn" id="editTankBtn">编辑岸罐信息</button></div></div>
-        <div class="shore-excel-notes"><p><strong>填写顺序：</strong>先填写基础测量数据，再核对体积计算和标准体积与重量。每一行的单位均与原表一致。</p><p><strong>接收量：</strong>以期末减期初计算；点击“运行计算”后，结果会同步到上方的接收量汇总。</p></div>
-        <section class="table-card shore-excel-card">
-          <div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>期初 / 期末</span></div>
-          <div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table">
-            <thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">期初<small>卸货前</small></th><th class="close-column">期末<small>卸货后</small></th></tr></thead>
-            <tbody>${body}</tbody>
-          </table></div>
-        </section>
-        <section class="shore-receipt-summary"><header><strong>${row.tank} 接收数量</strong><span>期末 − 期初</span></header><table><thead><tr><th>数量单位</th><th>单位</th><th>毛量</th><th>净量</th></tr></thead><tbody>${summaryRows}</tbody></table></section>`;
+        <section class="shore-quantity-overview"><header><div><strong>各罐收货数量</strong><span>以立方米（15℃）为主，期末 − 期初</span></div><span>共 ${receiptTanks.length} 个岸罐</span></header><div class="table-scroll"><table><thead><tr><th>岸罐</th><th>毛量 m³</th><th>净量 m³</th><th class="optional-unit">毛重 MT</th><th class="optional-unit">净重 MT</th><th>状态</th></tr></thead><tbody>${overviewRows}<tr class="quantity-total"><th>收货数量合计</th><td>${fmt(overviewTotals.gsv, 3)}</td><td>${fmt(overviewTotals.nsv, 3)}</td><td class="optional-unit">${fmt(overviewTotals.gross, 3)}</td><td class="optional-unit">${fmt(overviewTotals.net, 3)}</td><td>已汇总</td></tr></tbody></table></div></section>
+        <div class="shore-entry-layout">
+          <aside class="tank-navigator" aria-label="岸罐列表"><header><strong>岸罐列表</strong><small>选择岸罐后，在右侧录入数据</small></header><div class="tank-list">${tankNav}</div><button type="button" class="add-tank" id="addTankBtn">＋ 新增岸罐</button></aside>
+          <section class="shore-editor"><div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>按照原表顺序录入期初、期末数据；绿色项目由系统自动计算。</span></div><div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span><button type="button" class="tank-edit-btn" id="editTankBtn">编辑岸罐信息</button></div></div><section class="table-card shore-excel-card"><div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>期初 / 期末</span></div><div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table"><thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">期初<small>卸货前</small></th><th class="close-column">期末<small>卸货后</small></th></tr></thead><tbody>${body}</tbody></table></div></section></section>
+          <aside class="current-tank-result" aria-label="当前岸罐结果"><header><strong>${row.tank} 接收结果</strong><small>期末 − 期初</small></header><dl><dt>毛量（15℃）</dt><dd>${fmt(close.gsv - open.gsv, 3)} m³</dd></dl><dl><dt>净量（15℃）</dt><dd>${fmt(close.nsv - open.nsv, 3)} m³</dd></dl><dl><dt>毛重（空气中）</dt><dd>${fmt(close.grossWeight - open.grossWeight, 3)} MT</dd></dl><dl><dt>净重（空气中）</dt><dd>${fmt(close.netWeight - open.netWeight, 3)} MT</dd></dl></aside>
+        </div>`;
       $("panel-entry").querySelectorAll("[data-tank-id]").forEach((b) => b.addEventListener("click", () => { selectedTankId = Number(b.dataset.tankId); renderEntry(); }));
       $("addTankBtn").addEventListener("click", openAddTankDialog);
       $("editTankBtn").addEventListener("click", () => {
@@ -355,20 +514,20 @@
 
     function renderOutput() {
       const t = totalsFor(shoreReadings);
+      let selectedUnits = new Set(["bbl60", "m315", "mtair", "ltair"]);
+      try { const saved = JSON.parse(localStorage.getItem("offlineSurveyQuantityUnits")); if (Array.isArray(saved?.units) && saved.units.length) selectedUnits = new Set(saved.units); } catch (_) {}
       const outputRows = [
-        ["US Barrels (Obsd. Temp.)", "观测温度美制桶", "bbls", t.receivedGsv * 6.289812, t.receivedNsv * 6.289812],
-        ["Cubic Meters (Obsd. Temp.)", "观测温度立方米", "m³", t.receivedGsv, t.receivedNsv],
-        ["US Barrels (60℉)", "60℉美制桶", "bbls", t.receivedGsv * 6.289812, t.receivedNsv * 6.289812],
-        ["US Gallon (60℉)", "60℉美制加仑", "US gal", t.receivedGsv * 6.289812 * 42, t.receivedNsv * 6.289812 * 42],
-        ["Cubic Meters (15℃)", "15℃立方米", "m³", t.receivedGsv, t.receivedNsv],
-        ["Cubic Meters (20℃)", "20℃立方米", "m³", 0, 0],
-        ["Cubic Meters (30℃)", "30℃立方米", "m³", 0, 0],
-        ["Metric Tons (in vacuo)", "真空中公吨", "MT", 0, 0],
-        ["Metric Tons (in air)", "空气中公吨", "MT", t.receivedGrossWeight, t.receivedNetWeight],
-        ["Long Tons (in vacuo)", "真空中长吨", "LT", 0, 0],
-        ["Long Tons (in air)", "空气中长吨", "LT", t.receivedGrossWeight * 0.9842065276, t.receivedNetWeight * 0.9842065276],
-      ];
-      const rows = outputRows.map(([en, zh, unit, gross, net]) => {
+        ["bblobserved", "US Barrels (Obsd. Temp.)", "观测温度美制桶", "bbls", t.receivedGsv * 6.289812, t.receivedNsv * 6.289812],
+        ["bbl60", "US Barrels (60℉)", "60℉美制桶", "bbls", t.receivedGsv * 6.289812, t.receivedNsv * 6.289812],
+        ["m315", "Cubic Meters (15℃)", "15℃立方米", "m³", t.receivedGsv, t.receivedNsv],
+        ["m320", "Cubic Meters (20℃)", "20℃立方米", "m³", t.receivedGsv * 1.0072, t.receivedNsv * 1.0072],
+        ["m330", "Cubic Meters (30℃)", "30℃立方米", "m³", t.receivedGsv * 1.0251, t.receivedNsv * 1.0251],
+        ["mtvac", "Metric Tons (in vacuo)", "真空中公吨", "MT", t.receivedGrossWeight * 1.0011, t.receivedNetWeight * 1.0011],
+        ["mtair", "Metric Tons (in air)", "空气中公吨", "MT", t.receivedGrossWeight, t.receivedNetWeight],
+        ["ltvac", "Long Tons (in vacuo)", "真空中长吨", "LT", t.receivedGrossWeight * 1.0011 * 0.9842065276, t.receivedNetWeight * 1.0011 * 0.9842065276],
+        ["ltair", "Long Tons (in air)", "空气中长吨", "LT", t.receivedGrossWeight * 0.9842065276, t.receivedNetWeight * 0.9842065276],
+      ].filter(([id]) => selectedUnits.has(id));
+      const rows = outputRows.map(([, en, zh, unit, gross, net]) => {
         const zero = gross === 0 && !en.includes("Observed");
         return `<tr><th>${en}</th><td>${zh}</td><td>${unit}</td><td class="number strong">${fmt(gross, (unit.includes("gal") || unit === "bbls") ? 2 : 3)}</td><td class="number">${fmt(net, (unit.includes("gal") || unit === "bbls") ? 2 : 3)}</td><td><span class="status-pill ${zero ? "warning" : "success"}">${zero ? "Excel 当前为 0" : "已计算"}</span></td></tr>`;
       }).join("");
@@ -389,6 +548,28 @@
 
     $("workspace").addEventListener("change", (e) => {
       const t = e.target;
+      if (t.dataset.sampleField && t.dataset.sampleId) {
+        const sample = sampleEntries.find((item) => item.id === Number(t.dataset.sampleId));
+        if (sample) sample[t.dataset.sampleField] = t.value;
+        flash("样品记录已更新");
+        return;
+      }
+      if (t.id === "sampleWeather") {
+        sampleWeather = t.value;
+        flash("天气状况已更新");
+        return;
+      }
+      if (t.dataset.mergedField && t.dataset.id) {
+        const row = shoreReadings.find(r => r.id === Number(t.dataset.id));
+        if (!row) return;
+        const v = t.value === "" ? 0 : Number(t.value);
+        row.open[t.dataset.mergedField] = v;
+        row.close[t.dataset.mergedField] = v;
+        publishedTotals = null;
+        $("calculationStatus").textContent = "数据已修改，请运行计算更新汇总";
+        renderEntry();
+        return;
+      }
       if (t.dataset.field && t.dataset.phase && t.dataset.id) {
         const row = shoreReadings.find(r => r.id === Number(t.dataset.id));
         if (!row) return;
@@ -401,8 +582,18 @@
       }
     });
 
+    $("measurementTab").addEventListener("click", () => {
+      activeWorkspaceTab = "measurement";
+      renderWorkspaceTab();
+    });
+    $("samplesTab").addEventListener("click", () => {
+      activeWorkspaceTab = "samples";
+      renderWorkspaceTab();
+    });
+
     const saveState = $("saveState");
     function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
+    $("closeSampleReference").addEventListener("click", () => $("sampleReferenceDialog").close());
     document.querySelectorAll('input[name="tankSource"]').forEach((input) => input.addEventListener("change", () => {
       const manual = document.querySelector('input[name="tankSource"]:checked').value === "manual";
       $("masterTankField").hidden = manual;
@@ -445,6 +636,9 @@
     renderContext();
     renderMetrics();
     renderEntry();
+    renderSamples();
+    renderWorkspaceTab();
   </script>
+  <script src="save-guard.js"></script>
 </body>
 </html>

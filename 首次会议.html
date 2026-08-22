@@ -17,9 +17,6 @@
 <body>
   <main class="page">
     <section class="card">
-      <header class="head">
-        <div><h1>首次会议</h1><p class="desc">在正式计量前确认基础资料、船舶/岸罐工作条件、取样条件与安全事项。</p></div>
-      </header>
       <div class="content">
         <div class="notice"><b>ⓘ</b><div>首次会议用于确认现场作业基础资料与条件。请先填写会议信息，再依次处理 5 个分组、23 个子项；全部提交后方可确认完成。</div></div>
         <section class="panel">
@@ -54,7 +51,7 @@
             <div class="panel"><div class="panel-title">基础资料 / 货物资料 <span class="status" style="margin-left:8px">未开始</span></div><div class="panel-body">
               <div class="subhead"><h3 style="margin:0;font-size:15px">所需文件</h3><button class="btn" type="button">添加附件</button></div>
               <div class="file-list" style="margin:12px 0 18px"><label><input type="checkbox" checked><span class="important">*</span> 提单（B/L）</label><label><input type="checkbox" checked><span class="important">*</span> 装货港商检报告</label><label><input type="checkbox" checked><span class="important">*</span> 货物 SDS</label><label><input type="checkbox">其他文件</label></div>
-              <div class="grid"><div class="field"><label>货物名称 <span class="req">*</span></label><input value="阿曼出口混合原油"></div><div class="field"><label>英文名称</label><input value="OMAN EXPORT BLEND CRUDE OIL"></div><div class="field"><label>提单重量（MT）</label><input type="number" step="0.001" value="951230.200"></div><div class="field"><label>装港数量（MT）</label><input type="number" step="0.001" value="949805.500"></div><div class="field"><label>悬浮杂质和水 S&W%（V/V）</label><input type="number" step="0.001" value="0.120"></div><div class="field"><label>扣除悬浮杂质和水 CSW</label><input readonly value="99.880%"></div><div class="field"><label>密度口径</label><select><option selected>密度 @15℃</option><option>密度 @20℃</option></select></div><div class="field"><label>密度值（g/cm³）</label><input type="number" step="0.0001" value="0.8598"></div><div class="field"><label>核查照片</label><input type="file" multiple></div><div class="field span-3"><label>核查备注</label><textarea placeholder="如有异常，请填写文字备注。"></textarea></div></div>
+              <div class="field"><label>核查备注</label><textarea placeholder="如有异常，请填写文字备注。"></textarea></div>
             </div></div>
           </section>
         </div>
@@ -119,14 +116,13 @@
           content.innerHTML = `<div class="panel"><div class="panel-title">${title} <span class="status" style="margin-left:8px">未开始</span></div><div class="panel-body">
             <h3 style="margin:0 0 12px;font-size:15px">所需文件</h3><div class="file-list" style="margin-bottom:16px"><label><input type="checkbox" checked><span class="important">*</span> 船舶资料（ship's particular）</label><label><input type="checkbox" checked><span class="important">*</span> 配载图</label><label><input type="checkbox" checked>经验系数表</label><label><input type="checkbox" checked><span class="important">*</span> 前三次装在货物</label><label><input type="checkbox" checked>加油记录</label><label><input type="checkbox">其他文件</label></div>
             <div class="field" style="margin-bottom:16px"><label>其他所需文件</label><textarea placeholder="请输入其他所需文件"></textarea></div><div class="field" style="margin-bottom:16px"><label>备注</label><textarea placeholder="以上核查如有异常，进行文字备注"></textarea></div><div class="field" style="margin-bottom:18px"><label>现场情况照片（0 / 5）</label><input type="file" multiple accept="image/*"><div class="hint">保存三至五张现场情况照片；文档模式竖排船舶资料、配载图，横拍其它资料。</div></div>
-            <div class="grid"><div class="field"><label>贸易方式</label><select><option>装货</option><option selected>卸货</option></select></div><div class="field"><label>贸易性质</label><select><option>内贸</option><option selected>外贸</option></select></div><div class="field"><label>起运港</label><input placeholder="请选择"></div><div class="field"><label>目的港</label><input placeholder="请选择"></div><div class="field"><label>检验场所</label><input value="香港港（Hong Kong Port）"></div><div class="field"><label>储运工具名称</label><input value="MV Starlight Dawn"></div><div class="field"><label>IMO 号</label><input value="954321678"></div><div class="field"><label>MMSI 号</label><input value="954321678"></div><div class="field"><label>航次</label><input placeholder="请输入"></div><div class="field"><label>舱容表编号</label><input value="954321678"></div><div class="field"><label>船龄（年）</label><input type="number" value="5"></div><div class="field"><label>船舶经验系数 VEF</label><input type="number" step="0.0001" placeholder="请输入"></div><div class="field"><label>壁材 / 钢材系数 α</label><input value="0.000012℃"></div><div class="field"><label>钢卷尺钢材系数 αr</label><input value="0.000012℃"></div></div>
           </div></div>`;
         } else if (name === '岸罐资料') {
           content.innerHTML = `<div class="panel"><div class="panel-title">${title} <span class="status" style="margin-left:8px">未开始</span></div><div class="panel-body">
             <h3 style="margin:0 0 12px;font-size:15px">所需文件</h3>
             <div class="file-list" style="margin-bottom:16px"><label><input type="checkbox" checked><span class="important">*</span> 岸罐检定证书 / 校准报告资料</label><label><input type="checkbox" checked><span class="important">*</span> 前三次装载货物</label><label><input type="checkbox" checked><span class="important">*</span> 岸罐清洁记录</label><label><input type="checkbox" checked>经验系数表</label><label><input type="checkbox">其他文件</label></div>
             <div class="field" style="margin-bottom:16px"><label>其他所需文件</label><textarea placeholder="请输入其他所需文件"></textarea></div><div class="field" style="margin-bottom:18px"><label>备注</label><textarea placeholder="以上核查如有异常，进行文字备注"></textarea></div>
-            <div class="grid"><div class="field span-3"><label>检验场所</label><input value="江阴恒阳储运有限公司"></div><div class="field"><label>贸易方式</label><select><option>装货</option><option selected>卸货</option></select></div><div class="field"><label>贸易性质</label><select><option>内贸</option><option selected>外贸</option></select></div><div class="field"><label>壁材 / 钢材系数 α</label><input value="0.000012℃"></div><div class="field"><label>钢卷尺钢材系数 αr</label><input value="0.000012℃"></div><div class="field span-3"><label>岸罐资料拍照（0 / 5）</label><input type="file" multiple accept="image/*"><div class="hint">请上传岸罐资料相关的现场照片。</div></div></div>
+            <div class="field"><label>岸罐资料拍照（0 / 5）</label><input type="file" multiple accept="image/*"><div class="hint">请上传岸罐资料相关的现场照片。</div></div>
           </div></div>`;
         } else content.innerHTML = checkTemplate(title);
       }

@@ -63,6 +63,12 @@
     .search input { width: 100%; min-height: 36px; padding: 0 12px 0 34px; border: 1px solid #cbd5e1; border-radius: 4px; color: var(--text); background: #fff; }
     .search input:hover { border-color: #8da0b6; }
     .search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30, 58, 95, .12); outline: none; }
+    .manage-button { min-height: 36px; padding: 0 12px; border: 1px solid var(--primary); border-radius: 4px; color: #fff; background: var(--primary); font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .manage-button:hover { background: var(--primary-hover); }
+    .row-input { width: 100%; min-height: 30px; padding: 0 6px; border: 1px solid transparent; border-radius: 3px; color: inherit; background: transparent; }
+    .row-input:hover, .row-input:focus { border-color: var(--border-strong); background: #fff; outline: none; }
+    .row-action { padding: 3px 7px; border: 1px solid #cbd5e1; border-radius: 3px; color: #41536a; background: #fff; font-size: 11px; }
+    .row-action.danger { margin-left: 5px; border-color: #efb2b2; color: #a33737; }
     .table-scroll { min-height: 390px; overflow-x: auto; }
     table { width: 100%; min-width: 860px; border-collapse: separate; border-spacing: 0; }
     th, td { height: 42px; padding: 6px 12px; border-right: 1px solid #e5e9ef; border-bottom: 1px solid #e5e9ef; text-align: left; white-space: nowrap; }
@@ -125,6 +131,7 @@
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="vessels">船舶与舱容</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="tanks">岸罐</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="ports">港口码头</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-key="cargoTypes">货物类型</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="cargoes">货物</button>
       </div>
 
@@ -136,6 +143,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
             <input id="searchInput" type="search" placeholder="搜索名称、编号或关键字">
           </label>
+          <button class="manage-button" id="addMasterItemButton" type="button" hidden>新增</button>
         </div>
 
         <div class="table-scroll" id="tableWrap">
@@ -201,6 +209,29 @@
       }
     };
 
+    const cargoMasterKey = 'offlineSurveyCargoMaster';
+    const defaultCargoMaster = {
+      LIQUID_CHEMICALS: { label: '液体化学品', subtypes: {
+        CHEMICALS: { label: '化学品', cargos: [{ name: '化学品（TEC）', nameEn: 'CHEMICALS (TEC)', category: 'C · 液体化学品', calculationMethod: 'TEC' }, { name: '化学品（DCF）', nameEn: 'CHEMICALS (DCF)', category: 'C · 液体化学品', calculationMethod: 'DCF' }] },
+        AROMATICS_CYCLOHEXANE: { label: '芳香烃及环己烷', cargos: [{ name: '芳香烃及环己烷', nameEn: 'AROMATICS AND CYCLOHEXANE', category: 'C · 液体化学品', calculationMethod: 'ASTM_D1555' }] }
+      } },
+      CLEAN_OIL: { label: '清洁油', subtypes: {
+        NAPHTHA_GASOLINE_JET: { label: '石脑油 / 汽油 / 喷气燃料', cargos: [{ name: '石脑油 / 汽油 / 喷气燃料', nameEn: 'NAPHTHA / GASOLINE / JET FUEL', category: 'B · 成品油', calculationMethod: 'API_TABLE', calculationCategory: 'B' }] },
+        DIESEL: { label: '柴油', cargos: [{ name: '柴油', nameEn: 'DIESEL', category: 'B · 成品油', calculationMethod: 'API_TABLE', calculationCategory: 'B' }] },
+        LUBRICANT: { label: '润滑油', cargos: [{ name: '润滑油', nameEn: 'LUBRICATING OIL', category: 'D · 润滑油', calculationMethod: 'API_TABLE', calculationCategory: 'D' }] },
+        CRUDE_CONDENSATE: { label: '原油 / 凝析油', cargos: [{ name: '原油 / 凝析油', nameEn: 'CRUDE OIL / CONDENSATE', category: 'A · 原油', calculationMethod: 'API_TABLE', calculationCategory: 'A' }, { name: '阿曼出口混合原油', nameEn: 'OMAN EXPORT BLEND CRUDE OIL', category: 'A · 原油', calculationMethod: 'API_TABLE', calculationCategory: 'A' }, { name: '上扎库姆原油', nameEn: 'UPPER ZAKUM CRUDE OIL', category: 'A · 原油', calculationMethod: 'API_TABLE', calculationCategory: 'A' }] }
+      } },
+      SLOP_OIL: { label: '污油', subtypes: {
+        FUEL_OIL: { label: '燃料油', cargos: [{ name: '燃料油', nameEn: 'FUEL OIL', category: 'B · 成品油', calculationMethod: 'API_TABLE', calculationCategory: 'B' }] },
+        ASPHALT_TAR: { label: '沥青 / 柏油', cargos: [{ name: '沥青 / 柏油', nameEn: 'ASPHALT / TAR', category: 'D · 重油', calculationMethod: 'ASTM_D4311' }] }
+      } }
+    };
+    let cargoMaster;
+    try {
+      const stored = JSON.parse(localStorage.getItem(cargoMasterKey));
+      cargoMaster = stored && typeof stored === 'object' && Object.keys(stored).length ? stored : defaultCargoMaster;
+    } catch (error) { cargoMaster = defaultCargoMaster; }
+
     const tabs = [...document.querySelectorAll('.tab')];
     const searchInput = document.querySelector('#searchInput');
     const tableHead = document.querySelector('#tableHead');
@@ -215,6 +246,7 @@
     const syncProgressBar = document.querySelector('#syncProgressBar');
     const syncFeedback = document.querySelector('#syncFeedback');
     const lastSyncTime = document.querySelector('#lastSyncTime');
+    const addMasterItemButton = document.querySelector('#addMasterItemButton');
     let currentKey = 'clients';
     let feedbackTimer;
 
@@ -234,7 +266,9 @@
     }
 
     function render() {
+      if (currentKey === 'cargoTypes' || currentKey === 'cargoes') { renderCargoMaster(); return; }
       const source = sources[currentKey];
+      addMasterItemButton.hidden = true;
       const query = searchInput.value.trim().toLowerCase();
       const rows = source.rows.filter(row => row.some(value => value.toLowerCase().includes(query)));
       listTitle.textContent = source.title;
@@ -245,12 +279,97 @@
       emptyState.classList.toggle('show', rows.length === 0);
     }
 
+    function esc(value) { return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]); }
+    function persistCargoMaster() {
+      localStorage.setItem(cargoMasterKey, JSON.stringify(cargoMaster));
+      syncFeedback.textContent = '货物主数据已保存，项目设置页将同步更新。';
+      syncFeedback.classList.add('show');
+      window.clearTimeout(feedbackTimer);
+      feedbackTimer = window.setTimeout(() => syncFeedback.classList.remove('show'), 3500);
+    }
+    function calculationMethodOptions(selected) {
+      const methods = [['', '未预设（项目页确认）'], ['TEC', 'TEC'], ['DCF', 'DCF'], ['API_TABLE', 'API_TABLE'], ['ASTM_D1555', 'ASTM D1555'], ['ASTM_D4311', 'ASTM D4311/D4311M']];
+      return methods.map(([value, label]) => `<option value="${value}"${value === (selected || '') ? ' selected' : ''}>${label}</option>`).join('');
+    }
+    function renderCargoMaster() {
+      const isTypes = currentKey === 'cargoTypes';
+      const query = searchInput.value.trim().toLowerCase();
+      listTitle.textContent = isTypes ? '货物类型维护' : '货物维护';
+      listDescription.textContent = isTypes ? '维护一级货物类型与二级子类型；保存后项目设置页自动读取。' : '维护具体货物的中英文名称、类别及预设体积换算方法；保存后项目设置页自动读取。';
+      addMasterItemButton.hidden = false;
+      addMasterItemButton.textContent = isTypes ? '新增货物类型' : '新增货物';
+      const rows = [];
+      Object.entries(cargoMaster).forEach(([typeId, type]) => Object.entries(type.subtypes).forEach(([subtypeId, subtype]) => {
+        if (isTypes) rows.push({ typeId, type, subtypeId, subtype });
+        else subtype.cargos.forEach((cargo, index) => rows.push({ typeId, type, subtypeId, subtype, cargo, index }));
+      }));
+      const filtered = rows.filter(row => JSON.stringify(row).toLowerCase().includes(query));
+      tableHead.innerHTML = (isTypes ? ['一级类型', '二级类型', '货物数量', '操作'] : ['一级类型', '二级类型', '货物名称', '英文名称', '油品类别', '预设方法', '操作']).map(column => `<th scope="col">${column}</th>`).join('');
+      tableBody.innerHTML = filtered.map(row => isTypes
+        ? `<tr><td data-label="一级类型"><input class="row-input" value="${esc(row.type.label)}" data-master-field="typeLabel" data-type="${row.typeId}"></td><td data-label="二级类型"><input class="row-input" value="${esc(row.subtype.label)}" data-master-field="subtypeLabel" data-type="${row.typeId}" data-subtype="${row.subtypeId}"></td><td data-label="货物数量">${row.subtype.cargos.length}</td><td data-label="操作"><button class="row-action danger" type="button" data-delete-subtype data-type="${row.typeId}" data-subtype="${row.subtypeId}">删除</button></td></tr>`
+        : `<tr><td data-label="一级类型">${esc(row.type.label)}</td><td data-label="二级类型">${esc(row.subtype.label)}</td><td data-label="货物名称"><input class="row-input" value="${esc(row.cargo.name)}" data-master-field="cargoName" data-type="${row.typeId}" data-subtype="${row.subtypeId}" data-index="${row.index}"></td><td data-label="英文名称"><input class="row-input" value="${esc(row.cargo.nameEn)}" data-master-field="cargoNameEn" data-type="${row.typeId}" data-subtype="${row.subtypeId}" data-index="${row.index}"></td><td data-label="油品类别"><input class="row-input" value="${esc(row.cargo.category)}" data-master-field="cargoCategory" data-type="${row.typeId}" data-subtype="${row.subtypeId}" data-index="${row.index}"></td><td data-label="预设方法"><select class="row-input" data-master-field="calculationMethod" data-type="${row.typeId}" data-subtype="${row.subtypeId}" data-index="${row.index}">${calculationMethodOptions(row.cargo.calculationMethod)}</select></td><td data-label="操作"><button class="row-action danger" type="button" data-delete-cargo data-type="${row.typeId}" data-subtype="${row.subtypeId}" data-index="${row.index}">删除</button></td></tr>`).join('');
+      tableWrap.hidden = filtered.length === 0;
+      emptyState.classList.toggle('show', filtered.length === 0);
+    }
+
     tabs.forEach(tab => tab.addEventListener('click', () => {
       currentKey = tab.dataset.key;
       tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
       searchInput.value = '';
       render();
     }));
+    addMasterItemButton.addEventListener('click', () => {
+      if (currentKey === 'cargoTypes') {
+        const typeLabel = window.prompt('请输入一级货物类型名称');
+        if (!typeLabel || !typeLabel.trim()) return;
+        const subtypeLabel = window.prompt('请输入该类型下的二级货物类型名称');
+        if (!subtypeLabel || !subtypeLabel.trim()) return;
+        const typeId = `TYPE_${Date.now()}`;
+        const subtypeId = `SUBTYPE_${Date.now()}`;
+        cargoMaster[typeId] = { label: typeLabel.trim(), subtypes: { [subtypeId]: { label: subtypeLabel.trim(), cargos: [] } } };
+      } else if (currentKey === 'cargoes') {
+        const candidates = Object.entries(cargoMaster).flatMap(([typeId, type]) => Object.entries(type.subtypes).map(([subtypeId, subtype]) => `${typeId}|${subtypeId}|${type.label} / ${subtype.label}`));
+        const choice = window.prompt(`请输入所属类型编号（可选项：\n${candidates.join('\n')}）`);
+        const [typeId, subtypeId] = (choice || '').split('|');
+        if (!cargoMaster[typeId]?.subtypes[subtypeId]) return;
+        const name = window.prompt('请输入货物中文名称');
+        if (!name || !name.trim()) return;
+        const nameEn = window.prompt('请输入货物英文名称') || '';
+        const category = window.prompt('请输入油品类别', 'B · 成品油') || '';
+        const calculationMethod = window.prompt('请输入预设方法：TEC、DCF、API_TABLE、ASTM_D1555、ASTM_D4311；留空则项目页确认', '') || '';
+        cargoMaster[typeId].subtypes[subtypeId].cargos.push({ name: name.trim(), nameEn: nameEn.trim(), category: category.trim(), calculationMethod: calculationMethod.trim() });
+      }
+      persistCargoMaster();
+      render();
+    });
+    tableBody.addEventListener('change', event => {
+      const input = event.target.closest('[data-master-field]');
+      if (!input) return;
+      const type = cargoMaster[input.dataset.type];
+      if (!type) return;
+      const subtype = type.subtypes[input.dataset.subtype];
+      if (input.dataset.masterField === 'typeLabel') type.label = input.value.trim() || type.label;
+      else if (input.dataset.masterField === 'subtypeLabel' && subtype) subtype.label = input.value.trim() || subtype.label;
+      else if (subtype) {
+        const cargo = subtype.cargos[Number(input.dataset.index)];
+        if (!cargo) return;
+        const fields = { cargoName: 'name', cargoNameEn: 'nameEn', cargoCategory: 'category', calculationMethod: 'calculationMethod' };
+        cargo[fields[input.dataset.masterField]] = input.value.trim();
+      }
+      persistCargoMaster();
+    });
+    tableBody.addEventListener('click', event => {
+      const button = event.target.closest('[data-delete-subtype], [data-delete-cargo]');
+      if (!button || !window.confirm('确认删除该基础数据吗？')) return;
+      const type = cargoMaster[button.dataset.type];
+      const subtype = type?.subtypes[button.dataset.subtype];
+      if (!subtype) return;
+      if (button.hasAttribute('data-delete-subtype')) delete type.subtypes[button.dataset.subtype];
+      else subtype.cargos.splice(Number(button.dataset.index), 1);
+      if (!Object.keys(type.subtypes).length) delete cargoMaster[button.dataset.type];
+      persistCargoMaster();
+      render();
+    });
     tabs.forEach((tab, index) => tab.addEventListener('keydown', event => {
       if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
       event.preventDefault();

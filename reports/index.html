@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>报告模版目录 - Index</title>
+  <link rel="stylesheet" href="report-common.css" />
+  <style>
+    .index-wrap { max-width: 1100px; margin: 24px auto; padding: 0 24px; }
+    .index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .index-card {
+      border: 1px solid #d6dde6;
+      background: #fff;
+      padding: 14px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: inherit;
+      transition: all .2s;
+    }
+    .index-card:hover { background: #f0f6fb; box-shadow: 0 2px 6px rgba(31,78,121,.12); border-color: var(--brand-blue); }
+    .index-card h3 { margin: 0 0 6px; font-size: 14px; color: var(--brand-blue); }
+    .index-card .en { font-size: 11px; color: var(--brand-muted); margin-bottom: 8px; }
+    .index-card .desc { font-size: 12px; color: #4a5662; line-height: 1.5; }
+    .index-card .badge { display: inline-block; padding: 1px 6px; border-radius: 3px; background: #e7f0fa; color: #1f4e79; font-size: 10px; margin-right: 4px; }
+    .index-summary {
+      background: #fff;
+      border: 1px solid #d6dde6;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      border-radius: 6px;
+    }
+    .index-summary h2 { margin: 0 0 8px; color: #1f4e79; font-size: 16px; }
+    .index-summary p { margin: 4px 0; font-size: 12.5px; color: #4a5662; }
+  </style>
+</head>
+<body>
+
+<div class="xls-toolbar">
+  <span class="left"><span class="icon"></span>Xlsip 截图</span>
+  <span>报告模版目录</span>
+  <span class="right">19 个报告 / 单文件 HTML / 共用样式</span>
+</div>
+
+<div class="index-wrap">
+  <h1 style="color:#1f4e79;font-size:24px;margin:24px 0 14px">📑 报告模版目录</h1>
+
+  <div class="index-summary">
+    <h2>📋 关于本目录</h2>
+    <p><strong>来源：</strong>根据原始 Excel 报告模版 <code>210225050087-SAIQ-5.30-实测(2).xlsm</code> 中的 17 个报告型 sheet 逐页生成,字段与单位与 Excel 保持一致。</p>
+    <p><strong>风格：</strong>参照 Excel 预览截图(白色底/浅蓝色细线表格/表格居中/中英字段并存),并参考 容量计重离线版 step-* 的设计系统。</p>
+    <p><strong>交互级别：</strong>可点击数量表的"差异百分比"行高亮;所有字段均为可编辑演示态,无持久化。</p>
+    <p><strong>样式位置：</strong>共享样式在 <code>report-common.css</code>,通过 CSS 变量控制主题色。</p>
+  </div>
+
+  <div class="index-grid">
+    <a class="index-card" href="discharge-summary.html">
+      <h3>卸货摘要报告</h3>
+      <div class="en">Discharge Summary</div>
+      <div class="desc"><span class="badge">核心</span>含时间表、毛量/净量、签字栏</div>
+    </a>
+    <a class="index-card" href="load-summary.html">
+      <h3>装货摘要报告</h3>
+      <div class="en">Load Summary</div>
+      <div class="desc">与卸货摘要字段对偶,装货港使用</div>
+    </a>
+    <a class="index-card" href="load-summary-2.html">
+      <h3>装货摘要报告(2)</h3>
+      <div class="en">Load Summary (2)</div>
+      <div class="desc">装货摘要第二版(扩展字段)</div>
+    </a>
+    <a class="index-card" href="quantity.html">
+      <h3>数量报告</h3>
+      <div class="en">Quantity</div>
+      <div class="desc">11 项核心数量指标 + 多单位列</div>
+    </a>
+    <a class="index-card" href="quantity-2.html">
+      <h3>数量报告(2)</h3>
+      <div class="en">Quantity (2)</div>
+      <div class="desc">数量报告第二版(扩展单位列)</div>
+    </a>
+    <a class="index-card" href="time-log.html">
+      <h3>时间记录</h3>
+      <div class="en">Time Log</div>
+      <div class="desc">船舶 + 岸罐事件,起/止双向时间表</div>
+    </a>
+    <a class="index-card" href="obq.html">
+      <h3>装货前船舱底量</h3>
+      <div class="en">OBQ</div>
+      <div class="desc">测量参数 + 13 个舱数据表 + 汇总</div>
+    </a>
+    <a class="index-card" href="wedge.html">
+      <h3>楔形计算报告</h3>
+      <div class="en">Wedge</div>
+      <div class="desc">13 舱楔形修正体积计算</div>
+    </a>
+    <a class="index-card" href="vsl-fw.html">
+      <h3>船舶游离水报告</h3>
+      <div class="en">Vsl FW</div>
+      <div class="desc">按舱列出的游离水量与体积</div>
+    </a>
+    <a class="index-card" href="ullage.html">
+      <h3>空距报告</h3>
+      <div class="en">Ullage</div>
+      <div class="desc">抵港与卸货后空距对比</div>
+    </a>
+    <a class="index-card" href="rob.html">
+      <h3>卸货后船舱底量</h3>
+      <div class="en">ROB</div>
+      <div class="desc">测量参数 + 卸货后各舱计量</div>
+    </a>
+    <a class="index-card" href="shore-tk.html">
+      <h3>岸罐计量报告</h3>
+      <div class="en">Shore Tk</div>
+      <div class="desc">岸罐前尺/后尺 + 汇总</div>
+    </a>
+    <a class="index-card" href="shore-tk-2.html">
+      <h3>岸罐计量报告(2)</h3>
+      <div class="en">Shore Tk (2)</div>
+      <div class="desc">扩展岸罐数清单</div>
+    </a>
+    <a class="index-card" href="shore-tk-pipeline.html">
+      <h3>岸罐管线计量</h3>
+      <div class="en">Shore Tk-PIPELINE</div>
+      <div class="desc">管线流量 + 岸罐组合</div>
+    </a>
+    <a class="index-card" href="vef.html">
+      <h3>船舶经验系数</h3>
+      <div class="en">VEF</div>
+      <div class="desc">6 个航次 VEF 历史 + 计算</div>
+    </a>
+    <a class="index-card" href="sample.html">
+      <h3>船舱样品报告</h3>
+      <div class="en">Sample</div>
+      <div class="desc">船舱取样记录与样品编号</div>
+    </a>
+    <a class="index-card" href="sample-shore-tk.html">
+      <h3>岸罐样品报告</h3>
+      <div class="en">Sample (Shore TK)</div>
+      <div class="desc">岸罐前/后尺样品记录</div>
+    </a>
+    <a class="index-card" href="blank.html">
+      <h3>报告模版(空白)</h3>
+      <div class="en">Blank</div>
+      <div class="desc">最小化空白报告模版</div>
+    </a>
+    <a class="index-card" href="cover.html">
+      <h3>封面/目录</h3>
+      <div class="en">Cover</div>
+      <div class="desc">报告集封面、目录、支持文档列表</div>
+    </a>
+  </div>
+
+  <p style="margin-top:24px;font-size:12px;color:var(--brand-muted)">
+    本目录对应 Excel <code>prototype</code> 工程中的实际报告输出。所有数值均来自原实测数据,字段标签与中英文译名均与 Excel 保持一致。
+  </p>
+</div>
+
+</body>
+</html>

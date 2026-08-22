@@ -114,9 +114,6 @@
     /* ===== Timeline ===== */
     .timeline-heading { align-items: center; }
     .template-chip { min-height: 38px; padding: 0 11px; display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 5px; background: white; color: var(--text-secondary); font-size: 10px; white-space: nowrap; }
-    .timeline-boundary-note { margin-top: 14px; padding: 10px 13px; display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; border: 1px solid #aac1da; border-left: 3px solid #4f78a5; border-radius: var(--radius); background: #f3f7fb; }
-    .timeline-boundary-note strong { color: #23527e; font-size: 11px; }
-    .timeline-boundary-note span { color: #46586c; font-size: 10px; }
     .timeline-add-card { margin-top: 12px; border: 1px solid #8ba6c4; border-radius: var(--radius); background: white; overflow: hidden; box-shadow: 0 5px 16px rgba(30,58,95,.08); }
     .timeline-add-card > header { min-height: 51px; padding: 8px 13px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--primary-soft); }
     .timeline-add-card h3 { margin: 0; font-size: 13px; }
@@ -198,6 +195,93 @@
     .timeline-help { margin-top: 10px; padding: 10px 13px; display: grid; grid-template-columns: 76px 1fr; gap: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: white; }
     .timeline-help strong { color: var(--primary); font-size: 10px; }
     .timeline-help span { color: var(--text-secondary); font-size: 10px; }
+
+    /* ===== 报告预览 ===== */
+    .workspace-tabs { display: flex; gap: 2px; margin: 16px 0 0; border-bottom: 1px solid var(--border); }
+    .workspace-tabs button { min-height: 40px; padding: 0 16px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-secondary); font-size: 12px; font-weight: 700; }
+    .workspace-tabs button[aria-selected="true"] { border-bottom-color: var(--primary); color: var(--primary); }
+    .tab-panel[hidden] { display: none; }
+    .timeline-panel > .metric-row { margin-top: 15px; }
+    .report-toolbar { margin-top: 16px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-muted); }
+    .report-toolbar h3 { margin: 0; font-size: 14px; }
+    .report-toolbar p { margin: 2px 0 0; color: var(--text-secondary); font-size: 10px; }
+    .report-cards { margin-top: 12px; display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .report-card { min-height: 84px; padding: 12px 14px; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: var(--radius); background: white; }
+    .report-icon { width: 34px; height: 42px; display: grid; place-items: center; border: 1px solid #a9c3df; border-radius: 4px; background: var(--primary-soft); color: var(--primary); font: 700 10px ui-monospace, monospace; }
+    .report-card h4 { margin: 0; font-size: 12px; }
+    .report-card p { margin: 3px 0 0; color: var(--text-secondary); font-size: 10px; }
+    .report-card small { display: block; margin-top: 8px; color: #748194; font-size: 9px; }
+    .report-card .button { min-height: 32px; padding: 0 10px; font-size: 10px; }
+    .report-state { display: inline-block; margin-top: 7px; padding: 2px 6px; border-radius: 999px; font-size: 9px; font-weight: 700; }
+    .report-state.ready { background: var(--accent-soft); color: #075d49; }
+    .report-state.generating { background: var(--warning-soft); color: #744602; }
+    .report-empty { grid-column: 1 / -1; padding: 28px; border: 1px dashed var(--border-strong); border-radius: var(--radius); background: white; color: var(--text-secondary); text-align: center; }
+    .report-selector { border: 1px solid var(--border); border-radius: var(--radius); background: white; overflow: hidden; }
+    .report-selector header { padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--primary-soft); }
+    .report-selector header strong { font-size: 12px; }
+    .report-selector header span { display: block; margin-top: 2px; color: var(--text-secondary); font-size: 10px; }
+    .report-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .report-options label { min-height: 52px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; border-right: 1px solid #e5e9ef; border-bottom: 1px solid #e5e9ef; font-size: 11px; }
+    .report-options input { width: 16px; height: 16px; accent-color: var(--primary); }
+    .report-selector footer { padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px; background: var(--surface-muted); }
+    .modal-backdrop { position: fixed; z-index: 100; inset: 0; padding: 44px 20px; display: grid; place-items: center; background: rgba(20, 43, 70, .46); }
+    .modal-backdrop[hidden] { display: none; }
+    .modal-dialog { width: min(880px, 100%); max-height: calc(100vh - 88px); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #9eabb9; border-radius: 8px; background: var(--background); box-shadow: 0 20px 50px rgba(12, 30, 52, .28); }
+    .modal-dialog.preview-dialog { width: min(1440px, 100%); }
+    .modal-header { min-height: 54px; padding: 10px 14px 10px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--border); background: white; }
+    .modal-header h3 { margin: 0; font-size: 14px; }
+    .modal-header p { margin: 2px 0 0; color: var(--text-secondary); font-size: 10px; }
+    .modal-close { width: 30px; height: 30px; border: 1px solid var(--border); border-radius: 4px; background: white; color: var(--text-secondary); font-size: 19px; line-height: 1; }
+    .modal-content { min-height: 0; padding: 16px; overflow: auto; }
+    .excel-preview { border: 1px solid #bfc8d3; border-radius: var(--radius); background: #fff; overflow: hidden; }
+    .excel-preview header { padding: 8px 12px; display: flex; justify-content: space-between; color: #455468; background: #f3f6f9; border-bottom: 1px solid var(--border); font-size: 10px; }
+    .excel-sheet { padding: 22px 28px 28px; font-family: Arial, "Microsoft YaHei", sans-serif; }
+    .excel-sheet h3 { margin: 0; color: #111; font-size: 17px; text-align: center; }
+    .excel-sheet > p { margin: 4px 0 16px; color: #333; font-size: 10px; text-align: center; }
+    .excel-meta { margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid #717b87; }
+    .excel-meta span { padding: 5px 8px; border-right: 1px solid #717b87; font-size: 10px; }
+    .excel-meta span:last-child { border-right: 0; }
+    .excel-sheet table { min-width: 0; font-size: 10px; }
+    .excel-sheet th, .excel-sheet td { height: 28px; border: 1px solid #717b87; color: #111; text-align: center; }
+    .excel-sheet thead th { background: #d9e2f3; }
+    .excel-sheet td.text-cell { text-align: left; }
+    .preview-placeholder { padding: 40px 20px; color: var(--text-secondary); text-align: center; }
+    .summary-sheet { min-width: 1100px; padding: 36px 44px 28px; color: #111; font-family: "Times New Roman", "SimSun", serif; background: white; }
+    .summary-sheet * { box-sizing: border-box; }
+    .summary-head { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; }
+    .summary-brand { display: flex; gap: 12px; align-items: center; font-family: Arial, "Microsoft YaHei", sans-serif; }
+    .summary-brand-mark { width: 54px; height: 54px; display: grid; place-items: center; border: 4px solid #111; border-radius: 50%; font: 700 15px/1 Arial; }
+    .summary-brand b, .summary-brand span { display: block; }
+    .summary-brand b { font-size: 15px; }
+    .summary-brand span { margin-top: 3px; font-size: 11px; font-weight: 700; letter-spacing: .01em; }
+    .summary-doc { min-width: 236px; font-size: 11px; text-align: right; }
+    .summary-doc strong { display: block; padding: 4px 8px; border: 1px solid #111; font-weight: 400; }
+    .summary-doc span { display: block; margin-top: 6px; }
+    .summary-intro { margin-top: 44px; display: grid; grid-template-columns: 340px minmax(620px, 1fr); gap: 28px; align-items: end; }
+    .summary-intro h2 { margin: 0 0 20px; font-size: 30px; letter-spacing: .08em; white-space: nowrap; }
+    .summary-project { border-collapse: collapse; font-family: Arial, "Microsoft YaHei", sans-serif; }
+    .summary-sheet .summary-project td { height: 25px; padding: 3px 7px; border: 1px solid #4aa3d9; text-align: left; font-size: 11px; }
+    .summary-project td:first-child { width: 31%; }
+    .summary-main { margin-top: 24px; }
+    .summary-block-title { margin: 0 0 5px; font-size: 17px; }
+    .summary-time { width: 100%; border-collapse: collapse; }
+    .summary-sheet .summary-time th, .summary-sheet .summary-time td { height: 24px; padding: 2px 5px; border: 0; text-align: left; font-size: 11px; }
+    .summary-sheet .summary-time thead th { background: transparent; text-align: center; }
+    .summary-time .time-label { width: 51%; padding-left: 28px !important; }
+    .summary-time .time-value { border: 1px solid #4aa3d9 !important; text-align: center !important; font-family: Arial, sans-serif; }
+    .summary-quantities { margin-top: 12px; }
+    .summary-quantity { margin-top: 12px; }
+    .summary-unit { margin-left: 28%; padding: 2px 10px; border: 1px solid #4aa3d9; font-family: Arial, sans-serif; font-size: 12px; }
+    .summary-qtable { width: 100%; margin-top: 2px; border-collapse: collapse; font-family: Arial, "Microsoft YaHei", sans-serif; }
+    .summary-sheet .summary-qtable th, .summary-sheet .summary-qtable td { height: 24px; padding: 2px 6px; border: 1px solid #4aa3d9; text-align: center; font-size: 10px; }
+    .summary-sheet .summary-qtable thead th { border: 0; background: transparent; font-size: 10px; }
+    .summary-qtable .q-label { width: 50%; border: 0 !important; text-align: left !important; font-family: "Times New Roman", "SimSun", serif; font-size: 15px !important; }
+    .summary-qtable .q-spacer { border: 0 !important; }
+    .summary-signatures { margin-top: 82px; display: grid; grid-template-columns: 1fr 1fr; gap: 110px; font-size: 15px; }
+    .summary-signatures p { margin: 5px 0; }
+    .summary-line { display: inline-block; width: 75%; border-bottom: 1px solid #111; vertical-align: middle; }
+    .summary-disclaimer { margin: 32px -44px -28px; padding: 11px 44px; border-top: 1px solid #111; font-size: 11px; line-height: 1.6; }
+    @media (max-width: 900px) { .summary-sheet { padding: 30px 36px 24px; } .summary-disclaimer { margin: 28px -36px -24px; padding: 10px 36px; } }
 
     .source-badge { display: inline-block; flex: none; padding: 2px 6px; border: 1px solid; border-radius: 999px; font-size: 9px; font-style: normal; font-weight: 700; white-space: nowrap; }
     .source-badge.project { color: #075d49; border-color: #8cc9b5; background: var(--accent-soft); }
@@ -314,11 +398,16 @@
 
         <section class="workspace" id="workspace">
           <div class="workspace-heading timeline-heading">
-            <div><p class="eyebrow">步骤 02 · Excel Time Log</p><h2>作业时间线</h2><p>记录抵港、NOR、靠泊、接管、开工、暂停与完工等时间节点，数据将进入作业摘要和时间报告。</p></div>
-            <div class="context-actions"><span class="template-chip">卸货作业模板 · 17 个标准事件</span><button type="button" class="button primary" id="addToggle" aria-expanded="false">+ 新增自定义事件</button></div>
+            <div><h2>作业时间线与报告</h2></div>
+            <div class="context-actions"><button type="button" class="button primary" id="addToggle" aria-expanded="false">+ 新增自定义事件</button></div>
           </div>
 
-          <div class="timeline-boundary-note"><strong>原型业务边界</strong><span>标准事件来自 Excel Time Log，可编辑时间和备注；“自定义事件”是软件增强能力，是否进入正式报告需客户确认。</span></div>
+          <div class="workspace-tabs" role="tablist" aria-label="作业内容">
+            <button type="button" role="tab" id="timelineTab" aria-selected="true" aria-controls="timelinePanel">时间表</button>
+            <button type="button" role="tab" id="reportsTab" aria-selected="false" aria-controls="reportsPanel">报告预览</button>
+          </div>
+
+          <div class="tab-panel timeline-panel" id="timelinePanel" role="tabpanel" aria-labelledby="timelineTab">
 
           <section class="timeline-add-card" id="addCard" hidden aria-labelledby="add-timeline-title">
             <header><div><p class="eyebrow">项目级数据</p><h3 id="add-timeline-title">新增自定义事件</h3></div><button type="button" class="close-button" id="addCancel">取消</button></header>
@@ -355,9 +444,28 @@
           <div class="timeline-help"><strong>操作说明</strong><span>暂停/恢复等多次发生的事件，使用“重复”新增一条记录，不覆盖原数据。非必填标准事件可标记为“不适用”，但不能直接删除。</span></div>
 
           <footer class="workspace-footer">
-            <div><strong>下一步：岸罐接收计量</strong><span>本机草稿会保留各步骤录入状态，可随时返回修改</span></div>
-            <a class="button primary" href="step-03-arrival-ullage.html">保存并进入下一步</a>
+            <button type="button" class="button" data-save-data>保存数据</button>
           </footer>
+          </div>
+
+          <div class="tab-panel" id="reportsPanel" role="tabpanel" aria-labelledby="reportsTab" hidden>
+            <div class="report-toolbar"><div><h3>卸货报告</h3><p>选择所需报告并确认；生成期间可继续填写作业数据。</p></div><button class="button primary" type="button" id="chooseReportsBtn">+ 勾选新的报告</button></div>
+            <div class="report-cards" id="reportCards"></div>
+          </div>
+
+          <div class="modal-backdrop" id="reportSelectModal" hidden>
+            <section class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="reportSelectTitle">
+              <header class="modal-header"><div><h3 id="reportSelectTitle">勾选需要生成的报告</h3><p>确认后，所选报告将依次生成。</p></div><button type="button" class="modal-close" data-close-modal="reportSelectModal" aria-label="关闭">×</button></header>
+              <div class="modal-content"><section class="report-selector" aria-label="报告清单"><header><strong>选择报告</strong><span>已加入报告无需重复选择。</span></header><div class="report-options" id="reportOptions"></div><footer><button type="button" class="button secondary" id="cancelReportsBtn">取消</button><button type="button" class="button primary" id="confirmReportsBtn">确认并生成</button></footer></section></div>
+            </section>
+          </div>
+
+          <div class="modal-backdrop" id="reportPreviewModal" hidden>
+            <section class="modal-dialog preview-dialog" role="dialog" aria-modal="true" aria-labelledby="reportPreviewTitle">
+              <header class="modal-header"><div><h3 id="reportPreviewTitle">报告预览</h3><p>按 Excel 的字段和表格结构展示。</p></div><button type="button" class="modal-close" data-close-modal="reportPreviewModal" aria-label="关闭">×</button></header>
+              <div class="modal-content"><section class="excel-preview" id="excelPreview"><div class="preview-placeholder">选择一份已生成的报告即可预览。</div></section></div>
+            </section>
+          </div>
         </section>
       </div>
     </section>
@@ -574,6 +682,98 @@
       renderAll();
     });
 
+    // ===== 报告预览（按 Excel 页签结构演示） =====
+    const reports = [
+      { id: "summary", name: "卸货摘要报告", sheet: "DISCHARGE SUMMARY", description: "卸货作业、数量与关键节点汇总", state: "READY" },
+      { id: "quantity", name: "数量报告", sheet: "QUANTITY REPORT", description: "船舱、岸罐与计量数量对比", state: "READY" },
+      { id: "ullage", name: "空距报告", sheet: "ULLAGE REPORT", description: "抵港、卸后船舱空距计量记录", state: null },
+      { id: "rob", name: "船舱底量报告", sheet: "ROB REPORT", description: "卸货后船舱底量与残留量记录", state: null },
+      { id: "shore", name: "岸罐计量报告", sheet: "SHORE TANK MEASUREMENT REPORT", description: "岸罐开关罐计量及收货数据", state: null },
+      { id: "vessel-sample", name: "船舱样品报告", sheet: "VESSEL SAMPLE REPORT", description: "船舱样品采集与封样信息", state: null },
+      { id: "shore-sample", name: "岸罐样品报告", sheet: "SHORE TANK SAMPLE REPORT", description: "岸罐样品采集与封样信息", state: null },
+      { id: "timeline", name: "时间表", sheet: "TIME LOG", description: "卸货作业标准事件与时间节点", state: "READY" }
+    ];
+    let previewReportId = "summary";
+
+    function reportMarkup(report) {
+      const generated = report.state === "READY";
+      const generating = report.state === "GENERATING";
+      return `<article class="report-card">
+        <span class="report-icon">XLS</span><div><h4>${report.name}</h4>
+        <span class="report-state ${generating ? "generating" : "ready"}">${generating ? "正在生成中" : "已生成"}</span><small>工作表：${report.sheet}</small></div>
+        <button class="button secondary" type="button" data-preview-report="${report.id}" ${generated ? "" : "disabled"}>${generated ? "预览" : "生成中"}</button>
+      </article>`;
+    }
+
+    function renderReportOptions() {
+      document.getElementById("reportOptions").innerHTML = reports.map(report => `<label><input type="checkbox" value="${report.id}" ${report.state ? "disabled" : ""}><span>${report.name}${report.state ? "（已加入）" : ""}</span></label>`).join("");
+    }
+
+    function renderReportCards() {
+      const active = reports.filter(r => r.state);
+      document.getElementById("reportCards").innerHTML = active.length ? active.map(reportMarkup).join("") : `<div class="report-empty">暂未选择报告。点击“勾选新的报告”开始生成。</div>`;
+      renderPreview();
+    }
+
+    function summaryReportMarkup() {
+      const timelineRows = [
+        ["航行结束", "--", "--", "2025-05-21", "0430"], ["备妥通知书发出", "--", "--", "2025-05-21", "0630"], ["备妥通知书接受", "--", "--", "2025-05-11", "1130"], ["领航员上船", "2025-05-24", "0912", "--", "--"], ["所有缆绳全部系妥", "--", "--", "2025-05-24", "1600"], ["输油臂连接", "--", "--", "2025-05-24", "1724"], ["开始卸货", "2025-05-24", "1918", "--", "--"], ["卸货完毕", "--", "--", "2025-05-26", "1812"], ["输油臂分离", "--", "--", "2025-05-26", "1930"], ["预计启航时间", "--", "--", "2025-05-26", "--"]
+      ];
+      const gross = [["提单", "1876524.00", "251337.370", "N/A", "255371.330"], ["装货后船舱数量", "1872632.50", "250816.650", "N/A", "254846.560"], ["船舶抵港数量", "11943087.57", "1585206.013", "1897876.046", "1610644.790"], ["装卸港船舶数量差异", "10070455.07", "1334389.363", "N/A", "1355798.23"], ["差异百分比", "537.77%", "532.02%", "N/A", "532.01%"], ["卸货后船舱底量", "0", "", "", ""], ["船舶卸货数量", "11943087.57", "1585206.013", "1897876.046", "1610644.79"], ["岸罐接收数量", "1867968.46", "250190.978", "296838.868", "254207.111"], ["卸货港岸/船数量差异", "-10075119.11", "-1335015.035", "-1601037.178", "-1356437.679"], ["差异百分比", "-84.36%", "-84.22%", "-84.36%", "-84.22%"]];
+      const net = [["提单", "1876524.00", "251337.370", "N/A", "255371.330"], ["装货后船舱数量", "1872632.50", "250816.650", "N/A", "254846.560"], ["船舶抵港数量", "11940101.80", "1584809.711", "1897401.577", "1610242.129"], ["装卸港船舶数量差异", "10067469.3", "1333993.061", "N/A", "1355395.569"], ["差异百分比", "537.61%", "531.86%", "N/A", "531.85%"], ["船舶卸货数量", "11940101.8", "1584809.711", "1897401.577", "1610242.129"], ["岸罐接收数量", "1867185.66", "250086.130", "296714.472", "254100.579"], ["卸货港岸/船数量差异", "-10072916.14", "-1334723.581", "-1600687.105", "-1356141.55"], ["差异百分比", "-84.36%", "-84.22%", "-84.36%", "-84.22%"]];
+      const quantityTable = (title, rows) => `<section class="summary-quantity"><h3 class="summary-block-title">- ${title}</h3><span class="summary-unit">T-6A</span><table class="summary-qtable"><thead><tr><th class="q-label"></th><th>美制桶(60°F)</th><th>长吨(空气中)</th><th>立方米(15℃)</th><th>公吨(空气中)</th></tr></thead><tbody>${rows.map(row => `<tr><td class="q-label">${row[0]}</td>${row.slice(1).map(value => `<td class="${value ? "" : "q-spacer"}">${value}</td>`).join("")}</tr>`).join("")}</tbody></table></section>`;
+      return `<div class="summary-sheet">
+        <header class="summary-head"><div class="summary-brand"><span class="summary-brand-mark">CCIC</span><div><b>中国检验认证集团辽宁有限公司</b><span>CHINA CERTIFICATION &amp; INSPECTION GROUP LIAONING Co., LTD</span></div></div><div class="summary-doc"><strong>CCIC-LN-TRD(118)-02-01-2023</strong><span>工作单号：　210225050087</span><span>报告日期：　2025-05-26</span></div></header>
+        <section class="summary-intro"><h2>卸货摘要报告</h2><table class="summary-project"><tbody><tr><td>货物</td><td>阿曼原油</td></tr><tr><td>船名</td><td>MT SAIQ</td></tr><tr><td>港口</td><td>辽宁营口仙人岛原油码头</td></tr><tr><td>检验日期</td><td>2025-05-24 至 2025-05-26</td></tr></tbody></table></section>
+        <section class="summary-main"><h3 class="summary-block-title">时间表</h3><table class="summary-time"><thead><tr><th></th><th colspan="2">起</th><th colspan="2">止</th></tr><tr><th></th><th>日期</th><th>时间</th><th>日期</th><th>时间</th></tr></thead><tbody>${timelineRows.map(row => `<tr><td class="time-label">${row[0]}</td>${row.slice(1).map(value => `<td class="time-value">${value}</td>`).join("")}</tr>`).join("")}</tbody></table></section><section class="summary-quantities"><h3 class="summary-block-title">数量</h3>${quantityTable("毛量", gross)}${quantityTable("净量", net)}</section>
+        <section class="summary-signatures"><div><p>船长/大副</p><p>姓名　<span class="summary-line"></span></p><p>签字　<span class="summary-line"></span></p></div><div><p>CCIC检验员</p><p>姓名　<span class="summary-line">　习大大·特朗普·普京·金三胖</span></p><p>签字　<span class="summary-line"></span></p></div></section>
+        <footer class="summary-disclaimer">本证书/报告仅反映本公司检验当时当地之检验结果。本证书/报告的签发并不免除合约所规定的贸易双方的权利和义务，与此相反的规定对我方无约束力。未经本公司批准不得复制（全文复制除外）本证书/报告。</footer>
+      </div>`;
+    }
+
+    function renderPreview() {
+      const report = reports.find(r => r.id === previewReportId && r.state === "READY");
+      const container = document.getElementById("excelPreview");
+      if (!report) { container.innerHTML = `<div class="preview-placeholder">报告正在生成中，完成后可进行预览。</div>`; return; }
+      if (report.id === "summary") { container.innerHTML = `<header><span>Excel 预览 · ${report.sheet}</span><span>字段与表格结构按原始 Excel 呈现</span></header>${summaryReportMarkup()}`; return; }
+      const rows = report.id === "timeline"
+        ? [["TL-01", "船舶抵达锚地", "2025/05/24 08:20", ""], ["TL-02", "递交准备就绪通知书（NOR）", "2025/05/24 08:45", "锚地递交"], ["TL-11", "开始卸货", "2025/05/25 00:15", ""], ["TL-15", "卸货作业", "2025/05/25 00:15", "进行中"]]
+        : [["货物名称", "OMAN EXPORT BLEND CRUDE OIL", "港口", "营口港"], ["船名", "MT SAIQ", "作业类型", "卸货"], ["计量日期", "2025/05/24 — 2025/05/26", "报告状态", "草稿"]];
+      container.innerHTML = `<header><span>Excel 预览 · ${report.sheet}</span><span>字段与表格结构按原始 Excel 呈现</span></header><div class="excel-sheet"><h3>${report.name}</h3><p>${report.sheet} · DISCHARGE SURVEY</p><div class="excel-meta"><span>VESSEL: MT SAIQ</span><span>PORT: YINGKOU</span><span>DATE: 2025-05-26</span></div><table><thead><tr>${report.id === "timeline" ? "<th>编号</th><th>事件</th><th>时间</th><th>备注</th>" : "<th>字段</th><th>内容</th><th>字段</th><th>内容</th>"}</tr></thead><tbody>${rows.map(row => `<tr>${row.map((cell, i) => `<td class="${i % 2 ? "text-cell" : ""}">${cell}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    }
+
+    document.getElementById("timelineTab").addEventListener("click", () => switchWorkspaceTab("timeline"));
+    document.getElementById("reportsTab").addEventListener("click", () => switchWorkspaceTab("reports"));
+    function switchWorkspaceTab(tab) {
+      const isTimeline = tab === "timeline";
+      document.getElementById("timelineTab").setAttribute("aria-selected", String(isTimeline));
+      document.getElementById("reportsTab").setAttribute("aria-selected", String(!isTimeline));
+      document.getElementById("timelinePanel").hidden = !isTimeline;
+      document.getElementById("reportsPanel").hidden = isTimeline;
+      addToggle.hidden = !isTimeline;
+      if (!isTimeline && !addCard.hidden) addCard.hidden = true;
+    }
+    function closeModal(id) { document.getElementById(id).hidden = true; }
+    document.getElementById("chooseReportsBtn").addEventListener("click", () => { renderReportOptions(); document.getElementById("reportSelectModal").hidden = false; });
+    document.getElementById("cancelReportsBtn").addEventListener("click", () => closeModal("reportSelectModal"));
+    document.querySelectorAll("[data-close-modal]").forEach(button => button.addEventListener("click", () => closeModal(button.dataset.closeModal)));
+    document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("click", e => { if (e.target === backdrop) backdrop.hidden = true; }));
+    document.getElementById("confirmReportsBtn").addEventListener("click", () => {
+      const selected = [...document.querySelectorAll("#reportOptions input:checked")].map(input => input.value);
+      selected.forEach(id => { const report = reports.find(r => r.id === id); if (report) report.state = "GENERATING"; });
+      closeModal("reportSelectModal");
+      renderReportCards();
+      if (selected.length) setTimeout(() => { selected.forEach(id => { const report = reports.find(r => r.id === id); if (report) report.state = "READY"; }); previewReportId = selected[0]; renderReportCards(); }, 1500);
+    });
+    document.getElementById("reportCards").addEventListener("click", e => {
+      const button = e.target.closest("[data-preview-report]");
+      if (!button || button.disabled) return;
+      previewReportId = button.dataset.previewReport;
+      renderPreview();
+      document.getElementById("reportPreviewTitle").textContent = button.closest(".report-card").querySelector("h4").textContent + "预览";
+      document.getElementById("reportPreviewModal").hidden = false;
+    });
+
     // ===== 顶栏按钮（演示，不持久化）=====
     const saveState = document.getElementById("saveState");
     function flash(message) {
@@ -581,9 +781,11 @@
       setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800);
     }
     document.getElementById("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
-    document.getElementById("reportBtn").addEventListener("click", () => flash("（演示）报告预览在报告包环节提供"));
+    document.getElementById("reportBtn").addEventListener("click", () => switchWorkspaceTab("reports"));
 
     renderAll();
+    renderReportCards();
   </script>
+  <script src="save-guard.js"></script>
 </body>
 </html>

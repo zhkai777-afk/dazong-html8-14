@@ -308,6 +308,25 @@ tbody select { height: 28px; padding: 0 6px; border: 1px solid var(--border); bo
 .trace-strip b { color: var(--primary); }
 .variance-card > p { padding: 10px 16px; font-size: 10px; color: var(--text-secondary); margin: 0; }
 
+.comparison-detail-card { margin-top: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.comparison-detail-card > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; background: var(--surface-muted); border-bottom: 1px solid var(--border); }
+.comparison-detail-card h3 { margin: 0; font-size: 13px; }
+.comparison-detail-card > header > span { padding: 3px 7px; border: 1px solid #a9c3df; border-radius: 999px; background: var(--primary-soft); color: #23527e; font: 700 10px ui-monospace, monospace; white-space: nowrap; }
+.comparison-detail-note { margin: 0; padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); font-size: 10px; line-height: 1.5; }
+.comparison-detail-scroll { overflow-x: auto; }
+.quantity-detail-section + .quantity-detail-section { border-top: 8px solid var(--background); }
+.quantity-detail-section h4 { margin: 0; padding: 9px 14px; background: #f7f9fb; color: var(--primary-strong); font-size: 12px; }
+.quantity-detail-table { min-width: 780px; margin: 0; font-size: 11px; }
+.quantity-detail-table th, .quantity-detail-table td { height: 32px; padding: 5px 12px; }
+.quantity-detail-table thead th { height: 39px; background: var(--primary-soft); color: var(--primary-strong); }
+.quantity-detail-table thead th:first-child { min-width: 230px; }
+.quantity-detail-table thead small { color: var(--text-secondary); font-size: 9px; font-weight: 500; }
+.quantity-detail-table tbody th { background: #fbfcfd; color: var(--text); font-weight: 600; }
+.quantity-detail-table .subtotal-row th, .quantity-detail-table .subtotal-row td { background: #f3f8f5; font-weight: 700; }
+.quantity-detail-table .variance-row th, .quantity-detail-table .variance-row td { color: #744602; background: var(--warning-soft); font-weight: 700; }
+.quantity-detail-table .percentage-row th, .quantity-detail-table .percentage-row td { background: #fafbfd; font-weight: 700; }
+.quantity-detail-table .percentage-row td { text-align: center; color: var(--primary-strong); }
+
 .report-readiness { margin-top: 14px; padding: 10px 14px; border: 1px solid var(--warning); border-left: 3px solid var(--warning); border-radius: var(--radius); background: var(--warning-soft); }
 .report-readiness strong { color: #744602; font-size: 12px; }
 .report-readiness span { font-size: 10px; color: #5c4a12; }

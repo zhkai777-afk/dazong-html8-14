@@ -955,6 +955,7 @@
 
     /* ---------- entry navigation ---------- */
     function goEntry() {
+      notifyParent("enter-data-entry");
       window.location.href = "./现场检验数据录入.html?taskNo=" + TASK_NO;
     }
     $("#btnPrimary").addEventListener("click", function () {

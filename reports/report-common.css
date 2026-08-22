@@ -1,0 +1,440 @@
+/* =====================================================================
+ * 报告模版共用样式 - report-common.css
+ * 完全对照 Excel `prototype` 中的截图风格:
+ * - 白底可编辑字段 / 灰绿色底公式区
+ * - 英文原字段名 + 中文译名并存
+ * - Intl 数字格式 (千分位、保留位数)
+ * - 蓝色细线表格 / 浅灰分隔
+ * ===================================================================== */
+
+* { box-sizing: border-box; }
+
+:root {
+  --brand-blue:   #1f4e79;
+  --brand-light:  #f4f7fa;
+  --brand-border: #c8d6e2;
+  --brand-text:   #1c1c1c;
+  --brand-muted:  #6b7280;
+  --formula-bg:   #d8e2dc;
+  --label-bg:     #eef2f6;
+  --cell-bg:      #ffffff;
+  --header-bg:    #dde6f0;
+  --row-bg-alt:   #f8fafc;
+  --link-color:   #1e6fbf;
+  --signature-bg: #f7f9fb;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f0f3f6;
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--brand-text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ---------- 顶部 Excel-like 工具栏 ---------- */
+.xls-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f4f4f4;
+  border-bottom: 1px solid #d6d6d6;
+  padding: 5px 16px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #555;
+}
+.xls-toolbar .left { font-weight: 600; }
+.xls-toolbar .icon {
+  width: 16px; height: 16px;
+  background: #2b8a3e;
+  display: inline-block;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.xls-toolbar .tabs { display: flex; gap: 4px; }
+.xls-toolbar .tab {
+  padding: 3px 10px;
+  border: 1px solid #cfcfcf;
+  border-radius: 3px 3px 0 0;
+  background: #fafafa;
+  cursor: pointer;
+  font-size: 12px;
+}
+.xls-toolbar .tab.active {
+  background: #fff;
+  border-bottom-color: #fff;
+  color: var(--brand-blue);
+  font-weight: 600;
+}
+.xls-toolbar .right { margin-left: auto; }
+.xls-toolbar a { color: var(--link-color); text-decoration: none; }
+.xls-toolbar a:hover { text-decoration: underline; }
+
+/* ---------- 报告页面容器 ---------- */
+.report-page {
+  max-width: 1180px;
+  margin: 24px auto;
+  background: #fff;
+  padding: 36px 56px 28px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.06);
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.report-nav {
+  max-width: 1180px;
+  margin: 12px auto 0;
+  padding: 0 56px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.report-nav a {
+  background: #fff;
+  border: 1px solid #d6dde6;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--brand-blue);
+  text-decoration: none;
+}
+.report-nav a:hover { background: #eaf2f8; }
+.report-nav a.active {
+  background: var(--brand-blue);
+  color: #fff;
+  border-color: var(--brand-blue);
+}
+
+/* ---------- 页眉块(公司+单号+日期) ---------- */
+.report-header {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--brand-border);
+  background: var(--brand-light);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+}
+.report-header .logo {
+  width: 56px; height: 56px;
+  margin-right: 16px;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-blue);
+  text-align: center;
+  line-height: 1.1;
+}
+.report-header .logo span { display: block; font-size: 9px; color: var(--brand-muted); }
+.report-header .company {
+  font-weight: 700;
+  font-size: 15px;
+  color: #0e3a66;
+  letter-spacing: .5px;
+}
+.report-header .company-en {
+  font-size: 11px;
+  color: #496780;
+  margin-top: 2px;
+  letter-spacing: .4px;
+}
+.report-header .jobbox {
+  margin-left: auto;
+  text-align: right;
+  font-size: 12px;
+  border-left: 1px solid var(--brand-border);
+  padding-left: 22px;
+}
+.report-header .jobbox .doc-no {
+  border: 1px solid #b8c4d2;
+  padding: 4px 12px;
+  background: #fff;
+  font-weight: 600;
+  color: var(--brand-blue);
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+.report-header .jobbox table { font-size: 12px; border-collapse: collapse; }
+.report-header .jobbox td { padding: 2px 8px 2px 0; }
+.report-header .jobbox .k { color: var(--brand-muted); }
+.report-header .jobbox .v { font-weight: 600; }
+
+/* ---------- 报告标题 ---------- */
+.report-title-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.report-title-row h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 28px 0 0;
+  color: #152935;
+  letter-spacing: 1px;
+}
+.report-title-row .header-fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 14px;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid #d6dde6;
+  background: #fafcfe;
+}
+.report-title-row .header-fields .k {
+  background: #f0f4f8;
+  padding: 3px 10px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+.report-title-row .header-fields .v {
+  border: 1px solid #e2e8f0;
+  padding: 3px 10px;
+  min-width: 220px;
+  background: #fff;
+}
+
+/* ---------- 区段标题 ---------- */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 22px 0 10px;
+  color: #152935;
+}
+.section-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f4e79;
+  margin: 16px 0 8px;
+}
+.section-subtitle::before {
+  content: "- ";
+  color: var(--brand-blue);
+}
+.t-watermark-right {
+  float: right;
+  display: inline-block;
+  border: 1px solid var(--brand-border);
+  background: #fff;
+  color: var(--brand-blue);
+  font-size: 11px;
+  padding: 2px 8px;
+  margin-top: 8px;
+}
+
+/* ---------- 时间表 ---------- */
+.time-log {
+  border: 1px solid var(--brand-border);
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+.time-log thead th {
+  background: #f0f4f8;
+  border: 1px solid var(--brand-border);
+  font-weight: 600;
+  text-align: center;
+  padding: 5px 6px;
+  color: #1f4e79;
+}
+.time-log td {
+  border: 1px solid var(--brand-border);
+  padding: 5px 6px;
+  text-align: center;
+  background: #fff;
+}
+.time-log td.event {
+  text-align: left;
+  padding-left: 12px;
+  background: #fff;
+}
+.time-log thead th.col-from,
+.time-log thead th.col-to {
+  color: var(--brand-muted);
+  font-weight: 700;
+}
+.time-log .group-start { color: #1f4e79; font-weight: 600; }
+
+/* ---------- 数量表 ---------- */
+.qty-table {
+  border: 1px solid var(--brand-border);
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  margin-top: 6px;
+}
+.qty-table thead th {
+  background: #f0f4f8;
+  border: 1px solid var(--brand-border);
+  font-weight: 600;
+  text-align: center;
+  padding: 5px 6px;
+  color: #1f4e79;
+}
+.qty-table td {
+  border: 1px solid var(--brand-border);
+  padding: 5px 6px;
+  text-align: right;
+  background: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.qty-table td.label {
+  text-align: left;
+  padding-left: 12px;
+  font-weight: 500;
+  background: #fff;
+}
+.qty-table tr.section-divider td {
+  background: var(--label-bg);
+  font-weight: 700;
+  color: #1f4e79;
+}
+.qty-table tr.settlement td.label { font-weight: 700; color: #1f4e79; }
+
+/* 表格容器,中央对齐 + 限制宽度 */
+.table-wrap { max-width: 720px; margin: 0 auto; }
+
+/* ---------- 通用数据表(OBQ、Ullage 等) ---------- */
+.data-table {
+  border: 1px solid var(--brand-border);
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+.data-table thead th {
+  background: #f0f4f8;
+  border: 1px solid var(--brand-border);
+  font-weight: 600;
+  text-align: center;
+  padding: 4px 5px;
+  color: #1f4e79;
+}
+.data-table td {
+  border: 1px solid var(--brand-border);
+  padding: 4px 5px;
+  background: #fff;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.data-table tr:nth-child(even) td { background: var(--row-bg-alt); }
+.data-table td.label { text-align: left; padding-left: 8px; }
+.data-table td.num { text-align: right; }
+
+/* ---------- 字段组(浅色块) ---------- */
+.field-block {
+  border: 1px solid var(--brand-border);
+  background: #fff;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+}
+.field-block .field-row {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 6px;
+  align-items: center;
+}
+.field-block .key {
+  background: var(--label-bg);
+  padding: 3px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.field-block .val {
+  border: 1px solid #e2e8f0;
+  padding: 3px 10px;
+  background: #fff;
+  font-size: 12px;
+  min-height: 18px;
+}
+.field-block.formula .val { background: var(--formula-bg); }
+
+/* ---------- 签字栏 ---------- */
+.signatures {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 30px;
+  padding-top: 16px;
+}
+.signature-block {
+  border-top: 1px solid #d6dde6;
+  padding-top: 8px;
+}
+.signature-block .title {
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+.signature-block .row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px dotted #c8d0d8;
+  padding: 6px 0;
+  font-size: 12px;
+}
+.signature-block .row .k {
+  width: 56px;
+  color: var(--brand-muted);
+}
+.signature-block .row .v {
+  flex: 1;
+  border-bottom: 1px solid #b9c3cc;
+  padding: 2px 8px;
+  min-height: 18px;
+}
+
+/* ---------- 底部声明 ---------- */
+.disclaimer {
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid #d6dde6;
+  font-size: 11.5px;
+  color: #4a5662;
+  text-align: justify;
+  line-height: 1.7;
+}
+
+/* ---------- 工具类 ---------- */
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: var(--brand-muted); }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+/* ---------- 备注区 ---------- */
+.remarks {
+  border: 1px solid var(--brand-border);
+  background: #fafcfe;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.remarks li { list-style: none; margin-bottom: 4px; }
+.remarks li::before { content: "- "; color: var(--brand-blue); font-weight: 600; }
+
+/* ---------- 公式摘要小盒子 ---------- */
+.vcf-formula {
+  display: inline-block;
+  border: 1px solid #b8c8d6;
+  background: #fff;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: var(--brand-muted);
+  margin: 4px 0;
+}
+.vcf-formula strong { color: var(--brand-blue); }
+
+/* ---------- 响应 ---------- */
+@media (max-width: 720px) {
+  .report-page { padding: 20px; }
+  .report-title-row h1 { font-size: 22px; }
+  .signatures { grid-template-columns: 1fr; }
+}

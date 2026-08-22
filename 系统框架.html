@@ -107,6 +107,25 @@
     .closed-state button:hover { background: var(--primary-strong); }
     .toast { position: fixed; z-index: 100; right: 16px; bottom: 16px; max-width: 320px; padding: 9px 12px; border: 1px solid #c8d6e5; border-radius: 6px; color: #eaf2fb; background: #213651; box-shadow: 0 6px 18px rgba(15,31,50,.2); opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 160ms ease, transform 160ms ease; }
     .toast.show { opacity: 1; transform: translateY(0); }
+    .account-dialog { width: min(380px, calc(100vw - 32px)); border: 1px solid var(--border); border-radius: 10px; padding: 0; color: #172033; box-shadow: 0 16px 50px rgba(17,34,55,.22); }
+    .account-dialog::backdrop { background: rgba(17,34,55,.28); }
+    .account-dialog header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+    .account-dialog h2 { margin: 0; font-size: 16px; }
+    .account-dialog .dialog-close { display: grid; width: 30px; height: 30px; border: 0; border-radius: 5px; color: #526071; background: transparent; place-items: center; }
+    .account-dialog .dialog-close:hover { background: #f1f5f9; }
+    .account-profile { display: flex; align-items: center; gap: 12px; padding: 20px 18px; }
+    .account-profile .profile-avatar { display: grid; width: 44px; height: 44px; border-radius: 50%; color: #245a91; background: #e7f0f8; place-items: center; font-size: 17px; font-weight: 700; }
+    .account-profile strong, .account-profile span { display: block; }
+    .account-profile span { margin-top: 2px; color: var(--muted); font-size: 12px; }
+    .account-details { margin: 0 18px 18px; padding: 12px 14px; border-radius: 6px; background: #f7f9fb; }
+    .account-details div { display: flex; justify-content: space-between; gap: 14px; padding: 5px 0; font-size: 12px; }
+    .account-details dt { color: var(--muted); }
+    .account-details dd { margin: 0; font-weight: 600; }
+    .account-dialog footer { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); }
+    .account-dialog button { font: inherit; cursor: pointer; }
+    .account-dialog .dialog-button { min-height: 34px; padding: 0 13px; border: 1px solid var(--border-strong); border-radius: 5px; color: #273548; background: #fff; font-size: 12px; font-weight: 600; }
+    .account-dialog .dialog-button.logout { border-color: #e9bbb7; color: #b42318; background: #fff7f6; }
+    .account-dialog .dialog-button.logout:hover { background: #fdeceb; }
     @media (max-width: 1180px) {
       .titlebar { grid-template-columns: minmax(168px, auto) minmax(392px, 1fr) minmax(218px, auto); }
       html[data-platform="macos"] .titlebar { grid-template-columns: minmax(200px, auto) minmax(392px, 1fr) minmax(150px, auto); }
@@ -125,11 +144,65 @@
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
       .loading-spinner { animation: none; border-top-color: #c8d6e5; background: var(--primary); box-shadow: inset 0 0 0 5px #f6f8fb; }
     }
+
+    /* ===== Left application rail ===== */
+    .app { grid-template-columns: 240px minmax(0, 1fr); grid-template-rows: 44px var(--contextbar-height) minmax(0, 1fr); }
+    .app-window-chrome { position: fixed; z-index: 70; top: 0; right: 0; left: 0; display: flex; height: 44px; align-items: center; border-bottom: 1px solid #e5e9ef; background: #f7f8fa; -webkit-app-region: drag; }
+    .app-window-chrome .window-controls { display: none; height: 44px; align-items: center; -webkit-app-region: no-drag; }
+    .app-window-chrome .window-controls--mac { gap: 8px; padding-left: 14px; }
+    .app-window-chrome .window-controls--mac .window-control { width: 16px; height: 44px; }
+    .app-window-chrome .window-controls--mac .window-control::before { width: 13px; height: 13px; }
+    .app-window-chrome .window-controls--windows { margin-left: auto; gap: 4px; padding-right: 8px; }
+    .app-window-chrome .window-controls--windows .window-control { width: 34px; height: 28px; border: 1px solid var(--border); border-radius: 5px; color: #536478; }
+    .app-window-chrome .window-controls--windows .window-control:hover { color: #1b4f84; background: #f3f6f9; }
+    .app-window-chrome .window-controls--windows .window-control.close:hover { color: #fff; background: #c42b1c; }
+    html[data-platform="macos"] .app-window-chrome .window-controls--mac { display: flex; }
+    html[data-platform="windows"] .app-window-chrome .window-controls--windows { display: flex; }
+    .titlebar { grid-column: 1; grid-row: 2 / 4; display: flex; flex-direction: column; align-items: stretch; color: #273548; background: #fff; border-right: 1px solid var(--border); box-shadow: 1px 0 8px rgba(17,34,55,.05); }
+    .brand-area { display: flex !important; flex-direction: column; align-items: stretch; }
+    .window-controls { height: 44px; flex: 0 0 44px; align-self: auto; justify-content: flex-start; padding: 0 8px; }
+    .titlebar .brand-area > .window-controls { display: none !important; }
+    .window-controls--mac { width: auto; gap: 7px; }
+    .window-controls--mac .window-control { height: 44px; }
+    .window-controls--windows { gap: 5px; }
+    .window-controls--windows .window-control { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 5px; color: #536478; }
+    .window-controls--windows .window-control:hover { color: #1b4f84; background: #f3f6f9; }
+    .window-controls--windows .window-control.close:hover { color: #fff; background: #c42b1c; }
+    .primary-nav { flex: 0 0 auto; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 4px; padding: 4px 12px; }
+    .nav-item { min-width: 0; min-height: 42px; justify-content: flex-start; padding: 0 12px; border-radius: 6px; color: #526071; }
+    .nav-item::after { display: none; }
+    .nav-item:hover { color: #1d4f82; background: #eff5fa; }
+    .nav-item.active { color: #174b7a; background: #e7f0f8; }
+    .nav-item strong { font-size: 13px; }
+    .account-area { margin-top: auto; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-start; gap: 8px; padding: 14px 16px 18px; border-top: 1px solid #e7edf3; }
+    .offline { width: 100%; color: #66758a; }
+    .user { width: 100%; justify-content: flex-start; padding: 6px 4px; color: #273548; }
+    .user:hover { background: #f3f6f9; }
+    .avatar { border-color: #b9c8d7; background: #e7f0f8; color: #245a91; }
+    .contextbar { grid-column: 2; grid-row: 2; padding-left: 18px; padding-right: 18px; }
+    .workspace { grid-column: 2; grid-row: 3; }
+    .workspace { padding: 0; background: #fff; }
+    .page-card { border: 0; border-radius: 0; box-shadow: none; }
+    body.data-entry-mode .app { grid-template-columns: minmax(0, 1fr); }
+    body.data-entry-mode .titlebar { display: none; }
+    body.data-entry-mode .contextbar, body.data-entry-mode .workspace { grid-column: 1; }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#workspace">跳到页面内容</a>
   <div class="app">
+    <div class="app-window-chrome" aria-label="窗口标题栏">
+      <div class="window-controls window-controls--mac" aria-label="macOS 窗口控制">
+        <button class="window-control close" type="button" data-window-action="close" aria-label="关闭窗口"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2L2 8" fill="none" stroke="#521514" stroke-width="1.4"/></svg></button>
+        <button class="window-control minimize" type="button" data-window-action="minimize" aria-label="最小化窗口"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 5h6" fill="none" stroke="#5c3b05" stroke-width="1.4"/></svg></button>
+        <button class="window-control maximize" type="button" data-window-action="maximize" aria-label="最大化窗口"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2.2 2.2h5.6v5.6H2.2z" fill="none" stroke="#0b4819" stroke-width="1.2"/></svg></button>
+      </div>
+      <div class="window-controls window-controls--windows" aria-label="Windows 窗口控制">
+        <button class="window-control minimize" type="button" data-window-action="minimize" aria-label="最小化窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5h8" fill="none" stroke="currentColor"/></svg></button>
+        <button class="window-control maximize" type="button" data-window-action="maximize" aria-label="最大化窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" fill="none" stroke="currentColor"/></svg></button>
+        <button class="window-control close" type="button" data-window-action="close" aria-label="关闭窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" fill="none" stroke="currentColor"/></svg></button>
+      </div>
+    </div>
     <header class="titlebar" aria-label="应用标题栏">
       <div class="brand-area">
         <div class="window-controls window-controls--mac" aria-label="macOS 窗口控制">
@@ -137,7 +210,11 @@
           <button class="window-control minimize" type="button" data-window-action="minimize" aria-label="最小化窗口"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 5h6" fill="none" stroke="#5c3b05" stroke-width="1.4"/></svg></button>
           <button class="window-control maximize" type="button" data-window-action="maximize" aria-label="最大化窗口"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2.2 2.2h5.6v5.6H2.2z" fill="none" stroke="#0b4819" stroke-width="1.2"/></svg></button>
         </div>
-        <div class="brand" aria-label="容量计重离线系统"><span class="brand-mark" aria-hidden="true">CQ</span><span class="brand-copy"><strong>容量计重离线系统</strong><small>Quantity Survey · Offline</small></span></div>
+        <div class="window-controls window-controls--windows" aria-label="Windows 窗口控制">
+          <button class="window-control minimize" type="button" data-window-action="minimize" aria-label="最小化窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5h8" fill="none" stroke="currentColor"/></svg></button>
+          <button class="window-control maximize" type="button" data-window-action="maximize" aria-label="最大化窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" fill="none" stroke="currentColor"/></svg></button>
+          <button class="window-control close" type="button" data-window-action="close" aria-label="关闭窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" fill="none" stroke="currentColor"/></svg></button>
+        </div>
       </div>
       <nav class="primary-nav" aria-label="系统主导航">
         <a class="nav-item active" href="#" aria-current="page" data-page="检验任务管理.html" data-title="检验任务管理" data-crumb="检验任务"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01"/></svg><strong>检验任务</strong></a>
@@ -145,13 +222,7 @@
         <a class="nav-item" href="#" data-page="版本管理.html" data-title="版本管理" data-crumb="版本管理"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3a9 9 0 1 1-8.5 6"/><path d="M3 3v6h6M12 7v5l3 2"/></svg><strong>版本管理</strong></a>
       </nav>
       <div class="account-area">
-        <div class="offline" title="当前应用不依赖网络连接"><span class="status-dot" aria-hidden="true"></span><span>离线可用</span></div>
         <button class="user" type="button" aria-label="打开管理员账户菜单"><span class="avatar" aria-hidden="true">管</span><span class="user-name">管理员</span></button>
-        <div class="window-controls window-controls--windows" aria-label="Windows 窗口控制">
-          <button class="window-control minimize" type="button" data-window-action="minimize" aria-label="最小化窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5h8" fill="none" stroke="currentColor"/></svg></button>
-          <button class="window-control maximize" type="button" data-window-action="maximize" aria-label="最大化窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="2.5" width="7" height="7" fill="none" stroke="currentColor"/></svg></button>
-          <button class="window-control close" type="button" data-window-action="close" aria-label="关闭窗口"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" fill="none" stroke="currentColor"/></svg></button>
-        </div>
       </div>
     </header>
     <div class="contextbar">
@@ -173,6 +244,12 @@
       </div>
     </main>
   </div>
+  <dialog class="account-dialog" id="accountDialog" aria-labelledby="accountDialogTitle">
+    <header><h2 id="accountDialogTitle">账号信息</h2><button class="dialog-close" type="button" id="closeAccountDialog" aria-label="关闭账号信息">×</button></header>
+    <section class="account-profile"><span class="profile-avatar" aria-hidden="true">管</span><div><strong>管理员</strong><span>系统管理员</span></div></section>
+    <dl class="account-details"><div><dt>账号</dt><dd>admin</dd></div><div><dt>权限</dt><dd>系统管理权限</dd></div></dl>
+    <footer><button class="dialog-button" type="button" id="cancelAccountDialog">关闭</button><button class="dialog-button logout" type="button" id="logoutAccount">退出当前账号</button></footer>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script>
     const root = document.documentElement;
@@ -185,6 +262,7 @@
     const platformChoices = document.querySelectorAll('[data-platform-choice]');
     const navItems = document.querySelectorAll('.nav-item');
     const toast = document.querySelector('#toast');
+    const accountDialog = document.querySelector('#accountDialog');
     let toastTimer;
     function initialPlatform() {
       const forced = new URLSearchParams(location.search).get('platform');
@@ -215,11 +293,19 @@
       toast.classList.add('show');
       toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
     }
+    function applyEntryMode(page) {
+      const isDataEntry = /现场检验数据录入\.html$/.test(page || '');
+      document.body.classList.toggle('data-entry-mode', isDataEntry);
+    }
+    function syncEntryModeFromFrame() {
+      try { applyEntryMode(frame.contentWindow.location.pathname); } catch (error) {}
+    }
     function showPage(page, title, crumb) {
       crumbPath.textContent = crumb;
       pageTitle.textContent = title;
       document.title = `${title} · 容量计重离线系统`;
       if (page) {
+        applyEntryMode(page);
         frameLoading.hidden = false;
         frame.src = './' + page;
         frame.hidden = false;
@@ -245,7 +331,7 @@
     platformChoices.forEach(button => {
       button.addEventListener('click', () => applyPlatform(button.dataset.platformChoice, true));
     });
-    frame.addEventListener('load', () => { frameLoading.hidden = true; });
+    frame.addEventListener('load', () => { frameLoading.hidden = true; syncEntryModeFromFrame(); });
     if (frame.contentDocument?.readyState === 'complete') frameLoading.hidden = true;
     navItems.forEach(item => {
       item.addEventListener('click', event => {
@@ -258,6 +344,13 @@
     });
     document.querySelectorAll('[data-window-action]').forEach(button => {
       button.addEventListener('click', () => runWindowAction(button.dataset.windowAction));
+    });
+    document.querySelector('.user').addEventListener('click', () => accountDialog.showModal());
+    document.querySelector('#closeAccountDialog').addEventListener('click', () => accountDialog.close());
+    document.querySelector('#cancelAccountDialog').addEventListener('click', () => accountDialog.close());
+    document.querySelector('#logoutAccount').addEventListener('click', () => {
+      try { localStorage.removeItem('cq-current-user'); sessionStorage.removeItem('cq-current-user'); } catch (error) {}
+      window.location.href = './login.html';
     });
     document.querySelector('#refreshPage').addEventListener('click', () => {
       if (!frame.hidden) {
@@ -277,6 +370,8 @@
         }
         frame.hidden = false;
         closedState.classList.remove('show');
+      } else if (data.type === 'enter-data-entry') {
+        applyEntryMode('现场检验数据录入.html');
       } else if (data.type === 'close-task-page') {
         const active = document.querySelector('.nav-item.active');
         if (active?.dataset.page) {
