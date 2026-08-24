@@ -87,6 +87,9 @@
     .crumbs { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
     .crumbs::before { margin-right: 7px; color: #a1adba; content: "/"; }
     .context-actions { display: flex; align-items: center; gap: 6px; }
+    .exit-entry-button { display: none; height: 30px; padding: 0 12px; border: 1px solid #c9d5e2; border-radius: 5px; color: #38516b; background: #fff; font-size: 12px; font-weight: 600; }
+    .exit-entry-button:hover { border-color: #90a8c0; color: #173f6c; background: #f4f8fc; }
+    body.data-entry-mode .exit-entry-button { display: inline-flex; align-items: center; gap: 5px; }
     .platform-switch { display: inline-flex; height: 30px; align-items: center; gap: 2px; padding: 2px; border: 1px solid #d3dce7; border-radius: 6px; background: #eef2f6; white-space: nowrap; }
     .platform-switch-label { padding: 0 5px 0 6px; color: #6a7889; font-size: 11px; }
     .platform-choice { height: 24px; padding: 0 9px; border: 0; border-radius: 4px; color: #526276; background: transparent; font-size: 11px; font-weight: 500; transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease; }
@@ -228,6 +231,7 @@
     <div class="contextbar">
       <div class="page-identity"><h1 id="pageTitle">检验任务管理</h1><div class="crumbs" id="crumbPath">检验任务</div></div>
       <div class="context-actions">
+        <button class="exit-entry-button" type="button" id="exitDataEntry" aria-label="退出现场检验数据录入">退出</button>
         <div class="platform-switch" role="group" aria-label="演示布局切换">
           <span class="platform-switch-label" aria-hidden="true">布局</span>
           <button class="platform-choice" type="button" data-platform-choice="macos" aria-pressed="false">macOS</button>
@@ -263,6 +267,7 @@
     const navItems = document.querySelectorAll('.nav-item');
     const toast = document.querySelector('#toast');
     const accountDialog = document.querySelector('#accountDialog');
+    const exitDataEntry = document.querySelector('#exitDataEntry');
     let toastTimer;
     function initialPlatform() {
       const forced = new URLSearchParams(location.search).get('platform');
@@ -296,6 +301,19 @@
     function applyEntryMode(page) {
       const isDataEntry = /现场检验数据录入\.html$/.test(page || '');
       document.body.classList.toggle('data-entry-mode', isDataEntry);
+    }
+    function exitDataEntryPage() {
+      let taskNo = '';
+      try { taskNo = new URL(frame.contentWindow.location.href).searchParams.get('taskNo') || ''; } catch (error) {}
+      const page = '检验任务详情.html' + (taskNo ? `?taskNo=${encodeURIComponent(taskNo)}` : '');
+      pageTitle.textContent = '检验任务详情';
+      crumbPath.textContent = '检验任务 / 任务详情';
+      document.title = '检验任务详情 · 容量计重离线系统';
+      applyEntryMode('');
+      frameLoading.hidden = false;
+      frame.src = './' + page;
+      frame.hidden = false;
+      closedState.classList.remove('show');
     }
     function syncEntryModeFromFrame() {
       try { applyEntryMode(frame.contentWindow.location.pathname); } catch (error) {}
@@ -359,6 +377,7 @@
         notify('当前页面已刷新');
       }
     });
+    exitDataEntry.addEventListener('click', exitDataEntryPage);
     window.addEventListener('message', event => {
       const data = event.data;
       if (!data) return;

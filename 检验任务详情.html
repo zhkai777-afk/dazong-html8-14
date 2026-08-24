@@ -71,9 +71,6 @@
     .button.danger { border-color: var(--danger); color: #fff; background: var(--danger); }
     .button.danger:hover:not(:disabled) { border-color: #8f1c14; background: #8f1c14; }
     .button.icon-only { width: var(--control-height); padding: 0; }
-    .menu-wrap { position: relative; }
-    .menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 40; min-width: 168px; padding: 5px; display: none; border: 1px solid var(--border); border-radius: 5px; background: #fff; box-shadow: 0 10px 28px rgba(16,30,48,.18); }
-    .menu.show { display: block; }
     .menu button { width: 100%; min-height: 34px; padding: 0 10px; display: flex; align-items: center; gap: 8px; border: 0; border-radius: 3px; background: transparent; color: var(--text); font-size: 12px; text-align: left; }
     .menu button:hover { background: var(--surface-muted); }
     .menu svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; color: var(--text-secondary); }
@@ -208,11 +205,17 @@
     .alert p { margin: 4px 0 0; font-size: 12px; color: #54524a; }
     .alert .a-action { margin-left: auto; }
 
-    .report-metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 14px; }
-
-    .op-link { min-width: 44px; height: 28px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: 3px; color: var(--primary); background: var(--surface); font-size: 11px; font-weight: 700; }
-    .op-link:hover:not(:disabled) { background: var(--surface-muted); border-color: #8494a8; }
-    .op-link:disabled { color: #9aa6b3; border-color: #dde3ea; }
+    /* ---------- Report cards (aligned with the final-meeting report view) ---------- */
+    .report-toolbar { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-muted); }
+    .report-toolbar h3 { margin: 0; font-size: 14px; }
+    .report-toolbar p { margin: 2px 0 0; color: var(--text-secondary); font-size: 10px; }
+    .report-cards { margin-top: 12px; display: grid; gap: 8px; }
+    .report-card { min-height: 84px; padding: 12px 14px; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+    .report-file-icon { width: 34px; height: 42px; display: grid; place-items: center; border: 1px solid #a9c3df; border-radius: 4px; background: #eef5fd; color: var(--primary); font: 700 10px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .report-card h4 { margin: 0; font-size: 12px; }
+    .report-card small { display: block; margin-top: 8px; color: #748194; font-size: 9px; }
+    .report-state { display: inline-block; margin-top: 7px; padding: 2px 6px; border-radius: 999px; color: #075d49; background: var(--success-bg); font-size: 9px; font-weight: 700; }
+    .report-card .button { min-height: 32px; padding: 0 10px; font-size: 10px; }
 
     /* ---------- Empty states ---------- */
     .empty { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--text-secondary); }
@@ -293,7 +296,6 @@
       .desc { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .metric-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .steps { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .report-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
     @media (max-width: 780px) {
       :root { --control-height: 40px; }
@@ -310,7 +312,6 @@
       .task-option .task-option-name, .task-option .task-option-place { grid-column: 2; }
       .metric-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .steps { grid-template-columns: 1fr; }
-      .report-metrics { grid-template-columns: 1fr 1fr; }
       .tabs { overflow-x: auto; }
       .report-modal .r-body { grid-template-columns: 1fr; }
       .r-toc { display: none; }
@@ -368,14 +369,6 @@
               <option value="进行中" selected>进行中</option>
               <option value="已完成">已完成</option>
             </select>
-          </div>
-          <button class="button" type="button" id="btnPrint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>打印详情</button>
-          <div class="menu-wrap">
-            <button class="button" type="button" id="btnMore" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>更多操作</button>
-            <div class="menu" id="moreMenu" role="menu">
-              <button type="button" role="menuitem" id="miExport"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>导出任务摘要</button>
-              <button type="button" role="menuitem" id="miLog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h10"/></svg>查看操作记录</button>
-            </div>
           </div>
           <button class="button primary" type="button" id="btnPrimary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span id="btnPrimaryText">继续录入现场检验数据</span></button>
         </div>
@@ -630,11 +623,11 @@
       { zh: "VEF 报告", en: "Vessel Experience Factor Report", sum: "5 有效航次经验系数", ver: "v1.2 / 2024-11" },
       { zh: "时间与取样记录", en: "Time Log & Sampling Record", sum: "时间线 / 取样点", ver: "v1.1 / 2024-11" }
     ];
-    const reportStatus = {
-      "进行中": ["草稿", "草稿", "可预览", "草稿", "数据未就绪", "数据未就绪", "可预览", "草稿"],
-      "已完成": ["已签发", "已生成", "已生成", "已生成", "已生成", "已生成", "已生成", "已生成"]
-    };
-
+    const reportPreviewCards = [
+      { name: "卸货摘要报告", sheet: "DISCHARGE SUMMARY", reportIndex: 1 },
+      { name: "数量报告", sheet: "QUANTITY REPORT", reportIndex: 0 },
+      { name: "时间表", sheet: "TIME LOG", reportIndex: 7 }
+    ];
     /* ---------- field data views ---------- */
     const subtabs = [
       { id: "timeline", label: "作业时间线" },
@@ -767,45 +760,14 @@
           <p>现场检验数据完成并通过校验后，系统将生成报告草稿。</p>
         </div>`;
       }
-      const done = state === "已完成";
-      const alert = done
-        ? `<div class="alert success"><svg class="a-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
-            <div class="a-body"><h4>检验报告已生成</h4><p>8 份报告已基于冻结数据快照生成，报告包版本 v1.0。</p></div></div>`
-        : `<div class="alert warning"><svg class="a-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 20h20z"/><path d="M12 9v5M12 17h.01"/></svg>
-            <div class="a-body"><h4>当前报告包不可签发</h4><p>仍有 1 项阻断问题，ROB 仅完成 8 / 17 舱。可以预览已生成的草稿，但不能签发正式报告。</p></div>
-            <div class="a-action"><button class="button" type="button" id="alertLocate">查看阻断问题</button></div></div>`;
-      const metrics = done
-        ? `<div class="metric"><div class="m-label">报告总数</div><div class="m-value">8</div><div class="m-aux">全部报告</div></div>
-           <div class="metric"><div class="m-label">已生成</div><div class="m-value">8</div><div class="m-aux">基于冻结快照</div></div>
-           <div class="metric"><div class="m-label">已签发</div><div class="m-value">8</div><div class="m-aux">正式报告</div></div>
-           <div class="metric"><div class="m-label">报告版本</div><div class="m-value">v1.0</div><div class="m-aux">冻结数据快照</div></div>`
-        : `<div class="metric"><div class="m-label">报告总数</div><div class="m-value">8</div><div class="m-aux">全部报告</div></div>
-           <div class="metric"><div class="m-label">可预览</div><div class="m-value">2</div><div class="m-aux">已生成草稿</div></div>
-           <div class="metric"><div class="m-label">草稿</div><div class="m-value">6</div><div class="m-aux">编辑中</div></div>
-           <div class="metric"><div class="m-label">已签发</div><div class="m-value">0</div><div class="m-aux">未签发</div></div>`;
-      const stArr = reportStatus[state];
-      const rows = reports.map((r, i) => {
-        const st = stArr[i];
-        const disabled = st === "数据未就绪";
-        const time = disabled ? "—" : "2025-05-26 09:12";
-        const ops = done
-          ? `<button class="op-link" type="button" data-preview="${i}">预览</button> <button class="op-link" type="button" data-download="${i}">下载 PDF</button>`
-          : `<button class="op-link" type="button" data-preview="${i}" ${disabled ? "disabled" : ""}>预览</button>`;
-        const note = disabled ? '<div style="font-size:10px;color:var(--text-secondary);margin-top:2px">数据未就绪，暂不可预览</div>' : "";
-        return `<tr>
-          <td class="center num">${i + 1}</td>
-          <td><strong>${r.zh}</strong><div style="font-size:9px;color:var(--text-secondary)">${r.en}</div></td>
-          <td>${r.sum}</td>
-          <td class="num">${r.ver}</td>
-          <td class="num">${time}</td>
-          <td class="center">${statusTag(st)}</td>
-          <td class="center">${ops}${note}</td>
-        </tr>`;
-      }).join("");
-      return alert + `<div class="report-metrics">${metrics}</div>
-        <div class="table-scroll"><table>
-          <thead><tr><th class="center">序号</th><th>报告名称</th><th>数据摘要</th><th class="number">模板版本</th><th class="number">生成时间</th><th class="center">状态</th><th class="center">操作</th></tr></thead>
-          <tbody>${rows}</tbody></table></div>`;
+      const cards = reportPreviewCards.map(report => `<article class="report-card">
+          <span class="report-file-icon" aria-hidden="true">XLS</span>
+          <div><h4>${report.name}</h4><span class="report-state">已生成</span><small>工作表：${report.sheet}</small></div>
+          <button class="button" type="button" data-preview="${report.reportIndex}">预览</button>
+        </article>`).join("");
+      return `<div class="report-toolbar"><div><h3>卸货报告</h3><p>选择所需报告并确认；生成期间可继续填写作业数据。</p></div>
+          <button class="button primary" type="button" id="manageReports">+ 勾选新的报告</button></div>
+        <div class="report-cards">${cards}</div>`;
     }
 
     /* ---------- state application ---------- */
@@ -862,12 +824,9 @@
 
     /* ---------- report handlers ---------- */
     function bindReportHandlers() {
-      const alertLocate = $("#alertLocate");
-      if (alertLocate) alertLocate.addEventListener("click", () => {
-        goEntry();
-      });
+      const manageReports = $("#manageReports");
+      if (manageReports) manageReports.addEventListener("click", goEntry);
       $$('#tab-report [data-preview]').forEach(b => b.addEventListener("click", () => openReport(Number(b.dataset.preview))));
-      $$('#tab-report [data-download]').forEach(b => b.addEventListener("click", () => downloadReport(Number(b.dataset.download))));
     }
 
     /* ---------- temporary task association ---------- */
@@ -974,37 +933,7 @@
       }
     });
 
-    /* ---------- more menu ---------- */
-    const moreMenu = $("#moreMenu");
-    $("#btnMore").addEventListener("click", function (e) {
-      e.stopPropagation();
-      const show = moreMenu.classList.toggle("show");
-      this.setAttribute("aria-expanded", show ? "true" : "false");
-    });
-    document.addEventListener("click", function (e) {
-      if (!moreMenu.contains(e.target) && e.target !== $("#btnMore")) {
-        moreMenu.classList.remove("show");
-        $("#btnMore").setAttribute("aria-expanded", "false");
-      }
-    });
-    $("#miExport").addEventListener("click", function () {
-      moreMenu.classList.remove("show");
-      const relationText = linkedTempTask ? linkedTempTask.id + " · " + linkedTempTask.name : "未关联";
-      const txt = "检验任务摘要\n任务单编号: RW-202505-0087\n任务单名称: MT SAIQ 卸货检验\n任务类型: 正式任务单\n检验类型: 卸货检验\n关联临时任务: " + relationText + "\n任务状态: " + $("#sumStatus").textContent + "\n同步状态: " + $("#sumSync").textContent + "\n船舶: MT SAIQ (IMO 9723792)\n货物: 阿曼出口混合原油\n港口: 营口港 仙人岛原油码头\n服务技术: 陈海峰\n导出时间: " + new Date().toLocaleString("zh-CN", { hour12: false });
-      const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = "检验任务摘要_RW-202505-0087.txt";
-      a.click(); URL.revokeObjectURL(url);
-      showToast("任务摘要已导出");
-    });
-    $("#miLog").addEventListener("click", function () {
-      moreMenu.classList.remove("show");
-      showToast("操作记录：2025-05-25 15:06 本地修订（现场数据）· 2025-05-23 09:42 任务下载");
-    });
-
     /* ---------- print ---------- */
-    $("#btnPrint").addEventListener("click", () => window.print());
     $("#rPrint").addEventListener("click", () => window.print());
 
     /* ---------- report preview modal ---------- */

@@ -699,8 +699,8 @@
       const generated = report.state === "READY";
       const generating = report.state === "GENERATING";
       return `<article class="report-card">
-        <span class="report-icon">XLS</span><div><h4>${report.name}</h4>
-        <span class="report-state ${generating ? "generating" : "ready"}">${generating ? "正在生成中" : "已生成"}</span><small>工作表：${report.sheet}</small></div>
+        <span class="report-icon">PDF</span><div><h4>${report.name}</h4>
+        <span class="report-state ${generating ? "generating" : "ready"}">${generating ? "正在生成中" : "已生成"}</span></div>
         <button class="button secondary" type="button" data-preview-report="${report.id}" ${generated ? "" : "disabled"}>${generated ? "预览" : "生成中"}</button>
       </article>`;
     }
