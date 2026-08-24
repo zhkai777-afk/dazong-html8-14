@@ -120,6 +120,7 @@
     tbody td strong { color: #243347; }
     .center { text-align: center; }
     .number { color: #2e536f; font: 650 11px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .task-actions { display: inline-flex; gap: 4px; align-items: center; justify-content: center; }
     .action-link { min-width: 44px; height: 28px; border: 0; border-radius: 3px; color: #245a91; background: transparent; font-weight: 700; }
     .action-link:hover { background: #eaf1f8; }
     .tag { min-width: 54px; padding: 2px 6px; display: inline-flex; justify-content: center; border: 1px solid; border-radius: 3px; font-size: 10px; font-weight: 700; }
@@ -342,7 +343,7 @@
       rows.innerHTML = visible.map((task,index) => `<tr>
         ${cell('选择', `<input class="task-check" type="checkbox" data-id="${task.id}" aria-label="选择任务 ${escapeHtml(task.taskNo)}" ${selectedIds.has(task.id) ? 'checked' : ''}>`, 'check-cell')}
         ${cell('序号', index + 1, 'center')}
-        ${cell('操作', `<button class="action-link open-task" type="button" data-id="${task.id}">${task.status === '已完成' ? '查看' : '进入'}</button>`, 'center')}
+        ${cell('操作', `<div class="task-actions"><button class="action-link open-task" type="button" data-id="${task.id}">${task.status === '已完成' ? '查看' : '进入'}</button><button class="action-link open-entry" type="button" data-id="${task.id}" aria-label="进入任务 ${escapeHtml(task.taskNo)} 的现场数据录入">现场录入</button></div>`, 'center')}
         ${cell('任务单编号', escapeHtml(task.taskNo), 'number')}
         ${cell('任务单名称', `<strong>${escapeHtml(task.taskName)}</strong>`)}
         ${cell('任务单类型', escapeHtml(task.taskType))}
@@ -372,6 +373,14 @@
           window.parent.postMessage({ type: 'navigate', title: '检验任务详情', crumb: '项目管理 / 检验任务 / 任务详情' }, '*');
         }
         window.location.href = './检验任务详情.html' + qs;
+      }));
+      document.querySelectorAll('.open-entry').forEach(button => button.addEventListener('click', () => {
+        const task = tasks.find(item => item.id === Number(button.dataset.id));
+        const qs = '?taskNo=' + encodeURIComponent(task.taskNo);
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'navigate', title: '现场检验数据录入', crumb: '项目管理 / 检验任务 / 现场检验' }, '*');
+        }
+        window.location.href = './现场检验数据录入.html' + qs;
       }));
       document.querySelectorAll('.task-check').forEach(checkbox => checkbox.addEventListener('change', () => {
         const id = Number(checkbox.dataset.id);

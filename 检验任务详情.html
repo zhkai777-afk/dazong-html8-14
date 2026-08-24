@@ -131,6 +131,54 @@
     .alert-note h4 { margin: 0 0 4px; font-size: 13px; font-weight: 600; color: #1c3a5e; }
     .alert-note p { margin: 0; font-size: 12px; color: #3a4a5d; }
 
+    /* ---------- Inspectors, safety checklist and equipment ---------- */
+    .section-actions { margin-left: auto; display: flex; gap: 8px; }
+    .section-actions .button { height: 30px; padding: 0 10px; font-size: 11px; }
+    .personnel-table th:first-child, .personnel-table td:first-child { width: 46px; text-align: center; }
+    .personnel-table th:nth-child(2), .personnel-table td:nth-child(2) { width: 46px; text-align: center; }
+    .personnel-table .login { color: var(--text-secondary); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+    .equipment-head { margin: 14px 0 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .equipment-head h4 { margin: 0; font-size: 13px; }
+    .equipment-head span { color: var(--text-secondary); font-size: 11px; }
+    .equipment-head .button { height: 30px; padding: 0 10px; font-size: 11px; }
+    .equipment-table th:last-child, .equipment-table td:last-child { width: 82px; text-align: center; }
+    .equipment-table .device-code { color: var(--text-secondary); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+    .equipment-remove { min-height: 28px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: 3px; color: var(--text-secondary); background: var(--surface); font-size: 11px; }
+    .equipment-remove:hover { border-color: var(--danger); color: var(--danger); background: #fff8f7; }
+    .safety-entry { margin-top: 12px; padding: 11px 12px; display: flex; gap: 12px; align-items: center; justify-content: space-between; border: 1px solid #c5d4e3; border-radius: 4px; background: #f4f8fb; }
+    .safety-entry strong, .safety-entry span { display: block; }
+    .safety-entry strong { font-size: 12px; }
+    .safety-entry span { margin-top: 2px; color: var(--text-secondary); font-size: 11px; }
+    .safety-entry .button { height: 32px; flex: none; font-size: 11px; }
+    .safety-modal { width: min(820px, 92vw); max-height: min(820px, 88vh); display: flex; flex-direction: column; overflow: hidden; border-radius: 6px; background: var(--surface); box-shadow: 0 24px 60px rgba(11,24,40,.28); }
+    .safety-modal header { padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid var(--border); background: var(--surface-muted); }
+    .safety-modal h2 { margin: 0; font-size: 15px; }
+    .safety-modal .close { width: 32px; height: 32px; margin-left: auto; border: 0; border-radius: 4px; color: #58677a; background: transparent; font-size: 22px; line-height: 1; }
+    .safety-modal .close:hover { background: #e9eef4; }
+    .safety-modal-body { padding: 16px; overflow-y: auto; }
+    .safety-modal-body p { margin: 0 0 12px; color: var(--text-secondary); font-size: 12px; }
+    .safety-checks { display: grid; gap: 8px; }
+    .safety-checks label { min-height: 38px; padding: 8px 10px; display: flex; gap: 8px; align-items: center; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; }
+    .safety-checks input { width: 16px; height: 16px; accent-color: var(--primary); }
+    .safety-modal label[for="safetyRemark"] { display: block; margin-top: 14px; font-size: 12px; font-weight: 600; }
+    .safety-modal textarea { width: 100%; min-height: 92px; margin-top: 6px; padding: 8px 10px; resize: vertical; border: 1px solid var(--border-strong); border-radius: 4px; color: var(--text); }
+    .safety-modal footer { padding: 10px 16px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); background: var(--surface-muted); }
+    .safety-info { margin: 0 0 14px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .safety-info div { min-height: 32px; padding: 6px 10px; display: grid; grid-template-columns: 110px 1fr; gap: 12px; border-bottom: 1px solid #e5e9ef; font-size: 12px; }
+    .safety-info div:last-child { border-bottom: 0; }
+    .safety-info span { color: var(--text-secondary); }
+    .safety-section-title { margin: 18px 0 8px; padding-left: 8px; border-left: 3px solid #4094e6; font-size: 13px; font-weight: 700; }
+    .safety-requirements { margin: 0; padding-left: 20px; color: #3a4a5d; font-size: 12px; line-height: 1.7; }
+    .safety-declaration { margin: 0; color: #3a4a5d; font-size: 12px; line-height: 1.75; }
+    .safety-check-table th:first-child, .safety-check-table td:first-child { white-space: normal; }
+    .safety-check-table th:not(:first-child), .safety-check-table td:not(:first-child) { width: 88px; text-align: center; }
+    .safety-check-table td { vertical-align: middle; }
+    .safety-check-table input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); }
+    .safety-other-input { width: 160px; height: 26px; padding: 0 6px; border: 1px solid var(--border); border-radius: 3px; }
+    .device-picker-table th:first-child, .device-picker-table td:first-child { width: 46px; text-align: center; }
+    .device-picker-table input { width: 16px; height: 16px; accent-color: var(--primary); }
+    .device-picker-note { margin: 0 0 12px; color: var(--text-secondary); font-size: 12px; }
+
     /* ---------- Field data ---------- */
     .metric-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 14px; }
     .metric { padding: 11px 14px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); }
@@ -312,6 +360,11 @@
       .task-option .task-option-name, .task-option .task-option-place { grid-column: 2; }
       .metric-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .steps { grid-template-columns: 1fr; }
+      .group-head { flex-wrap: wrap; }
+      .section-actions { width: 100%; margin-left: 0; }
+      .section-actions .button { flex: 1; }
+      .safety-entry { align-items: flex-start; flex-direction: column; }
+      .safety-entry .button { width: 100%; }
       .tabs { overflow-x: auto; }
       .report-modal .r-body { grid-template-columns: 1fr; }
       .r-toc { display: none; }
@@ -352,7 +405,7 @@
             <span class="tag sync-tag" id="sumSync" data-sync="待上传">待上传</span>
           </div>
           <div class="summary-sub">
-            <span>任务单编号 RW-202505-0087</span><span class="sep">·</span><span>工单编号 210225050087</span><span class="sep">·</span><span>卸货检验</span>
+            <span>任务单编号 RW-202505-0087</span><span class="sep">·</span><span>卸货检验</span>
           </div>
         </div>
         <div class="summary-center">
@@ -378,7 +431,6 @@
       <section class="card main-card">
         <div class="tabs" role="tablist" aria-label="任务详情页签">
           <button class="tab" role="tab" id="tab-basic-btn" aria-controls="tab-basic" aria-selected="true">基本信息</button>
-          <button class="tab" role="tab" id="tab-report-btn" aria-controls="tab-report" aria-selected="false">检验报告<span class="count">8</span></button>
         </div>
 
         <!-- Basic info -->
@@ -391,14 +443,9 @@
               <div><dt>任务类型</dt><dd><span class="tag idle">正式任务单</span></dd></div>
               <div><dt>检验类型</dt><dd>卸货检验</dd></div>
               <div><dt>任务状态</dt><dd><span class="tag active" id="basicStatus">进行中</span></dd></div>
-              <div><dt>工单编号</dt><dd class="num">210225050087</dd></div>
-              <div><dt>工单名称</dt><dd>营口港原油卸货计量</dd></div>
-              <div><dt>任务来源</dt><dd>任务中心下载</dd></div>
-              <div><dt>数据归属</dt><dd>当前离线设备</dd></div>
               <div><dt>同步状态</dt><dd><span class="tag sync-tag waiting" id="basicSync">待上传</span></dd></div>
               <div><dt>创建时间</dt><dd class="num">2025-05-23 09:42</dd></div>
               <div><dt>最后更新</dt><dd class="num">2025-05-25 15:06</dd></div>
-              <div><dt>任务优先级</dt><dd>普通</dd></div>
             </dl>
             <div class="task-relation" id="taskRelation" aria-label="关联临时任务"></div>
           </div>
@@ -409,10 +456,8 @@
               <div><dt>IMO 编号</dt><dd class="num">9723792</dd></div>
               <div><dt>航次</dt><dd class="num">SAIQ-2505</dd></div>
               <div><dt>货物</dt><dd>阿曼出口混合原油</dd></div>
-              <div><dt>委托方</dt><dd>中国石油国际事业有限公司</dd></div>
-              <div><dt>港口</dt><dd>营口港</dd></div>
-              <div><dt>检验场所</dt><dd>仙人岛原油码头</dd></div>
-              <div><dt>服务技术</dt><dd>陈海峰</dd></div>
+              <div><dt>客户名称</dt><dd>中国石油国际事业有限公司</dd></div>
+              <div><dt>港口</dt><dd>营口港 · 仙人岛原油码头</dd></div>
               <div><dt>跟单人</dt><dd>刘洋</dd></div>
               <div><dt>联系方式</dt><dd class="num">138 0000 2486</dd></div>
               <div><dt>所属公司</dt><dd>容量计重检验部</dd></div>
@@ -420,32 +465,67 @@
             </dl>
           </div>
           <div class="group">
-            <div class="group-head"><span class="idx">03</span><h3>计划与检验要求</h3><span class="hint">时间、计算规则和任务说明</span></div>
-            <dl class="desc">
-              <div><dt>计划开始</dt><dd class="num">2025-05-24 08:20</dd></div>
-              <div><dt>计划结束</dt><dd class="num">2025-05-26 18:00</dd></div>
-              <div><dt>实际检验开始</dt><dd class="num">2025-05-24 14:15</dd></div>
-              <div><dt>报告日期</dt><dd class="num">2025-05-26</dd></div>
-              <div><dt>密度口径</dt><dd>0.8598 g/cm³ @15℃</dd></div>
-              <div><dt>VCF 标准</dt><dd>ASTM D1250 / API MPMS 11.1（2004）</dd></div>
-              <div><dt>WCF 标准</dt><dd>API MPMS 11.5（2013）</dd></div>
-              <div><dt>允许差率</dt><dd>±0.300%</dd></div>
-              <div><dt>报告语言</dt><dd>中英文</dd></div>
-              <div><dt>报告类型</dt><dd>正式报告</dd></div>
-              <div><dt>报告数量单位</dt><dd>m³ @15℃、MT Air</dd></div>
-              <div><dt>任务说明</dt><dd style="grid-column:auto">完成抵港船舱、卸货前后岸罐、ROB、VEF、时间记录及船岸差复核；异常数据须保留现场说明。</dd></div>
-            </dl>
-            <div class="alert-note">
-              <h4>离线数据说明</h4>
-              <p>当前任务数据保存在本机。任务基本信息来自任务中心，现场检验数据修改会生成本地修订记录，上传后更新同步状态。</p>
+            <div class="group-head"><span class="idx">03</span><h3>检验人员与设备</h3><span class="hint">现场执行人员及所需检验设备</span><div class="section-actions"><button class="button" type="button" id="addInspector">添加人员</button><button class="button" type="button" id="removeInspector">删除人员</button></div></div>
+            <div class="table-scroll">
+              <table class="personnel-table" aria-label="检验人员列表">
+                <thead><tr><th scope="col">序号</th><th scope="col"><input type="checkbox" id="checkAllInspectors" aria-label="选择全部检验人员"></th><th scope="col">检验人员</th><th scope="col">登录名</th><th scope="col">角色</th></tr></thead>
+                <tbody id="inspectorRows">
+                  <tr><td>1</td><td><input class="inspector-check" type="checkbox" aria-label="选择陈海峰"></td><td>陈海峰</td><td class="login">chen.hf</td><td>检验组长</td></tr>
+                  <tr><td>2</td><td><input class="inspector-check" type="checkbox" aria-label="选择刘洋"></td><td>刘洋</td><td class="login">liu.yang</td><td>检验员</td></tr>
+                </tbody>
+              </table>
             </div>
+            <div class="equipment-head"><div><h4>检验设备</h4><span>已选择并纳入本任务的现场检验设备</span></div><button class="button" type="button" id="openDevicePicker">添加设备</button></div>
+            <div class="table-scroll">
+              <table class="equipment-table" aria-label="已选择的检验设备列表">
+                <thead><tr><th scope="col">设备名称</th><th scope="col">设备编号</th><th scope="col">设备类型</th><th scope="col">操作</th></tr></thead>
+                <tbody id="equipmentRows"></tbody>
+              </table>
+            </div>
+            <div class="safety-entry"><div><strong>容量计重安全核查表</strong><span>检验开始前完成现场安全核查并留存记录。</span></div><button class="button primary" type="button" id="openSafetyChecklist">填写安全核查表</button></div>
           </div>
         </div>
-
-        <!-- Report -->
-        <div class="tab-panel" id="tab-report" role="tabpanel" aria-labelledby="tab-report-btn" hidden></div>
       </section>
     </div>
+  </div>
+
+  <div class="modal-backdrop" id="safetyChecklistModal" role="presentation">
+    <section class="safety-modal" role="dialog" aria-modal="true" aria-labelledby="safetyChecklistTitle">
+      <header><h2 id="safetyChecklistTitle">容量计重安全核查表</h2><button class="close" type="button" id="closeSafetyChecklist" aria-label="关闭安全核查表">×</button></header>
+      <div class="safety-modal-body">
+        <div class="safety-info"><div><span>任务单编号</span><strong>RW-202505-0087</strong></div><div><span>任务单名称</span><strong>MT SAIQ 卸货检验</strong></div><div><span>检验场所</span><strong>营口港 · 仙人岛原油码头</strong></div><div><span>检验人员</span><strong>陈海峰（检验组长）、刘洋（检验员）</strong></div></div>
+        <h3 class="safety-section-title">检查要求</h3><ol class="safety-requirements"><li>检验组长对检验现场进行安全核查并填写此表。</li><li>填写完毕后，该检验组长负责向现场其他检验人员及分包方人员进行宣贯。</li><li>宣贯结束后，所有参与检验的人员须在系统中确认接受宣贯，并遵照本核查表和中国中检《安全与防护工作程序》要求执行。</li></ol>
+        <h3 class="safety-section-title">安全承诺</h3><p class="safety-declaration">本人于 <strong>2025年05月18日</strong> 到达检验现场，并于检验开始前对现场环境进行观察，对可能存在的风险进行识别。本人承诺将在检验执行过程中，按中国中检《安全与防护工作程序》的要求对已识别的现场风险进行控制和规避；如有其它参与检验的分包方人员，其须于工作开始前进行不少于 10 分钟的安全培训。</p>
+        <h3 class="safety-section-title">一、防护项目</h3>
+        <div class="table-scroll"><table class="safety-check-table" aria-label="检验现场安全核查项目"><thead><tr><th scope="col">检验现场安全核查项目</th><th scope="col">项目确认</th><th scope="col">不适用</th></tr></thead><tbody>
+          <tr><td>1. 须穿戴公司配发的适合本任务的工作服</td><td><input class="safety-answer" data-item="1" type="checkbox" checked aria-label="项目1已确认"></td><td><input class="safety-answer" data-item="1" type="checkbox" aria-label="项目1不适用"></td></tr>
+          <tr><td>2. 须穿戴公司配发的适合本任务的安全帽</td><td><input class="safety-answer" data-item="2" type="checkbox" checked aria-label="项目2已确认"></td><td><input class="safety-answer" data-item="2" type="checkbox" aria-label="项目2不适用"></td></tr>
+          <tr><td>3. 须穿戴公司配发的适合本任务的劳保鞋</td><td><input class="safety-answer" data-item="3" type="checkbox" checked aria-label="项目3已确认"></td><td><input class="safety-answer" data-item="3" type="checkbox" aria-label="项目3不适用"></td></tr>
+          <tr><td>4. 在室外，须穿戴公司配发的适合本任务的救生衣</td><td><input class="safety-answer" data-item="4" type="checkbox" aria-label="项目4已确认"></td><td><input class="safety-answer" data-item="4" type="checkbox" checked aria-label="项目4不适用"></td></tr>
+          <tr><td>5. 当有颗粒飞溅、粉尘过大的情况下，须佩戴适合本任务的护目镜</td><td><input class="safety-answer" data-item="5" type="checkbox" aria-label="项目5已确认"></td><td><input class="safety-answer" data-item="5" type="checkbox" checked aria-label="项目5不适用"></td></tr>
+          <tr><td>6. 在登舷、上下直梯、爬梯等有坠落风险的作业时须佩戴安全带</td><td><input class="safety-answer" data-item="6" type="checkbox" checked aria-label="项目6已确认"></td><td><input class="safety-answer" data-item="6" type="checkbox" aria-label="项目6不适用"></td></tr>
+          <tr><td>7. 光线不足、夜间作业时须佩戴荧光背心</td><td><input class="safety-answer" data-item="7" type="checkbox" aria-label="项目7已确认"></td><td><input class="safety-answer" data-item="7" type="checkbox" checked aria-label="项目7不适用"></td></tr>
+          <tr><td>8. 船舶靠泊稳定，舷梯放置妥当并加防护网后方可登轮作业</td><td><input class="safety-answer" data-item="8" type="checkbox" checked aria-label="项目8已确认"></td><td><input class="safety-answer" data-item="8" type="checkbox" aria-label="项目8不适用"></td></tr>
+          <tr><td>9. 由船方人员指引至相关作业场所，遵守港方及船方的安全规定</td><td><input class="safety-answer" data-item="9" type="checkbox" checked aria-label="项目9已确认"></td><td><input class="safety-answer" data-item="9" type="checkbox" aria-label="项目9不适用"></td></tr>
+          <tr><td>10. 检验用车辆状况是否满足要求</td><td><input class="safety-answer" data-item="10" type="checkbox" checked aria-label="项目10已确认"></td><td><input class="safety-answer" data-item="10" type="checkbox" aria-label="项目10不适用"></td></tr>
+          <tr><td>11. 已识别重型机械伤害风险</td><td><input class="safety-answer" data-item="11" type="checkbox" checked aria-label="项目11已确认"></td><td><input class="safety-answer" data-item="11" type="checkbox" aria-label="项目11不适用"></td></tr>
+          <tr><td>12. 已识别自身坠落风险</td><td><input class="safety-answer" data-item="12" type="checkbox" checked aria-label="项目12已确认"></td><td><input class="safety-answer" data-item="12" type="checkbox" aria-label="项目12不适用"></td></tr>
+          <tr><td>13. 已识别物体坠落风险</td><td><input class="safety-answer" data-item="13" type="checkbox" checked aria-label="项目13已确认"></td><td><input class="safety-answer" data-item="13" type="checkbox" aria-label="项目13不适用"></td></tr>
+          <tr><td>14. 其他：<input class="safety-other-input" type="text" aria-label="其他安全核查项目14"></td><td><input class="safety-answer" data-item="14" type="checkbox" checked aria-label="项目14已确认"></td><td><input class="safety-answer" data-item="14" type="checkbox" aria-label="项目14不适用"></td></tr>
+          <tr><td>15. 其他：<input class="safety-other-input" type="text" aria-label="其他安全核查项目15"></td><td><input class="safety-answer" data-item="15" type="checkbox" checked aria-label="项目15已确认"></td><td><input class="safety-answer" data-item="15" type="checkbox" aria-label="项目15不适用"></td></tr>
+        </tbody></table></div>
+        <label for="safetyRemark">其他安全注意事项备注</label><textarea id="safetyRemark" placeholder="请输入补充说明（可选）"></textarea>
+      </div>
+      <footer><button class="button" type="button" id="cancelSafetyChecklist">取消</button><button class="button primary" type="button" id="saveSafetyChecklist">保存核查表</button></footer>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="devicePickerModal" role="presentation">
+    <section class="safety-modal" role="dialog" aria-modal="true" aria-labelledby="devicePickerTitle">
+      <header><h2 id="devicePickerTitle">添加检验设备</h2><button class="close" type="button" id="closeDevicePicker" aria-label="关闭设备选择窗口">×</button></header>
+      <div class="safety-modal-body"><p class="device-picker-note">请选择需要纳入本任务的设备；已选择设备不可重复添加。</p><div class="table-scroll"><table class="device-picker-table" aria-label="设备库"><thead><tr><th scope="col"><input type="checkbox" id="checkAllDevices" aria-label="选择全部可添加设备"></th><th scope="col">设备名称</th><th scope="col">设备编号</th><th scope="col">设备类型</th><th scope="col">状态</th></tr></thead><tbody id="devicePickerRows"></tbody></table></div></div>
+      <footer><button class="button" type="button" id="cancelDevicePicker">取消</button><button class="button primary" type="button" id="confirmDevicePicker">确认添加</button></footer>
+    </section>
   </div>
 
   <!-- Temporary task association modal -->
@@ -774,7 +854,7 @@
     const summaryCfg = {
       "待开始": { status: "待开始", statusCls: "pending", sync: "待上传", syncCls: "waiting", done: 0, total: 8, pct: 0, aux: "尚未开始现场检验", btn: "录入现场检验数据", entry: true },
       "进行中": { status: "进行中", statusCls: "active", sync: "待上传", syncCls: "waiting", done: 5, total: 8, pct: 68, aux: "2 项待补录 · 1 项需复核", btn: "继续录入现场检验数据", entry: true },
-      "已完成": { status: "已完成", statusCls: "done", sync: "已同步", syncCls: "synced", done: 8, total: 8, pct: 100, aux: "全部环节已完成", btn: "查看检验报告", entry: false }
+      "已完成": { status: "已完成", statusCls: "done", sync: "已同步", syncCls: "synced", done: 8, total: 8, pct: 100, aux: "全部环节已完成", btn: "查看现场检验数据", entry: true }
     };
     function applyState(state) {
       const cfg = summaryCfg[state];
@@ -803,14 +883,11 @@
       // primary button
       $("#btnPrimaryText").textContent = cfg.btn;
       $("#btnPrimary").dataset.entry = cfg.entry ? "1" : "0";
-      // panels
-      $("#tab-report").innerHTML = reportHTML(state);
-      bindReportHandlers();
     }
 
     /* ---------- tabs ---------- */
     function activateTab(id) {
-      const map = { "tab-basic": "tab-basic-btn", "tab-report": "tab-report-btn" };
+      const map = { "tab-basic": "tab-basic-btn" };
       Object.keys(map).forEach(panelId => {
         const sel = panelId === id;
         $("#" + panelId).hidden = !sel;
@@ -818,7 +895,7 @@
         btn.setAttribute("aria-selected", sel ? "true" : "false");
       });
     }
-    ["tab-basic-btn", "tab-report-btn"].forEach(btnId => {
+    ["tab-basic-btn"].forEach(btnId => {
       $("#" + btnId).addEventListener("click", () => activateTab(btnId.replace("-btn", "")));
     });
 
@@ -912,14 +989,127 @@
     linkTaskModal.addEventListener("mousedown", e => { if (e.target === linkTaskModal) closeLinkTaskModal(); });
     unlinkTaskModal.addEventListener("mousedown", e => { if (e.target === unlinkTaskModal) closeUnlinkTaskModal(); });
 
+    /* ---------- inspectors, equipment and safety checklist ---------- */
+    const inspectorRows = $("#inspectorRows");
+    const inspectorCandidates = [
+      { name: "林燕", login: "lin.yan", role: "检验员" },
+      { name: "徐娜", login: "xu.na", role: "检验员" },
+      { name: "王磊", login: "wang.lei", role: "检验员" }
+    ];
+    function renumberInspectors() {
+      $$("tr", inspectorRows).forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+        row.querySelector(".inspector-check").setAttribute("aria-label", "选择" + row.cells[2].textContent);
+      });
+      $("#checkAllInspectors").checked = false;
+    }
+    $("#addInspector").addEventListener("click", () => {
+      const presentLogins = new Set($$(".login", inspectorRows).map(cell => cell.textContent));
+      const person = inspectorCandidates.find(item => !presentLogins.has(item.login));
+      if (!person) return showToast("可添加的检验人员均已在列表中");
+      const row = document.createElement("tr");
+      row.innerHTML = `<td></td><td><input class="inspector-check" type="checkbox"></td><td>${person.name}</td><td class="login">${person.login}</td><td>${person.role}</td>`;
+      inspectorRows.appendChild(row);
+      renumberInspectors();
+      showToast("已添加检验人员：" + person.name);
+    });
+    $("#removeInspector").addEventListener("click", () => {
+      const selected = $$(".inspector-check:checked", inspectorRows);
+      if (!selected.length) return showToast("请先选择要删除的检验人员");
+      selected.forEach(box => box.closest("tr").remove());
+      renumberInspectors();
+      showToast("已删除 " + selected.length + " 位检验人员");
+    });
+    $("#checkAllInspectors").addEventListener("change", event => {
+      $$(".inspector-check", inspectorRows).forEach(box => { box.checked = event.target.checked; });
+    });
+    const deviceCatalog = [
+      { id: "JY0001", name: "测深钢卷尺", type: "计量设备" },
+      { id: "JY0002", name: "海水密度计", type: "计量设备" },
+      { id: "ZN0001", name: "海康智能头盔", type: "安全防护设备" },
+      { id: "HW0001", name: "华为天眼执法记录仪", type: "记录设备" },
+      { id: "JY0003", name: "电子温度计", type: "计量设备" },
+      { id: "JY0004", name: "便携式气体检测仪", type: "安全防护设备" },
+      { id: "JY0005", name: "取样器", type: "取样设备" },
+      { id: "JY0006", name: "压力表", type: "计量设备" }
+    ];
+    let selectedDevices = ["JY0001", "JY0002", "ZN0001", "HW0001"];
+    const equipmentRows = $("#equipmentRows");
+    const devicePickerModal = $("#devicePickerModal");
+    function renderEquipmentRows() {
+      equipmentRows.innerHTML = selectedDevices.map(id => {
+        const device = deviceCatalog.find(item => item.id === id);
+        return `<tr><td>${device.name}</td><td class="device-code">${device.id}</td><td>${device.type}</td><td><button class="equipment-remove" type="button" data-remove-device="${device.id}">移除</button></td></tr>`;
+      }).join("");
+    }
+    function renderDevicePicker() {
+      devicePickerRows.innerHTML = deviceCatalog.map(device => {
+        const selected = selectedDevices.includes(device.id);
+        return `<tr><td><input class="device-picker-check" type="checkbox" value="${device.id}" ${selected ? "disabled" : ""} aria-label="选择${device.name} ${device.id}"></td><td>${device.name}</td><td class="device-code">${device.id}</td><td>${device.type}</td><td>${selected ? "已选择" : "可添加"}</td></tr>`;
+      }).join("");
+      $("#checkAllDevices").checked = false;
+    }
+    function closeDevicePicker() {
+      devicePickerModal.classList.remove("show");
+      $("#openDevicePicker").focus();
+    }
+    equipmentRows.addEventListener("click", event => {
+      const button = event.target.closest("[data-remove-device]");
+      if (!button) return;
+      selectedDevices = selectedDevices.filter(id => id !== button.dataset.removeDevice);
+      renderEquipmentRows();
+      showToast("已移除检验设备");
+    });
+    $("#openDevicePicker").addEventListener("click", () => {
+      renderDevicePicker();
+      devicePickerModal.classList.add("show");
+      $("#devicePickerModal input:not(:disabled)")?.focus();
+    });
+    $("#closeDevicePicker").addEventListener("click", closeDevicePicker);
+    $("#cancelDevicePicker").addEventListener("click", closeDevicePicker);
+    $("#checkAllDevices").addEventListener("change", event => {
+      $$(".device-picker-check:not(:disabled)").forEach(box => { box.checked = event.target.checked; });
+    });
+    $("#confirmDevicePicker").addEventListener("click", () => {
+      const added = $$(".device-picker-check:checked").map(box => box.value);
+      if (!added.length) return showToast("请选择要添加的检验设备");
+      selectedDevices = selectedDevices.concat(added);
+      renderEquipmentRows();
+      closeDevicePicker();
+      showToast("已添加 " + added.length + " 台检验设备");
+    });
+    devicePickerModal.addEventListener("mousedown", e => { if (e.target === devicePickerModal) closeDevicePicker(); });
+    renderEquipmentRows();
+    const safetyChecklistModal = $("#safetyChecklistModal");
+    function closeSafetyChecklist() {
+      safetyChecklistModal.classList.remove("show");
+      $("#openSafetyChecklist").focus();
+    }
+    $("#openSafetyChecklist").addEventListener("click", () => {
+      safetyChecklistModal.classList.add("show");
+      $("#safetyChecklistModal .safety-answer").focus();
+    });
+    $$(".safety-answer", safetyChecklistModal).forEach(box => box.addEventListener("change", function () {
+      if (!this.checked) return;
+      $$(".safety-answer[data-item='" + this.dataset.item + "']", safetyChecklistModal).forEach(peer => { if (peer !== this) peer.checked = false; });
+    }));
+    $("#closeSafetyChecklist").addEventListener("click", closeSafetyChecklist);
+    $("#cancelSafetyChecklist").addEventListener("click", closeSafetyChecklist);
+    $("#saveSafetyChecklist").addEventListener("click", () => {
+      const incomplete = Array.from({ length: 15 }, (_, index) => String(index + 1)).some(item => !$$(".safety-answer[data-item='" + item + "']:checked", safetyChecklistModal).length);
+      if (incomplete) return showToast("请完成全部安全核查项目后再保存");
+      closeSafetyChecklist();
+      showToast("容量计重安全核查表已保存");
+    });
+    safetyChecklistModal.addEventListener("mousedown", e => { if (e.target === safetyChecklistModal) closeSafetyChecklist(); });
+
     /* ---------- entry navigation ---------- */
     function goEntry() {
       notifyParent("enter-data-entry");
       window.location.href = "./现场检验数据录入.html?taskNo=" + TASK_NO;
     }
     $("#btnPrimary").addEventListener("click", function () {
-      if (this.dataset.entry === "1") goEntry();
-      else activateTab("tab-report");
+      goEntry();
     });
 
     /* ---------- back to task list (frame-aware) ---------- */
@@ -994,7 +1184,9 @@
 
     document.addEventListener("keydown", e => {
       if (e.key !== "Escape") return;
-      if (unlinkTaskModal.classList.contains("show")) closeUnlinkTaskModal();
+      if (devicePickerModal.classList.contains("show")) closeDevicePicker();
+      else if (safetyChecklistModal.classList.contains("show")) closeSafetyChecklist();
+      else if (unlinkTaskModal.classList.contains("show")) closeUnlinkTaskModal();
       else if (linkTaskModal.classList.contains("show")) closeLinkTaskModal();
       else if (reportModal.classList.contains("show")) closeReport();
     });

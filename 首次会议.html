@@ -22,16 +22,10 @@
         <section class="panel">
           <div class="panel-title">会议信息 <small style="color:var(--muted);font-weight:400">（不计入 23 项，须完成后方可确认）</small></div>
           <div class="panel-body"><div class="grid">
-            <div class="field"><label>会议日期时间 <span class="req">*</span></label><input type="datetime-local" value="2025-05-24T14:15"></div>
-            <div class="field"><label>会议地点 <span class="req">*</span></label><input value="MT SAIQ 会议室"></div>
-            <div class="field"><label>主持人 <span class="req">*</span></label><input value="陈海峰"></div>
             <div class="field"><label>船方代表（姓名 / 职务） <span class="req">*</span></label><input placeholder="请输入船方代表信息"></div>
             <div class="field"><label>岸方代表（姓名 / 单位） <span class="req">*</span></label><input placeholder="请输入岸方代表信息"></div>
             <div class="field"><label>客户名称</label><input id="meetingCustomerName" value="委托方" placeholder="请输入客户名称"><div class="hint">从临时任务单带入；修改后将同步更新临时任务单。</div></div>
-            <div class="field"><label>会议语言</label><select><option>中文</option><option>英文</option><option selected>中英文</option></select></div>
-            <div class="field"><label>作业安全交底</label><select><option selected>已完成</option><option>未完成</option></select></div>
             <div class="field span-3"><label>会议主要事项</label><textarea>核对资料、计量条件、取样方案及作业计划。</textarea><div class="hint">最多 1000 字</div></div>
-            <section class="inspectors-block span-3" aria-label="检验员（从临时任务单带入）"><div class="inspectors-head"><span>检验员 <span class="source-tag">临时任务单</span></span><span class="lock-mark">🔒 不可编辑</span></div><table class="inspectors-table"><thead><tr><th style="width:72px">序号</th><th>姓名</th><th>登录名</th><th>角色</th></tr></thead><tbody id="meetingInspectors"><tr><td>1</td><td>陈海峰</td><td>—</td><td>检验员</td></tr></tbody></table></section>
           </div></div>
         </section>
         <div class="summary"><div class="metric"><span>已提交</span><b>0</b></div><div class="metric"><span>草稿</span><b>0</b></div><div class="metric"><span>未开始</span><b>23</b></div><div class="metric"><span>重要文件预警</span><b style="color:var(--danger)">0</b></div><div class="metric"><span>不符合项</span><b style="color:var(--warning)">0</b></div></div>
@@ -65,7 +59,6 @@
       const content = document.querySelector('#itemContent');
       const goodsContent = content.innerHTML;
       const taskSourceKey = 'cq_temp_task_meeting_source';
-      const inspectorList = document.querySelector('#meetingInspectors');
       const customerInput = document.querySelector('#meetingCustomerName');
       function readTaskSource() {
         try { return JSON.parse(localStorage.getItem(taskSourceKey) || '{}'); } catch (error) { return {}; }
@@ -73,20 +66,7 @@
       function writeTaskSource(next) {
         try { localStorage.setItem(taskSourceKey, JSON.stringify(next)); } catch (error) {}
       }
-      function renderInspectors(names) {
-        inspectorList.replaceChildren(...names.map((name, index) => {
-          const row = document.createElement('tr');
-          const cells = [String(index + 1), name, '—', '检验员'];
-          cells.forEach(value => {
-            const cell = document.createElement('td');
-            cell.textContent = value;
-            row.appendChild(cell);
-          });
-          return row;
-        }));
-      }
       const taskSource = readTaskSource();
-      renderInspectors(taskSource.inspectors?.length ? taskSource.inspectors : ['陈海峰']);
       if (taskSource.customerName) customerInput.value = taskSource.customerName;
       customerInput.addEventListener('input', () => {
         const next = Object.assign({}, readTaskSource(), { customerName: customerInput.value });

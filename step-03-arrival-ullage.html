@@ -188,9 +188,9 @@
           </dialog>
 
           <dialog class="correction-dialog" id="correctionDialog" aria-labelledby="correctionDialogTitle">
-            <header><div><h3 id="correctionDialogTitle">修正项目</h3><p id="correctionDialogHint">可新增自定义项目，并录入正值或负值。</p></div><button type="button" class="button tertiary" id="closeCorrectionDialogBtn">关闭</button></header>
+            <header><div><h3 id="correctionDialogTitle">修正项目</h3><p id="correctionDialogHint">请录入各修正项目的正值或负值。</p></div><button type="button" class="button tertiary" id="closeCorrectionDialogBtn">关闭</button></header>
             <div class="correction-dialog-body"><div class="correction-list" id="correctionList"></div></div>
-            <footer><button type="button" class="button secondary" id="addCorrectionItemBtn">＋ 添加修正项目</button><div><button type="button" class="button secondary" id="cancelCorrectionDialogBtn">取消</button><button type="button" class="button primary" id="saveCorrectionDialogBtn">保存修正值</button></div></footer>
+            <footer><div><button type="button" class="button secondary" id="cancelCorrectionDialogBtn">取消</button><button type="button" class="button primary" id="saveCorrectionDialogBtn">保存修正值</button></div></footer>
           </dialog>
 
           <footer class="workspace-footer">
@@ -232,9 +232,8 @@
       { id: 15, tank: "5S", hatch: "A", gaugeMethod: "U", observed: 3.900, corrected: 3.900, temperature: 17.4, tov: 70315.04, fwMethod: "I", fwInterface: 0.130, freeWater: 195.74, vcf: 0.99796 },
       { id: 16, tank: "SLOP P", hatch: "A", gaugeMethod: "U", observed: 3.260, corrected: 3.260, temperature: 96.6, tov: 24971.17, fwMethod: "I", fwInterface: 0.560, freeWater: 36.48, vcf: 0.92934 },
       { id: 17, tank: "SLOP S", hatch: "A", gaugeMethod: "U", observed: 3.200, corrected: 3.200, temperature: 96.1, tov: 25066.78, fwMethod: "I", fwInterface: 0.510, freeWater: 32.71, vcf: 0.92978 },
-      { id: 18, tank: "P.Line", hatch: "A", gaugeMethod: "U", observed: 0, corrected: 0, temperature: "", tov: 0, fwMethod: "I", fwInterface: 0, freeWater: 0, vcf: 1.01271 },
     ];
-    readings.forEach(r => { r.assetType = r.tank === "P.Line" ? "PIPELINE" : "TANK"; r.fwSource = "ULLAGE_IMPORTED"; r.trimCorrection = 0; r.listCorrection = 0; r.tapeDensityCorrection = 0; r.floatUtiDensityCorrection = 0; });
+    readings.forEach(r => { r.assetType = "TANK"; r.fwSource = "ULLAGE_IMPORTED"; r.trimCorrection = 0; r.listCorrection = 0; r.tapeDensityCorrection = 0; r.floatUtiDensityCorrection = 0; });
 
     let useInterpolation = false;
     let interpolationTankId = null;
@@ -320,16 +319,6 @@
       return Math.max(0, a ?? b ?? row.tov);
     }
 
-    function addTankRow() {
-      const nextId = Math.max(...readings.map(row => row.id)) + 1;
-      const tankCount = readings.filter(row => row.assetType === "TANK").length + 1;
-      const row = createTankRecord(nextId, tankCount);
-      const pipelineIndex = readings.findIndex(item => item.assetType === "PIPELINE");
-      readings.splice(pipelineIndex === -1 ? readings.length : pipelineIndex, 0, row);
-      renderMetrics(); renderEntry();
-      flash("已新增一行，请填写舱号和计量数据");
-    }
-
     function createTankRecord(id, tankCount) {
       return { id, tank: `新增舱 ${tankCount}`, isCustom: true, assetType: "TANK", hatch: "A", gaugeMethod: "U", observed: 0, trimCorrection: 0, listCorrection: 0, tapeDensityCorrection: 0, floatUtiDensityCorrection: 0, corrected: 0, temperature: 0, tov: 0, fwMethod: "I", fwInterface: 0, freeWater: 0, vcf: 1 };
     }
@@ -353,7 +342,6 @@
     }
 
     function saveTankMaintenance() {
-      const pipelineRows = readings.filter(row => row.assetType === "PIPELINE");
       const nextIdStart = Math.max(...readings.map(row => row.id), 0) + 1;
       let nextId = nextIdStart;
       const maintainedRows = tankMaintenanceDraft.map((draft, index) => {
@@ -363,7 +351,7 @@
         row.hatch = draft.hatch;
         return row;
       });
-      readings.splice(0, readings.length, ...maintainedRows, ...pipelineRows);
+      readings.splice(0, readings.length, ...maintainedRows);
       if ($("syncTankInfo").checked) localStorage.setItem("offlineSurveySharedTankInfo", JSON.stringify(maintainedRows.map(row => ({ id: row.id, tank: row.tank, hatch: row.hatch }))));
       activeMeasurementId = maintainedRows[0]?.id ?? null;
       $("tankMaintenanceDialog").close();
@@ -392,9 +380,9 @@
       const rows = readings.map((r) => {
         const gov = Math.max(r.tov - r.freeWater, 0);
         const trace = r.fwInterface === "TRACE";
-        const statusPill = trace ? `<span class="status-pill warning">TRACE</span>` : r.assetType === "PIPELINE" ? `<span class="status-pill neutral">管线记录</span>` : `<span class="status-pill success">已录入</span>`;
-        return `<tr class="${r.assetType === "PIPELINE" ? "pipeline-row" : ""}">
-          <th scope="row"><input class="custom-tank-name" type="text" value="${r.tank}" aria-label="${r.tank} 舱号" data-field="tank" data-id="${r.id}" />${r.assetType === "PIPELINE" ? "<small>管线</small>" : ""}</th>
+        const statusPill = trace ? `<span class="status-pill warning">TRACE</span>` : `<span class="status-pill success">已录入</span>`;
+        return `<tr>
+          <th scope="row"><input class="custom-tank-name" type="text" value="${r.tank}" aria-label="${r.tank} 舱号" data-field="tank" data-id="${r.id}" /></th>
           <td><span class="imported-value">${r.hatch}</span></td>
           <td><input type="number" step="0.001" value="${r.observed}" readonly aria-label="${r.tank} 平均观测值（船舱计量带入）" /></td>
           <td class="correction-field"><button type="button" class="correction-editor" data-edit-correction="${r.id}" aria-label="编辑${r.tank}修正项目">${fmt(r.corrected, 3)}</button></td>
@@ -412,10 +400,10 @@
       $("panel-entry").innerHTML = `
         <div class="table-card ullage-table-card">
           <div class="table-scroll ullage-table-scroll"><table class="ullage-table">
-            <thead><tr class="group-header"><th rowSpan="2">Tank No.<small>舱号</small><button type="button" class="add-tank-row" id="addTankRowBtn">＋ 添加行</button></th><th rowSpan="2">G.H.L. (1)<small>船舱计量带入</small></th><th colSpan="2">Gauge<small>液位测量</small></th><th rowSpan="2">平均温度<small>原始记录带入 · ℃</small></th><th rowSpan="2">Total Observed Volume<small>总观测体积 · m³</small></th><th colSpan="3" class="fw-group">Free Water<small>游离水</small></th><th rowSpan="2">Gross Observed Volume<small>观测毛体积 · m³</small></th><th rowSpan="2">VCF · T-54A<small>体积修正系数 · Ver. ${project.vcfVersion}</small></th><th rowSpan="2">Gross Standard Volume<small>标准毛体积 · m³ (15℃)</small></th><th rowSpan="2">Action<small>操作</small></th></tr>
+            <thead><tr class="group-header"><th rowSpan="2">Tank No.<small>舱号</small></th><th rowSpan="2">G.H.L. (1)<small>船舱计量带入</small></th><th colSpan="2">Gauge<small>液位测量</small></th><th rowSpan="2">平均温度<small>原始记录带入 · ℃</small></th><th rowSpan="2">Total Observed Volume<small>总观测体积 · m³</small></th><th colSpan="3" class="fw-group">Free Water<small>游离水</small></th><th rowSpan="2">Gross Observed Volume<small>观测毛体积 · m³</small></th><th rowSpan="2">VCF · T-54A<small>体积修正系数 · Ver. ${project.vcfVersion}</small></th><th rowSpan="2">Gross Standard Volume<small>标准毛体积 · m³ (15℃)</small></th><th rowSpan="2">Action<small>操作</small></th></tr>
             <tr><th>平均液深<small>原始记录带入 · m</small></th><th>修正后<small>点击维护 · m</small></th><th class="fw-group">U/I (2)<small>船舱计量带入</small></th><th class="fw-group">油水界面高度<small>原始记录带入 · m</small></th><th class="fw-group">Volume<small>手动输入 · m³</small></th></tr></thead>
             <tbody>${rows}</tbody>
-            <tfoot><tr><th scope="row" colSpan="5">TOTAL · ${readings.filter(r => r.assetType === "TANK").length} 舱 + P.Line</th><td>${fmt(t.tov, 2)}</td><td colSpan="2">—</td><td>${fmt(t.fw, 2)}</td><td>${fmt(t.gov, 2)}</td><td>—</td><td>${fmt(t.gsv, 3)}</td><td>—</td></tr></tfoot>
+            <tfoot><tr><th scope="row" colSpan="5">TOTAL · ${readings.filter(r => r.assetType === "TANK").length} 舱</th><td>${fmt(t.tov, 2)}</td><td colSpan="2">—</td><td>${fmt(t.fw, 2)}</td><td>${fmt(t.gov, 2)}</td><td>—</td><td>${fmt(t.gsv, 3)}</td><td>—</td></tr></tfoot>
           </table></div>
           <div class="excel-footnotes"><p><strong>(1) G.H.L.</strong> Gauge Hatch Location：F = Forward（前），C = Center（中），A = Aft（后）。</p><p><strong>(2) I/U</strong> Innage / Ullage：I = 实高，U = 空距。</p><p><strong>TRACE</strong> 原表 5C 的 Interface 为微量痕迹、Volume 为 0；这是原始状态，不等同于“未测量”。</p></div>
         </div>`;
@@ -508,7 +496,7 @@
         const gov = Math.max(r.tov - r.freeWater, 0);
         const selected = r.id === selCalcId;
         return `<tr class="${selected ? "selected-calculation-row" : ""}">
-          <th><button type="button" data-calctrace="${r.id}">${r.tank}<small>${r.assetType === "PIPELINE" ? "Pipeline · 管线" : "View trace · 查看追溯"}</small></button></th>
+          <th><button type="button" data-calctrace="${r.id}">${r.tank}<small>View trace · 查看追溯</small></button></th>
           <td class="input-value">${r.corrected.toFixed(3)}</td>
           <td class="input-value">${r.temperature === "" ? "—" : r.temperature.toFixed(1)}</td>
           <td class="input-value">${fmt(r.tov, 2)}</td>
@@ -516,7 +504,7 @@
           <td class="formula-value">${fmt(gov, 2)}<small>= ${fmt(r.tov, 2)} − ${fmt(r.freeWater, 2)}</small></td>
           <td class="formula-value">${r.vcf.toFixed(5)}<small>T-54A · ${project.vcfVersion}</small></td>
           <td class="formula-value strong">${fmt(gov * r.vcf, 3)}<small>= GOV × VCF</small></td>
-          <td><span class="status-pill ${r.assetType === "PIPELINE" ? "neutral" : "success"}">${r.assetType === "PIPELINE" ? "管线记录" : "公式已复核"}</span></td>
+          <td><span class="status-pill success">公式已复核</span></td>
         </tr>`;
       }).join("");
       const qRows = quantityConversions.map((item) => {
@@ -551,7 +539,7 @@
           <div class="table-scroll"><table class="calculation-detail-table">
             <thead><tr><th>Tank No.<small>舱号</small></th><th>Corr&apos;d<small>修正液位 · m</small></th><th>Temp.<small>温度 · ℃</small></th><th>TOV<small>总观测体积 · m³</small></th><th>FW Volume<small>游离水体积 · m³</small></th><th>GOV<small>TOV − FW · m³</small></th><th>VCF<small>vcf(...) 自定义函数</small></th><th>GSV<small>ROUND(GOV × VCF, 3)</small></th><th>Rule Status<small>规则状态</small></th></tr></thead>
             <tbody>${detailRows}</tbody>
-            <tfoot><tr><th colSpan="3">TOTAL · 合计</th><td>${fmt(t.tov, 2)}</td><td>${fmt(t.fw, 2)}</td><td>${fmt(t.gov, 2)}</td><td>—</td><td>${fmt(t.gsv, 3)}</td><td>17 舱 + P.Line</td></tr></tfoot>
+          <tfoot><tr><th colSpan="3">TOTAL · 合计</th><td>${fmt(t.tov, 2)}</td><td>${fmt(t.fw, 2)}</td><td>${fmt(t.gov, 2)}</td><td>—</td><td>${fmt(t.gsv, 3)}</td><td>${readings.filter(r => r.assetType === "TANK").length} 舱</td></tr></tfoot>
           </table></div>
         </section>
         <section class="tank-trace-panel" aria-live="polite">
@@ -708,7 +696,6 @@
     $("tankMaintenanceList").addEventListener("click", (e) => { const remove = e.target.closest("[data-remove-maintenance-tank]"); if (!remove) return; tankMaintenanceDraft.splice(Number(remove.dataset.removeMaintenanceTank), 1); renderTankMaintenance(); });
     $("closeCorrectionDialogBtn").addEventListener("click", () => $("correctionDialog").close());
     $("cancelCorrectionDialogBtn").addEventListener("click", () => $("correctionDialog").close());
-    $("addCorrectionItemBtn").addEventListener("click", () => { correctionDraft.push({ name: `修正项目 ${correctionDraft.length + 1}`, value: 0 }); renderCorrectionDialog(); });
     $("correctionList").addEventListener("input", (e) => { const index = Number(e.target.dataset.correctionIndex); const field = e.target.dataset.correctionField; if (!field || !correctionDraft[index]) return; correctionDraft[index][field] = field === "value" ? (e.target.value === "" ? 0 : Number(e.target.value)) : e.target.value; });
     $("correctionList").addEventListener("click", (e) => { const remove = e.target.closest("[data-remove-correction]"); if (!remove) return; correctionDraft.splice(Number(remove.dataset.removeCorrection), 1); renderCorrectionDialog(); });
     $("saveCorrectionDialogBtn").addEventListener("click", () => { const row = readings.find(item => item.id === correctionEditingId); if (!row) return; row.corrections = correctionDraft.map((item, index) => ({ name: item.name.trim() || `修正项目 ${index + 1}`, value: Number(item.value || 0) })); applyLevelCorrections(row); $("correctionDialog").close(); renderAll(); flash("修正项目已保存"); });
@@ -726,7 +713,6 @@
       if (addReading) { const row = readings.find(r => r.id === Number(addReading.dataset.id)); if (!row) return; ensureMeasurementLists(row); const key = addReading.dataset.addReading; row[key].push(row[key][row[key].length - 1] ?? 0); renderMeasurement(); return; }
       const removeReading = e.target.closest("[data-remove-reading]");
       if (removeReading) { const row = readings.find(r => r.id === Number(removeReading.dataset.id)); if (!row) return; const key = removeReading.dataset.removeReading; if (row[key]?.length > 1) row[key].splice(Number(removeReading.dataset.index), 1); renderMeasurement(); return; }
-      if (e.target.closest("#addTankRowBtn")) { addTankRow(); return; }
       const deleteTank = e.target.closest("[data-delete-tank]");
       if (deleteTank) { deleteTankRow(Number(deleteTank.dataset.deleteTank)); return; }
       const interpolation = e.target.closest("[data-interpolation]");

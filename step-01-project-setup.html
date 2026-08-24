@@ -33,9 +33,6 @@
     .calculation-method-field small.needs-recalc { color: #8a5410; font-weight: 650; }
     @media (max-width: 920px) { .quantity-unit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .quantity-unit-option:nth-child(n) { padding-left: 0; border-left: 0; } .quantity-unit-option:nth-child(2n) { padding-left: 12px; border-left: 1px solid var(--border); } }
     @media (max-width: 920px) { .calculation-method-field { grid-column: span 2; } .calculation-method-readout { grid-template-columns: 1fr; gap: 3px; } .calculation-method-readout em { text-align: left; } }
-    .vessel-picker { min-height: 36px; padding: 6px 9px; border: 1px solid var(--border-strong); border-radius: 4px; background: white; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
-    .vessel-picker label { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; white-space: nowrap; cursor: pointer; }
-    .vessel-picker input { width: 15px; height: 15px; accent-color: var(--primary); }
     @media (max-width: 920px) { #reportGroup { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   </style>
 </head>
@@ -118,7 +115,6 @@
             <section class="settings-section">
               <header><div><span>01</span><h3>基本信息</h3></div><p>项目级数据</p></header>
               <div class="form-grid">
-                <label class="setting-field"><span class="field-label"><span>作业号<b>*</b></span></span><input id="jobNo" value="210225050087" /></label>
                 <label class="setting-field"><span class="field-label"><span>报告日期<b>*</b></span></span><input type="date" id="reportDate" value="2025-05-26" /></label>
                 <label class="setting-field"><span class="field-label"><span>检验开始<b>*</b></span></span><input type="datetime-local" id="inspectionStart" value="2025-05-24T08:20" /></label>
                 <label class="setting-field"><span class="field-label"><span>检验结束</span></span><input type="datetime-local" id="inspectionEnd" value="2025-05-26T18:00" /></label>
@@ -130,9 +126,9 @@
             <section class="settings-section">
               <header><div><span>02</span><h3>参与方与作业地点</h3></div><p>选择基础资料并确认作业地点</p></header>
               <div class="form-grid">
-                <label class="setting-field"><span class="field-label"><span>委托方（中文）<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="clientName"><option>中国石油国际事业有限公司</option><option>中国联合石油有限责任公司</option><option>示例能源贸易有限公司</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>委托方（英文）</span><em class="source-badge master">基础资料</em></span><input id="clientNameEn" value="PETROCHINA INTERNATIONAL CO., LTD." /></label>
-                <div class="setting-field"><span class="field-label"><span>船舶<b>*</b></span><em class="source-badge master">基础资料</em></span><div class="vessel-picker" id="vesselName" role="group" aria-label="船舶，可多选"><label><input type="checkbox" value="MT SAIQ" checked />MT SAIQ</label><label><input type="checkbox" value="MT OCEAN CREST" />MT OCEAN CREST</label><label><input type="checkbox" value="MT EASTERN STAR" />MT EASTERN STAR</label></div></div>
+                <label class="setting-field"><span class="field-label"><span>客户名称<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="clientName"><option>中国石油国际事业有限公司</option><option>中国联合石油有限责任公司</option><option>示例能源贸易有限公司</option></select></label>
+                <label class="setting-field"><span class="field-label"><span>客户名称（英文）</span><em class="source-badge master">基础资料</em></span><input id="clientNameEn" value="PETROCHINA INTERNATIONAL CO., LTD." /></label>
+                <label class="setting-field"><span class="field-label"><span>船舶<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="vesselName" aria-label="船舶"><option>MT SAIQ</option><option>MT OCEAN CREST</option><option>MT EASTERN STAR</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>港口<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="portName"><option>营口港</option><option>青岛港</option><option>大连港</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>码头 / 油库<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="terminalName"><option>仙人岛原油码头</option><option>董家口原油码头</option><option>新港油库</option></select></label>
               </div>
@@ -280,7 +276,7 @@
     })();
 
     const settings = {
-      jobNo: "210225050087", reportDate: "2025-05-26", inspectionStart: "2025-05-24T08:20", inspectionEnd: "2025-05-26T18:00",
+      reportDate: "2025-05-26", inspectionStart: "2025-05-24T08:20", inspectionEnd: "2025-05-26T18:00",
       operationType: "DISCHARGE", voyageNo: "SAIQ-2505", clientName: "中国石油国际事业有限公司", clientNameEn: "PETROCHINA INTERNATIONAL CO., LTD.",
       vesselName: "MT SAIQ", vesselNames: ["MT SAIQ"], portName: "营口港", terminalName: "仙人岛原油码头", cargoType: "CLEAN_OIL", cargoSubType: "CRUDE_CONDENSATE", cargoName: "阿曼出口混合原油", cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL",
       densityType: "DENSITY_15C", densityValue: 0.8598, densityUnit: "g/cm³", vcfStandard: "ASTM D1250 / API MPMS 11.1", chemicalConversionMethod: "",
@@ -297,18 +293,16 @@
     const quantityUnitStorageKey = "offlineSurveyQuantityUnits";
 
     function syncVesselSelection(persist = true) {
-      const selected = [...$("vesselName").querySelectorAll("input:checked")].map((input) => input.value);
+      const selected = [$("vesselName").value];
       settings.vesselNames = selected;
-      settings.vesselName = selected.join(" / ");
+      settings.vesselName = selected[0];
       if (persist) localStorage.setItem(vesselStorageKey, JSON.stringify(selected));
     }
 
     function restoreVesselSelection() {
       try {
         const saved = JSON.parse(localStorage.getItem(vesselStorageKey));
-        if (Array.isArray(saved) && saved.length) {
-          $("vesselName").querySelectorAll("input").forEach((input) => { input.checked = saved.includes(input.value); });
-        }
+        if (Array.isArray(saved) && saved.length && [...$("vesselName").options].some((option) => option.value === saved[0])) $("vesselName").value = saved[0];
       } catch (_) { /* 保留默认船舶选择 */ }
       syncVesselSelection(false);
     }
@@ -457,7 +451,7 @@
       const densityComplete = settings.densityValue !== "" && settings.densityValue !== null && Number(settings.densityValue) > 0 && densityRule.units.includes(settings.densityUnit);
       const vcfComplete = (vcfStandardVersions[settings.vcfStandard] || []).includes(settings.vcfVersion);
       const routeComplete = Boolean(settings.calculationRoute && !settings.calculationRoute.pending);
-      const requiredComplete = Boolean(settings.jobNo && settings.reportDate && settings.vesselName && settings.cargoName && settings.clientName && densityComplete && vcfComplete && routeComplete && settings.quantityUnits.length > 0);
+      const requiredComplete = Boolean(settings.reportDate && settings.vesselName && settings.cargoName && settings.clientName && densityComplete && vcfComplete && routeComplete && settings.quantityUnits.length > 0);
       const applyBtn = $("applyBtn");
       applyBtn.disabled = !(requiredComplete && changed);
       const msg = $("settingsFooterMsg");
@@ -471,7 +465,7 @@
     function markChanged() { changed = true; $("changeWarning").hidden = false; revalidate(); }
 
     // 绑定文本/数字输入
-    ["jobNo", "reportDate", "inspectionStart", "inspectionEnd", "voyageNo", "clientNameEn", "portName", "terminalName", "cargoNameEn", "wcfStandard", "sedimentWaterPct", "allowedVariancePct", "seaState", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => {
+    ["reportDate", "inspectionStart", "inspectionEnd", "voyageNo", "clientNameEn", "portName", "terminalName", "cargoNameEn", "wcfStandard", "sedimentWaterPct", "allowedVariancePct", "seaState", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => {
       $(id).addEventListener("input", (e) => { settings[id] = e.target.value; markChanged(); });
       $(id).addEventListener("change", (e) => { settings[id] = e.target.value; markChanged(); });
     });
