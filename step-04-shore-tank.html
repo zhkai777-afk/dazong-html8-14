@@ -7,14 +7,43 @@
   <link rel="stylesheet" href="step-common.css">
   <style>
     .shore-heading .context-actions { align-self: center; }
-    .shore-context-card header { display: none; }
-    .shore-context-card { margin-top: 0; }
+    .metric-row.shore-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .workspace-mode-tabs { display: flex; gap: 0; width: 100%; margin: 0 0 16px; padding: 0; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; }
     .workspace-mode-tabs button { position: relative; min-height: 48px; padding: 0 24px; border: 0; border-radius: 0; background: transparent; color: var(--text-secondary); font-size: 14px; font-weight: 700; cursor: pointer; }
     .workspace-mode-tabs button:hover { color: var(--primary-strong); background: rgba(255, 255, 255, .42); }
     .workspace-mode-tabs button[aria-selected="true"] { color: var(--primary-strong); background: transparent; box-shadow: none; }
     .workspace-mode-tabs button[aria-selected="true"]::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--primary); content: ""; }
     .workspace-mode-tabs button:focus-visible { outline: 3px solid rgba(18, 91, 164, .28); outline-offset: 2px; }
+    .raw-entry-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 14px; align-items: start; }
+    .raw-record-card { min-width: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
+    .raw-record-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px 16px; background: var(--surface-muted); border-bottom: 1px solid var(--border); }
+    .raw-record-header strong { display: block; font-size: 14px; }
+    .raw-record-header small { display: block; margin-top: 3px; color: var(--text-secondary); font-size: 12px; }
+    .raw-record-switch { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--border); border-radius: 5px; background: #fff; }
+    .raw-record-switch button { min-height: 30px; padding: 0 11px; border: 0; border-radius: 3px; color: var(--text-secondary); background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .raw-record-switch button[aria-pressed="true"] { color: #fff; background: var(--primary); }
+    .raw-record-actions { display: flex; align-items: center; gap: 8px; }
+    .raw-section { padding: 16px; border-bottom: 1px solid var(--border); }
+    .raw-section:last-child { border-bottom: 0; }
+    .raw-section > h3 { margin: 0 0 12px; color: var(--primary-strong); font-size: 14px; }
+    .raw-section > h3 small { margin-left: 6px; color: var(--text-secondary); font-size: 11px; font-weight: 500; }
+    .raw-field-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .raw-field { display: grid; gap: 5px; color: var(--text); font-size: 13px; font-weight: 700; }
+    .raw-field span { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+    .raw-field input, .raw-field select { box-sizing: border-box; width: 100%; min-height: 38px; padding: 6px 9px; border: 1px solid #d8e1eb; border-radius: 4px; background: #fff; color: var(--text); font: inherit; font-size: 14px; }
+    .raw-field input[readonly] { color: var(--text-secondary); background: #f5f8fb; }
+    .raw-reading-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .raw-reading-group { padding: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fbfcfe; }
+    .raw-reading-group header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .raw-reading-group h4 { margin: 0; font-size: 13px; }
+    .raw-reading-group h4 span { margin-left: 5px; color: var(--text-secondary); font-size: 11px; font-weight: 500; }
+    .raw-reading-group .raw-average-value { color: #126044; font-size: 12px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .raw-reading-group label { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 8px; align-items: center; margin-top: 7px; color: var(--text-secondary); font-size: 12px; }
+    .raw-reading-group input, .raw-reading-group select { box-sizing: border-box; min-height: 36px; padding: 5px 8px; border: 1px solid #d8e1eb; border-radius: 4px; background: #fff; color: var(--text); font: inherit; font-size: 13px; }
+    .raw-reading-row { display: grid; grid-template-columns: 72px minmax(0, 1fr) 28px; gap: 8px; align-items: center; margin-top: 7px; color: var(--text-secondary); font-size: 12px; }
+    .raw-reading-row button { min-height: 32px; padding: 0; border: 1px solid #e3b8b8; border-radius: 4px; color: #b53d3d; background: #fff8f8; cursor: pointer; }
+    .raw-add-reading { width: 100%; min-height: 34px; margin-top: 10px; border: 1px solid var(--border); border-radius: 4px; color: var(--primary); background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
+    @media (max-width: 1050px) { .raw-field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .raw-reading-grid { grid-template-columns: 1fr; } }
     .sample-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
     .sample-card-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--surface-muted); }
     .sample-card-header strong { display: block; font-size: 15px; }
@@ -44,7 +73,8 @@
     .sample-reference-dialog th, .sample-reference-dialog td { padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: left; }
     .sample-reference-dialog th { background: var(--surface-muted); }
     .sample-reference-dialog tr:last-child td { border-bottom: 0; }
-    @media (max-width: 620px) { .workspace-mode-tabs button { flex: 1; padding: 0 12px; } .sample-card-header { align-items: flex-start; flex-direction: column; } .sample-weather { align-items: flex-start; flex-direction: column; } }
+    @media (max-width: 700px) { .raw-entry-layout { display: block; } .raw-entry-layout .tank-navigator { margin-bottom: 12px; } .raw-field-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 620px) { .workspace-mode-tabs button { flex: 1; padding: 0 12px; font-size: 13px; } .sample-card-header { align-items: flex-start; flex-direction: column; } .sample-weather { align-items: flex-start; flex-direction: column; } }
     .tank-tabs { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-muted); }
     .tank-tabs [role="tab"] { min-height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); font-weight: 650; white-space: nowrap; cursor: pointer; }
     .tank-tabs [role="tab"][aria-selected="true"] { color: #fff; background: var(--primary); border-color: var(--primary); }
@@ -97,7 +127,9 @@
     .tank-list button strong { font-size: 13px; }
     .tank-list button small { font-size: 10px; color: var(--text-secondary); }
     .tank-list button[aria-current="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-strong); }
-    .tank-navigator .add-tank { width: calc(100% - 16px); min-height: 40px; margin: 0 8px 8px; border: 1px dashed var(--primary); border-radius: 5px; color: var(--primary); background: #fff; font-weight: 700; cursor: pointer; }
+    .tank-navigator .add-tank, .tank-navigator .edit-selected-tank { width: calc(100% - 16px); min-height: 40px; margin: 0 8px 8px; border-radius: 5px; background: #fff; font-weight: 700; cursor: pointer; }
+    .tank-navigator .add-tank { border: 1px dashed var(--primary); color: var(--primary); }
+    .tank-navigator .edit-selected-tank { border: 1px solid var(--border); color: var(--primary); }
     .shore-editor { min-width: 0; }
     .shore-editor .shore-matrix-table { width: 100%; min-width: 0; }
     .shore-editor .tank-entry-toolbar { margin-top: 0; }
@@ -187,15 +219,16 @@
 
         <section class="workspace" id="workspace">
           <div class="workspace-mode-tabs" role="tablist" aria-label="岸罐作业内容">
-            <button type="button" role="tab" id="measurementTab" aria-selected="true" aria-controls="measurementPanel">岸罐计量</button>
+            <button type="button" role="tab" id="rawRecordTab" aria-selected="true" aria-controls="rawRecordPanel">岸罐原始记录</button>
+            <button type="button" role="tab" id="measurementTab" aria-selected="false" aria-controls="measurementPanel">岸罐计量</button>
             <button type="button" role="tab" id="samplesTab" aria-selected="false" aria-controls="samplesPanel">检验样品</button>
           </div>
 
-          <div id="measurementPanel" role="tabpanel" aria-labelledby="measurementTab">
-          <section class="shore-context-card">
-            <div class="shore-context-grid" id="shoreContext"><!-- rendered by JS --></div>
-          </section>
+          <div id="rawRecordPanel" role="tabpanel" aria-labelledby="rawRecordTab">
+            <div id="rawRecordContent"><!-- rendered by JS --></div>
+          </div>
 
+          <div id="measurementPanel" role="tabpanel" aria-labelledby="measurementTab" hidden>
           <div class="metric-row shore-metrics" aria-label="岸罐计量汇总" id="shoreMetrics"><!-- rendered by JS --></div>
 
           <div class="tabbar shore-actions">
@@ -320,7 +353,8 @@
     let selectedTankId = 1;
     let calculationMode = "RECEIVED";
     let publishedTotals = null;
-    let activeWorkspaceTab = "measurement";
+    let activeWorkspaceTab = "raw";
+    let activeRawPhase = "post";
     let sampleWeather = "FINE";
     let nextSampleId = 9;
     const sampleEntries = [
@@ -340,12 +374,76 @@
       return values.map((value) => `<option value="${escapeHTML(value)}"${value === selected ? " selected" : ""}>${escapeHTML(value)}</option>`).join("");
     }
 
+    const rawRecords = {};
+    const averageReadings = (values) => {
+      const valid = values.map(Number).filter((value) => Number.isFinite(value));
+      return valid.length ? round3(valid.reduce((sum, value) => sum + value, 0) / valid.length) : 0;
+    };
+    function rawRecordFor(row, phase = activeRawPhase) {
+      const source = phase === "pre" ? row.open : row.close;
+      const key = `${phase}-${row.id}`;
+      if (!rawRecords[key]) {
+        const liquid = Number(source.gaugeResult) || 0;
+        const water = Number(source.waterHeight) || 0;
+        const temperature = Number(source.oilTemp) || 0;
+        rawRecords[key] = {
+          basic: { meteringStatus: "在用", referenceBoardPosition: "", calibrationReferenceTemp: 20, calibrationDueDate: "", insulated: "是", referenceHeight: source.referenceHeight || 0, nonMeterUpper: source.nonMeasUpper || 0, nonMeterLower: source.nonMeasLower || 0 },
+          data: { measurementNode: phase === "pre" ? "卸货前" : "卸货后", date: source.date || "", time: source.time || "", remoteAtgLevel: liquid, remoteAtgTemp: temperature, actualReferenceHeight: source.observedReferenceHeight || 0, liquidMethod: "人工检尺", waterMethod: "人工测量", liquidReadings: [liquid, liquid, liquid], waterReadings: [water, water, water], temperatureReadings: [temperature, temperature, temperature] },
+        };
+      }
+      return rawRecords[key];
+    }
+
+    function renderRawRecords() {
+      const row = shoreReadings.find((item) => item.id === selectedTankId) || shoreReadings[0];
+      selectedTankId = row.id;
+      const record = rawRecordFor(row);
+      const field = (label, key, value, unit = "", type = "text", scope = "basic", choices = null, readOnly = false) => `<label class="raw-field">${label}<span>${unit}</span>${choices ? `<select data-raw-field="${key}" data-raw-scope="${scope}" data-raw-id="${row.id}" aria-label="${label}">${optionList(choices, value)}</select>` : `<input type="${type}" value="${escapeHTML(value)}" data-raw-field="${key}" data-raw-scope="${scope}" data-raw-id="${row.id}"${readOnly ? " readonly" : ""} aria-label="${label}">`}</label>`;
+      const readingGroup = (title, unit, group, methodKey, methodValue, methodChoices) => {
+        const readings = record.data[group];
+        const labels = group === "temperatureReadings" ? ["上部", "中部", "下部"] : ["第一尺读数", "第二尺读数", "第三尺读数"];
+        const method = methodKey ? `<label>计量方法<select data-raw-field="${methodKey}" data-raw-scope="data" data-raw-id="${row.id}" aria-label="${title}计量方法">${optionList(methodChoices, methodValue)}</select></label>` : "";
+        const inputs = readings.map((value, index) => { const label = labels[index] || `第 ${index + 1} 次读数`; return `<div class="raw-reading-row"><span>${label}</span><input type="number" step="0.001" value="${escapeHTML(value)}" data-raw-reading="${group}" data-raw-index="${index}" data-raw-id="${row.id}" aria-label="${title}${label}"><button type="button" data-remove-raw-reading="${group}" data-raw-index="${index}" data-raw-id="${row.id}" aria-label="删除${title}${label}">×</button></div>`; }).join("");
+        return `<section class="raw-reading-group"><header><h4>${title}<span>${unit}</span></h4><span class="raw-average-value">平均 ${averageReadings(readings)} ${unit}</span></header>${method}${inputs}<button type="button" class="raw-add-reading" data-add-raw-reading="${group}" data-raw-id="${row.id}">＋ 添加一次测量</button></section>`;
+      };
+      const rawNav = shoreReadings.map((item) => `<button type="button" data-raw-tank-id="${item.id}" aria-current="${item.id === selectedTankId}"><strong>${item.tank}</strong></button>`).join("");
+      $("rawRecordContent").innerHTML = `<div class="raw-entry-layout"><aside class="tank-navigator" aria-label="岸罐原始记录列表"><header><strong>岸罐列表</strong><small>选择岸罐后录入原始记录</small></header><div class="tank-list">${rawNav}</div><button type="button" class="add-tank" id="rawAddTankBtn">＋ 新增岸罐</button></aside><section class="raw-record-card"><header class="raw-record-header"><div><strong>${row.tank} · ${activeRawPhase === "pre" ? "前尺" : "后尺"}原始记录</strong><small>原始测量数据会保留多次读数，并自动计算平均值。</small></div><div class="raw-record-actions"><div class="raw-record-switch" role="group" aria-label="原始记录时点"><button type="button" data-raw-phase-switch="pre" aria-pressed="${activeRawPhase === "pre"}">前尺</button><button type="button" data-raw-phase-switch="post" aria-pressed="${activeRawPhase === "post"}">后尺</button></div><button type="button" class="tank-edit-btn" id="rawEditTankBtn">编辑岸罐信息</button></div></header><section class="raw-section"><h3>储罐基本信息</h3><div class="raw-field-grid">${field("计量笔状态", "meteringStatus", record.basic.meteringStatus, "", "text", "basic", ["在用", "停用", "待校验"])}${field("计量基准板的位置", "referenceBoardPosition", record.basic.referenceBoardPosition)}${field("标定参照温度", "calibrationReferenceTemp", record.basic.calibrationReferenceTemp, "℃", "number")}${field("标定到期日期", "calibrationDueDate", record.basic.calibrationDueDate, "", "date")}${field("是否为保温罐", "insulated", record.basic.insulated, "", "text", "basic", ["是", "否"])}${field("参照高度", "referenceHeight", record.basic.referenceHeight, "m", "number")}${field("非计量区间上限", "nonMeterUpper", record.basic.nonMeterUpper, "m", "number")}${field("非计量区间下限", "nonMeterLower", record.basic.nonMeterLower, "m", "number")}</div></section><section class="raw-section"><h3>计量数据</h3><div class="raw-field-grid">${field("计量节点", "measurementNode", record.data.measurementNode, "", "text", "data", ["卸货前", "卸货后"])}${field("日期", "date", record.data.date, "", "date", "data")}${field("时间", "time", record.data.time, "", "time", "data")}</div></section><section class="raw-section"><h3>远程计量设备读数（ATG）</h3><div class="raw-field-grid">${field("货物液位", "remoteAtgLevel", record.data.remoteAtgLevel, "实高 · m", "number", "data")}${field("温度（平均温度）", "remoteAtgTemp", record.data.remoteAtgTemp, "℃", "number", "data")}</div></section><section class="raw-section"><h3>手工计量数据</h3><div class="raw-field-grid">${field("实测参照高度", "actualReferenceHeight", record.data.actualReferenceHeight, "m", "number", "data")}</div><div class="raw-reading-grid">${readingGroup("货物液位（液体高度）", "m", "liquidReadings", "liquidMethod", record.data.liquidMethod, ["人工检尺", "手工测深"])}${readingGroup("游离水", "m", "waterReadings", "waterMethod", record.data.waterMethod, ["人工测量", "试水膏"])}${readingGroup("温度", "℃", "temperatureReadings", null, null, null)}</div></section></section></div>`;
+      $("rawRecordContent").querySelectorAll("[data-raw-tank-id]").forEach((button) => button.addEventListener("click", () => { selectedTankId = Number(button.dataset.rawTankId); renderRawRecords(); }));
+      $("rawAddTankBtn").addEventListener("click", openAddTankDialog);
+      $("rawEditTankBtn").addEventListener("click", () => {
+        $("editTankName").value = row.tank;
+        $("editTankType").value = row.assetType;
+        $("editTankDialog").showModal();
+      });
+      $("rawRecordContent").querySelectorAll("[data-raw-phase-switch]").forEach((button) => button.addEventListener("click", () => {
+        activeRawPhase = button.dataset.rawPhaseSwitch;
+        renderRawRecords();
+      }));
+      $("rawRecordContent").querySelectorAll("[data-add-raw-reading]").forEach((button) => button.addEventListener("click", () => {
+        const active = shoreReadings.find((item) => item.id === Number(button.dataset.rawId));
+        if (!active) return;
+        rawRecordFor(active).data[button.dataset.addRawReading].push(0);
+        renderRawRecords();
+      }));
+      $("rawRecordContent").querySelectorAll("[data-remove-raw-reading]").forEach((button) => button.addEventListener("click", () => {
+        const active = shoreReadings.find((item) => item.id === Number(button.dataset.rawId));
+        if (!active) return;
+        const readings = rawRecordFor(active).data[button.dataset.removeRawReading];
+        if (readings.length <= 1) return flash("每项至少保留一次测量");
+        readings.splice(Number(button.dataset.rawIndex), 1);
+        renderRawRecords();
+      }));
+    }
+
     function renderWorkspaceTab() {
+      const raw = activeWorkspaceTab === "raw";
       const measurement = activeWorkspaceTab === "measurement";
+      $("rawRecordPanel").hidden = !raw;
       $("measurementPanel").hidden = !measurement;
-      $("samplesPanel").hidden = measurement;
+      $("samplesPanel").hidden = activeWorkspaceTab !== "samples";
+      $("rawRecordTab").setAttribute("aria-selected", String(raw));
       $("measurementTab").setAttribute("aria-selected", String(measurement));
-      $("samplesTab").setAttribute("aria-selected", String(!measurement));
+      $("samplesTab").setAttribute("aria-selected", String(activeWorkspaceTab === "samples"));
     }
 
     function renderSamples() {
@@ -387,19 +485,9 @@
       }, { beforeGsv: 0, afterGsv: 0, receivedGsv: 0, receivedNsv: 0, receivedGrossWeight: 0, receivedNetWeight: 0 });
     }
 
-    function renderContext() {
-      $("shoreContext").innerHTML = `
-        <dl><dt>CALCULATION METHOD<small>计算方向</small></dt><dd>Received · 接收</dd></dl>
-        <dl><dt>COMMODITY<small>货物</small></dt><dd>${project.cargoNameEn}</dd></dl>
-        <dl><dt>VCF TABLE / VERSION<small>VCF 标准与版本</small></dt><dd>T-54A · ${project.vcfVersion}</dd></dl>
-        <dl><dt>WCF STANDARD<small>WCF 标准</small></dt><dd>${project.wcfStandard}</dd></dl>`;
-    }
-
     function renderMetrics() {
       const t = publishedTotals || totalsFor(shoreReadings);
-      const tankCount = shoreReadings.filter((row) => row.assetType === "TANK").length;
       $("shoreMetrics").innerHTML = `
-        <article><span>Shore Tanks · 岸罐数量</span><strong>${tankCount}</strong><small>可继续新增岸罐</small></article>
         <article><span>Open GSV · 期初标准毛体积</span><strong>${fmt(t.beforeGsv, 3)}</strong><small>m³ @15℃</small></article>
         <article><span>Close GSV · 期末标准毛体积</span><strong>${fmt(t.afterGsv, 3)}</strong><small>m³ @15℃</small></article>
         <article class="metric-accent"><span>Direction Result · 方向计算毛量</span><strong>${fmt(t.receivedGsv, 3)}</strong><small>${calculationMode === "RECEIVED" ? "Close − Open" : calculationMode === "DELIVERY" ? "Open − Close" : "Close inventory"}</small></article>`;
@@ -446,6 +534,7 @@
       });
       selectedTankId = id;
       renderEntry();
+      renderRawRecords();
       flash(`已添加 ${tank}，请填写期初和期末测量数据`);
     }
 
@@ -471,11 +560,7 @@
       }).join("");
       const open = shoreComputed(row.open), close = shoreComputed(row.close);
       const receiptTanks = shoreReadings.filter((item) => item.assetType === "TANK");
-      const tankNav = shoreReadings.map((item) => {
-        const start = shoreComputed(item.open), end = shoreComputed(item.close);
-        const received = end.nsv - start.nsv;
-        return `<button type="button" data-tank-id="${item.id}" aria-current="${item.id === selectedTankId}"><span><strong>${item.tank}</strong><small>${item.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</small></span><small>${fmt(received, 0)} m³</small></button>`;
-      }).join("");
+      const tankNav = shoreReadings.map((item) => `<button type="button" data-tank-id="${item.id}" aria-current="${item.id === selectedTankId}"><span><strong>${item.tank}</strong><small>${item.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</small></span></button>`).join("");
       const overviewRows = receiptTanks.map((item) => {
         const start = shoreComputed(item.open), end = shoreComputed(item.close);
         return `<tr><th>${item.tank}</th><td>${fmt(end.gsv - start.gsv, 3)}</td><td>${fmt(end.nsv - start.nsv, 3)}</td><td>${fmt(end.grossWeight - start.grossWeight, 3)}</td><td>${fmt(end.netWeight - start.netWeight, 3)}</td><td>${end.gsv > start.gsv ? "已计算" : "待录入"}</td></tr>`;
@@ -487,13 +572,13 @@
       $("panel-entry").innerHTML = `
         <section class="shore-quantity-overview"><header><div><strong>各罐收货数量</strong><span>以立方米（15℃）为主，期末 − 期初</span></div><span>共 ${receiptTanks.length} 个岸罐</span></header><div class="table-scroll"><table><thead><tr><th>岸罐</th><th>毛量 m³</th><th>净量 m³</th><th class="optional-unit">毛重 MT</th><th class="optional-unit">净重 MT</th><th>状态</th></tr></thead><tbody>${overviewRows}<tr class="quantity-total"><th>收货数量合计</th><td>${fmt(overviewTotals.gsv, 3)}</td><td>${fmt(overviewTotals.nsv, 3)}</td><td class="optional-unit">${fmt(overviewTotals.gross, 3)}</td><td class="optional-unit">${fmt(overviewTotals.net, 3)}</td><td>已汇总</td></tr></tbody></table></div></section>
         <div class="shore-entry-layout">
-          <aside class="tank-navigator" aria-label="岸罐列表"><header><strong>岸罐列表</strong><small>选择岸罐后，在右侧录入数据</small></header><div class="tank-list">${tankNav}</div><button type="button" class="add-tank" id="addTankBtn">＋ 新增岸罐</button></aside>
-          <section class="shore-editor"><div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>按照原表顺序录入期初、期末数据；绿色项目由系统自动计算。</span></div><div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span><button type="button" class="tank-edit-btn" id="editTankBtn">编辑岸罐信息</button></div></div><section class="table-card shore-excel-card"><div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>期初 / 期末</span></div><div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table"><thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">期初<small>卸货前</small></th><th class="close-column">期末<small>卸货后</small></th></tr></thead><tbody>${body}</tbody></table></div></section></section>
+          <aside class="tank-navigator" aria-label="岸罐列表"><header><strong>岸罐列表</strong><small>选择岸罐后，在右侧录入数据</small></header><div class="tank-list">${tankNav}</div><button type="button" class="edit-selected-tank" id="editSelectedTankBtn">编辑当前岸罐</button><button type="button" class="add-tank" id="addTankBtn">＋ 新增岸罐</button></aside>
+          <section class="shore-editor"><div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>按照原表顺序录入期初、期末数据；绿色项目由系统自动计算。</span></div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span></div><section class="table-card shore-excel-card"><div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>期初 / 期末</span></div><div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table"><thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">期初<small>卸货前</small></th><th class="close-column">期末<small>卸货后</small></th></tr></thead><tbody>${body}</tbody></table></div></section></section>
           <aside class="current-tank-result" aria-label="当前岸罐结果"><header><strong>${row.tank} 接收结果</strong><small>期末 − 期初</small></header><dl><dt>毛量（15℃）</dt><dd>${fmt(close.gsv - open.gsv, 3)} m³</dd></dl><dl><dt>净量（15℃）</dt><dd>${fmt(close.nsv - open.nsv, 3)} m³</dd></dl><dl><dt>毛重（空气中）</dt><dd>${fmt(close.grossWeight - open.grossWeight, 3)} MT</dd></dl><dl><dt>净重（空气中）</dt><dd>${fmt(close.netWeight - open.netWeight, 3)} MT</dd></dl></aside>
         </div>`;
       $("panel-entry").querySelectorAll("[data-tank-id]").forEach((b) => b.addEventListener("click", () => { selectedTankId = Number(b.dataset.tankId); renderEntry(); }));
       $("addTankBtn").addEventListener("click", openAddTankDialog);
-      $("editTankBtn").addEventListener("click", () => {
+      $("editSelectedTankBtn").addEventListener("click", () => {
         $("editTankName").value = row.tank;
         $("editTankType").value = row.assetType;
         $("editTankDialog").showModal();
@@ -548,6 +633,23 @@
 
     $("workspace").addEventListener("change", (e) => {
       const t = e.target;
+      if (t.dataset.rawReading && t.dataset.rawId) {
+        const row = shoreReadings.find((item) => item.id === Number(t.dataset.rawId));
+        if (!row) return;
+        const record = rawRecordFor(row);
+        record.data[t.dataset.rawReading][Number(t.dataset.rawIndex)] = t.value === "" ? 0 : Number(t.value);
+        renderRawRecords();
+        flash("已更新读数及平均值");
+        return;
+      }
+      if (t.dataset.rawField && t.dataset.rawScope && t.dataset.rawId) {
+        const row = shoreReadings.find((item) => item.id === Number(t.dataset.rawId));
+        if (!row || t.dataset.rawField === "tank") return;
+        const value = t.type === "number" ? (t.value === "" ? 0 : Number(t.value)) : t.value;
+        rawRecordFor(row)[t.dataset.rawScope][t.dataset.rawField] = value;
+        flash("原始记录已更新");
+        return;
+      }
       if (t.dataset.sampleField && t.dataset.sampleId) {
         const sample = sampleEntries.find((item) => item.id === Number(t.dataset.sampleId));
         if (sample) sample[t.dataset.sampleField] = t.value;
@@ -582,6 +684,10 @@
       }
     });
 
+    $("rawRecordTab").addEventListener("click", () => {
+      activeWorkspaceTab = "raw";
+      renderWorkspaceTab();
+    });
     $("measurementTab").addEventListener("click", () => {
       activeWorkspaceTab = "measurement";
       renderWorkspaceTab();
@@ -622,6 +728,7 @@
       $("editTankDialog").close();
       renderMetrics();
       renderEntry();
+      renderRawRecords();
       flash("岸罐信息已更新");
     });
     $("saveDraftBtn").addEventListener("click", () => flash("草稿已保存（演示）"));
@@ -633,9 +740,9 @@
       flash("计算完成，结果已同步至计量汇总");
     });
 
-    renderContext();
     renderMetrics();
     renderEntry();
+    renderRawRecords();
     renderSamples();
     renderWorkspaceTab();
   </script>
