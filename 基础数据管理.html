@@ -25,7 +25,7 @@
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
     body { min-width: 320px; min-height: 100vh; margin: 0; font-size: 13px; line-height: 1.5; }
-    button, input { font: inherit; }
+    button, input, select { font: inherit; }
     button { cursor: pointer; }
     button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
     .content { padding: 16px 20px 24px; }
@@ -34,7 +34,7 @@
     .intro h1 { margin: 0; font-size: 18px; }
     .intro p { max-width: 720px; margin: 4px 0 0; color: var(--text-secondary); font-size: 12px; }
     .offline-note { flex: none; padding: 5px 9px; border: 1px solid #a5cabb; border-radius: 4px; color: var(--success); background: var(--success-bg); font-size: 11px; font-weight: 650; }
-    .intro-actions { display: flex; flex: none; align-items: center; gap: 14px; }
+    .intro-actions { display: flex; flex: none; align-items: center; gap: 10px; }
     .sync-meta { display: grid; gap: 4px; justify-items: end; color: var(--text-secondary); font-size: 11px; white-space: nowrap; }
     .sync-meta time { color: #334155; font-variant-numeric: tabular-nums; font-weight: 650; }
     .sync-button { min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--primary); border-radius: 4px; color: #fff; background: var(--primary); font-weight: 650; white-space: nowrap; transition: background 180ms ease, border-color 180ms ease, opacity 180ms ease; }
@@ -42,6 +42,9 @@
     .sync-button:disabled { cursor: wait; opacity: .72; }
     .sync-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .sync-button.syncing svg { animation: spin 900ms linear infinite; }
+    .push-button { min-height: 40px; padding: 0 14px; border: 1px solid #8da0b6; border-radius: 4px; color: var(--primary); background: #fff; font-weight: 650; white-space: nowrap; }
+    .push-button:hover { border-color: var(--primary); background: #f4f7fb; }
+    .push-button:disabled { cursor: wait; opacity: .7; }
     .sync-progress { position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: #dfe6ee; }
     .sync-progress-bar { width: 100%; height: 100%; background: #2e78c7; transform: scaleX(0); transform-origin: left center; transition: transform 220ms ease-out; }
     .sync-feedback { position: fixed; z-index: 50; top: 18px; left: 50%; padding: 9px 14px; border: 1px solid #8cc9b5; border-radius: 4px; color: var(--success); background: #fff; box-shadow: 0 8px 24px rgba(21,36,56,.16); opacity: 0; pointer-events: none; transform: translate(-50%, -12px); transition: opacity 180ms ease, transform 180ms ease; }
@@ -79,17 +82,35 @@
     tbody td { color: #4b5869; font-size: 12px; }
     tbody td:first-child { color: #2e536f; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-weight: 650; }
     .status { min-width: 50px; padding: 2px 7px; display: inline-flex; justify-content: center; border: 1px solid #8cc9b5; border-radius: 3px; color: var(--success); background: var(--success-bg); font-size: 10px; font-weight: 700; }
+    .status.pending { border-color: #dcbf7a; color: #785500; background: #fff7e5; }
     .empty { min-height: 300px; padding: 48px 20px; display: none; place-items: center; color: #7a8797; text-align: center; }
     .empty.show { display: grid; }
     .empty svg { width: 48px; height: 48px; margin-bottom: 8px; fill: none; stroke: #aeb9c6; stroke-width: 1.6; }
     .empty strong { display: block; color: #536174; font-size: 14px; }
     .empty p { margin: 4px 0 0; font-size: 12px; }
+    .modal-backdrop { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(19, 35, 55, .42); }
+    .modal { width: min(920px, 100%); max-height: calc(100vh - 40px); overflow: auto; border: 1px solid var(--border); border-radius: 7px; background: #fff; box-shadow: 0 18px 50px rgba(16, 35, 58, .24); }
+    .modal-header, .modal-footer { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .modal-header { border-bottom: 1px solid var(--border); }
+    .modal-header h2 { margin: 0; font-size: 16px; }
+    .modal-header p { margin: 3px 0 0; color: var(--text-secondary); font-size: 12px; }
+    .modal-close { width: 30px; height: 30px; border: 0; border-radius: 4px; color: #526276; background: transparent; font-size: 21px; line-height: 1; }
+    .modal-close:hover { background: #eef3f8; }
+    .form-grid { padding: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px 16px; }
+    .field { display: grid; gap: 5px; color: #43536a; font-size: 12px; font-weight: 650; }
+    .field input, .field select { width: 100%; min-height: 34px; padding: 0 9px; border: 1px solid #cbd5e1; border-radius: 4px; color: var(--text); background: #fff; font-weight: 400; }
+    .field input:focus, .field select:focus { border-color: var(--primary); outline: 0; box-shadow: 0 0 0 3px rgba(30,58,95,.12); }
+    .field .required { color: #b42318; }
+    .modal-footer { justify-content: flex-end; border-top: 1px solid var(--border); background: #fafbfd; }
+    .button-secondary { min-height: 34px; padding: 0 13px; border: 1px solid #cbd5e1; border-radius: 4px; color: #42536a; background: #fff; font-weight: 650; }
+    .form-error { margin-right: auto; color: #b42318; font-size: 12px; }
     @media (max-width: 700px) {
       .content { padding: 10px; }
       .intro { padding: 14px; align-items: flex-start; flex-direction: column; gap: 10px; }
       .intro-actions { width: 100%; align-items: stretch; flex-direction: column; gap: 8px; }
       .sync-meta { justify-items: start; }
       .sync-button { min-height: 44px; }
+      .push-button { min-height: 44px; }
       .workspace { grid-template-columns: 122px minmax(0, 1fr); }
       .tabs { padding: 8px 6px; }
       .tab { min-width: 0; padding: 8px 8px 8px 13px; white-space: normal; }
@@ -104,6 +125,7 @@
       tbody td { height: auto; padding: 0; border: 0; white-space: normal; }
       tbody td::before { display: block; margin-bottom: 1px; color: #7a8797; content: attr(data-label); font-size: 10px; font-weight: 400; }
       tbody td:last-child { justify-self: start; }
+      .form-grid { grid-template-columns: 1fr; padding: 14px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { transition-duration: .01ms !important; }
@@ -121,6 +143,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-5V2"/><path d="M19 15a8 8 0 1 1-1.9-8.2L20 9"/></svg>
           <span id="syncButtonText">从主业务平台同步</span>
         </button>
+        <button class="push-button" id="pushButton" type="button">同步至主业务平台</button>
       </div>
       <div class="sync-progress" id="syncProgress" role="progressbar" aria-label="基础数据同步进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><div class="sync-progress-bar" id="syncProgressBar"></div></div>
     </section>
@@ -159,6 +182,15 @@
     </section>
   </main>
   <div class="sync-feedback" id="syncFeedback" role="status" aria-live="polite">同步完成，基础数据已更新。</div>
+  <div class="modal-backdrop" id="masterModal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <form id="masterForm">
+        <header class="modal-header"><div><h2 id="modalTitle">新增基础数据</h2><p id="modalDescription">保存后将作为本机待同步数据。</p></div><button class="modal-close" id="modalClose" type="button" aria-label="关闭">×</button></header>
+        <div class="form-grid" id="formFields"></div>
+        <footer class="modal-footer"><span class="form-error" id="formError" role="alert"></span><button class="button-secondary" id="modalCancel" type="button">取消</button><button class="manage-button" type="submit">保存为本机数据</button></footer>
+      </form>
+    </section>
+  </div>
 
   <script>
     const sources = {
@@ -172,21 +204,21 @@
         ]
       },
       vessels: {
-        title: '船舶与舱容资料', description: '维护船舶基本信息及关联舱容表。',
-        columns: ['IMO 编号', '船舶名称', '船型', '载重吨', '状态', '更新时间'],
+        title: '船舶与船舱资料', description: '维护船舶基本信息及船舱计量参数；可手动新增后同步至主业务平台。',
+        columns: ['IMO 编号', '船舶名称', '舱号', '船型', '舱容', '同步状态'],
         rows: [
-          ['IMO 9384721', 'MT SAIQ', '原油船', '309,164 MT', '有效', '2026-07-22'],
-          ['IMO 9457810', 'MT OCEAN CREST', '成品油船', '114,800 MT', '有效', '2026-06-14'],
-          ['IMO 9321458', 'MT EASTERN STAR', '原油船', '156,420 MT', '有效', '2026-04-30']
+          ['IMO 9384721', 'MT SAIQ', '1C', '原油船', '28,460 m³', '已同步'],
+          ['IMO 9457810', 'MT OCEAN CREST', '2P', '成品油船', '12,860 m³', '已同步'],
+          ['IMO 9321458', 'MT EASTERN STAR', '3S', '原油船', '24,120 m³', '已同步']
         ]
       },
       tanks: {
-        title: '岸罐资料', description: '维护岸罐参数、参考高度及罐容表关联。',
-        columns: ['岸罐编号', '岸罐名称', '所属码头', '公称容量', '状态', '更新时间'],
+        title: '岸罐资料', description: '维护检定证书、罐体参数及罐容表关联；可手动新增后同步至主业务平台。',
+        columns: ['设备编号', '器具名称', '申检单位', '标称容积', '有效日期', '同步状态'],
         rows: [
-          ['TK-A01', 'A01 原油罐', '仙人岛原油码头', '100,000 m³', '有效', '2026-07-11'],
-          ['TK-A02', 'A02 原油罐', '仙人岛原油码头', '100,000 m³', '有效', '2026-07-11'],
-          ['TK-D08', 'D08 储油罐', '董家口原油码头', '80,000 m³', '有效', '2026-05-20']
+          ['G101', '立式金属浮顶罐', '中国石化集团商业储备有限公司宁波分公司', '109,055.087 m³', '2028-08-19', '已同步'],
+          ['TK-A02', '立式金属浮顶罐', '仙人岛原油码头', '100,000 m³', '2028-05-18', '已同步'],
+          ['TK-D08', '储油罐', '董家口原油码头', '80,000 m³', '2027-10-31', '已同步']
         ]
       },
       ports: {
@@ -232,6 +264,29 @@
       cargoMaster = stored && typeof stored === 'object' && Object.keys(stored).length ? stored : defaultCargoMaster;
     } catch (error) { cargoMaster = defaultCargoMaster; }
 
+    const equipmentMasterKey = 'offlineSurveyEquipmentMaster';
+    const equipmentFields = {
+      tanks: [
+        ['certificateNo', '证书编号', 'text', true], ['equipmentNo', '设备编号', 'text', true], ['applicant', '申检单位', 'text', true],
+        ['instrumentName', '器具名称', 'text', true], ['model', '型号规格', 'text'], ['verificationCycle', '检定周期', 'text'],
+        ['verificationDate', '检定日期', 'date'], ['verificationOrg', '检定单位', 'text'], ['validUntil', '有效日期', 'date', true],
+        ['uncertainty', '不确定度', 'number'], ['referenceHeight', '参照高度（mm）', 'number'], ['safeHeight', '安全高度（mm）', 'number'],
+        ['nominalVolume', '标称容积（L）', 'number', true], ['floatingRoofStart', '浮顶起点（mm）', 'number'], ['floatingRoofEnd', '浮顶止点（mm）', 'number'],
+        ['floatingRoofMass', '浮顶质量（kg）', 'number'], ['slope', '倾斜率', 'number'], ['thermalExpansionCoefficient', '线膨胀系数', 'number'],
+        ['verificationLocation', '检定地点', 'text'], ['gaugeHeight', '液面计高度（mm）', 'number']
+      ],
+      vessels: [
+        ['imoNo', 'IMO 编号', 'text', true], ['vesselName', '船舶名称', 'text', true], ['tankNo', '舱号', 'text', true],
+        ['vesselType', '船型', 'text'], ['capacity', '舱容（m³）', 'number', true], ['referenceHeight', '参照高度（mm）', 'number'],
+        ['calibrationDate', '检定日期', 'date'], ['validUntil', '有效日期', 'date'], ['measurementOrg', '检定单位', 'text'], ['remarks', '备注', 'text']
+      ]
+    };
+    let equipmentMaster = { tanks: [], vessels: [] };
+    try {
+      const storedEquipment = JSON.parse(localStorage.getItem(equipmentMasterKey));
+      if (storedEquipment && typeof storedEquipment === 'object') equipmentMaster = { ...equipmentMaster, ...storedEquipment };
+    } catch (error) {}
+
     const tabs = [...document.querySelectorAll('.tab')];
     const searchInput = document.querySelector('#searchInput');
     const tableHead = document.querySelector('#tableHead');
@@ -247,8 +302,15 @@
     const syncFeedback = document.querySelector('#syncFeedback');
     const lastSyncTime = document.querySelector('#lastSyncTime');
     const addMasterItemButton = document.querySelector('#addMasterItemButton');
+    const pushButton = document.querySelector('#pushButton');
+    const masterModal = document.querySelector('#masterModal');
+    const masterForm = document.querySelector('#masterForm');
+    const modalTitle = document.querySelector('#modalTitle');
+    const formFields = document.querySelector('#formFields');
+    const formError = document.querySelector('#formError');
     let currentKey = 'clients';
     let feedbackTimer;
+    const tankDefaults = { certificateNo: '24041348', equipmentNo: 'G101', applicant: '中国石化集团商业储备有限公司宁波分公司', instrumentName: '立式金属浮顶罐', model: '100000', verificationCycle: '复检', verificationDate: '2024-08-20', verificationOrg: '国家大容量第一计量站', validUntil: '2028-08-19', uncertainty: '0.1', referenceHeight: '23617', safeHeight: '0', nominalVolume: '109055087', floatingRoofStart: '1720', floatingRoofEnd: '2065', floatingRoofMass: '396000', slope: '0.03', thermalExpansionCoefficient: '0.000012', verificationLocation: '公司罐区', gaugeHeight: '0' };
 
     function formatDateTime(date) {
       const pad = value => String(value).padStart(2, '0');
@@ -268,13 +330,18 @@
     function render() {
       if (currentKey === 'cargoTypes' || currentKey === 'cargoes') { renderCargoMaster(); return; }
       const source = sources[currentKey];
-      addMasterItemButton.hidden = true;
+      const equipmentKey = currentKey === 'tanks' || currentKey === 'vessels' ? currentKey : null;
+      addMasterItemButton.hidden = !equipmentKey;
+      if (equipmentKey) addMasterItemButton.textContent = currentKey === 'tanks' ? '新增岸罐' : '新增船舱';
       const query = searchInput.value.trim().toLowerCase();
-      const rows = source.rows.filter(row => row.some(value => value.toLowerCase().includes(query)));
+      const manualRows = equipmentKey ? equipmentMaster[equipmentKey].map(item => equipmentKey === 'tanks'
+        ? [item.equipmentNo, item.instrumentName, item.applicant, `${Number(item.nominalVolume || 0).toLocaleString()} L`, item.validUntil || '—', item.syncStatus || '待同步']
+        : [item.imoNo, item.vesselName, item.tankNo, item.vesselType || '—', item.capacity ? `${item.capacity} m³` : '—', item.syncStatus || '待同步']) : [];
+      const rows = [...source.rows, ...manualRows].filter(row => row.some(value => String(value).toLowerCase().includes(query)));
       listTitle.textContent = source.title;
       listDescription.textContent = source.description;
       tableHead.innerHTML = source.columns.map(column => `<th scope="col">${column}</th>`).join('');
-      tableBody.innerHTML = rows.map(row => `<tr>${row.map((value, index) => `<td data-label="${source.columns[index]}">${index === 4 ? `<span class="status">${value}</span>` : value}</td>`).join('')}</tr>`).join('');
+      tableBody.innerHTML = rows.map(row => `<tr>${row.map((value, index) => `<td data-label="${source.columns[index]}">${(source.columns[index] === '状态' || source.columns[index] === '同步状态') ? `<span class="status${value === '待同步' ? ' pending' : ''}">${value}</span>` : esc(value)}</td>`).join('')}</tr>`).join('');
       tableWrap.hidden = rows.length === 0;
       emptyState.classList.toggle('show', rows.length === 0);
     }
@@ -283,6 +350,15 @@
     function persistCargoMaster() {
       localStorage.setItem(cargoMasterKey, JSON.stringify(cargoMaster));
       syncFeedback.textContent = '货物主数据已保存，项目设置页将同步更新。';
+      syncFeedback.classList.add('show');
+      window.clearTimeout(feedbackTimer);
+      feedbackTimer = window.setTimeout(() => syncFeedback.classList.remove('show'), 3500);
+    }
+    function persistEquipmentMaster() {
+      try { localStorage.setItem(equipmentMasterKey, JSON.stringify(equipmentMaster)); } catch (error) {}
+    }
+    function showFeedback(message) {
+      syncFeedback.textContent = message;
       syncFeedback.classList.add('show');
       window.clearTimeout(feedbackTimer);
       feedbackTimer = window.setTimeout(() => syncFeedback.classList.remove('show'), 3500);
@@ -312,6 +388,17 @@
       emptyState.classList.toggle('show', filtered.length === 0);
     }
 
+    function openEquipmentModal(key) {
+      modalTitle.textContent = key === 'tanks' ? '新增岸罐' : '新增船舱';
+      document.querySelector('#modalDescription').textContent = '保存后将作为本机待同步数据，可通过顶部“同步至主业务平台”提交。';
+      formError.textContent = '';
+      formFields.innerHTML = equipmentFields[key].map(([name, label, type, required]) => `<label class="field"><span>${esc(label)}${required ? ' <b class="required">*</b>' : ''}</span><input name="${name}" type="${type}" value="${esc(key === 'tanks' ? (tankDefaults[name] || '') : '')}"${required ? ' required' : ''}></label>`).join('');
+      masterForm.dataset.key = key;
+      masterModal.hidden = false;
+      window.setTimeout(() => formFields.querySelector('input')?.focus(), 0);
+    }
+    function closeEquipmentModal() { masterModal.hidden = true; masterForm.reset(); }
+
     tabs.forEach(tab => tab.addEventListener('click', () => {
       currentKey = tab.dataset.key;
       tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
@@ -319,6 +406,10 @@
       render();
     }));
     addMasterItemButton.addEventListener('click', () => {
+      if (currentKey === 'tanks' || currentKey === 'vessels') {
+        openEquipmentModal(currentKey);
+        return;
+      }
       if (currentKey === 'cargoTypes') {
         const typeLabel = window.prompt('请输入一级货物类型名称');
         if (!typeLabel || !typeLabel.trim()) return;
@@ -341,6 +432,22 @@
       }
       persistCargoMaster();
       render();
+    });
+    document.querySelector('#modalClose').addEventListener('click', closeEquipmentModal);
+    document.querySelector('#modalCancel').addEventListener('click', closeEquipmentModal);
+    masterModal.addEventListener('click', event => { if (event.target === masterModal) closeEquipmentModal(); });
+    masterForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const key = masterForm.dataset.key;
+      const data = Object.fromEntries(new FormData(masterForm).entries());
+      const identity = key === 'tanks' ? data.equipmentNo : `${data.imoNo}-${data.tankNo}`;
+      const duplicate = equipmentMaster[key].some(item => (key === 'tanks' ? item.equipmentNo : `${item.imoNo}-${item.tankNo}`) === identity);
+      if (duplicate) { formError.textContent = '该基础数据已在本机待同步列表中。'; return; }
+      equipmentMaster[key].push({ ...data, createdAt: new Date().toISOString() });
+      persistEquipmentMaster();
+      closeEquipmentModal();
+      render();
+      showFeedback(`${key === 'tanks' ? '岸罐' : '船舱'}已保存为本机数据，等待同步至主业务平台。`);
     });
     tableBody.addEventListener('change', event => {
       const input = event.target.closest('[data-master-field]');
@@ -400,16 +507,11 @@
         window.clearInterval(syncTimer);
         const completedAt = new Date();
         const completedText = formatDateTime(completedAt);
-        const completedDate = completedText.slice(0, 10);
         lastSyncTime.textContent = completedText;
         lastSyncTime.dateTime = completedText.replace(' ', 'T');
-        Object.values(sources).forEach(source => source.rows.forEach(row => { row[row.length - 1] = completedDate; }));
         render();
         try { localStorage.setItem('masterDataLastSync', completedText); } catch (error) {}
-        syncFeedback.textContent = `同步完成：5 类基础数据已更新 · ${completedText}`;
-        syncFeedback.classList.add('show');
-        window.clearTimeout(feedbackTimer);
-        feedbackTimer = window.setTimeout(() => syncFeedback.classList.remove('show'), 3500);
+        showFeedback(`同步完成：已从主业务平台更新基础数据 · ${completedText}`);
 
         window.setTimeout(() => {
           syncButton.disabled = false;
@@ -419,6 +521,23 @@
           syncProgress.hidden = true;
         }, 700);
       }, 260);
+    });
+    pushButton.addEventListener('click', () => {
+      const pendingTanks = equipmentMaster.tanks.filter(item => item.syncStatus !== '已同步').length;
+      const pendingVessels = equipmentMaster.vessels.filter(item => item.syncStatus !== '已同步').length;
+      const total = pendingTanks + pendingVessels;
+      if (!total) { showFeedback('没有待同步的岸罐或船舱本机数据。'); return; }
+      pushButton.disabled = true;
+      pushButton.textContent = '正在提交…';
+      window.setTimeout(() => {
+        equipmentMaster.tanks.forEach(item => { if (item.syncStatus !== '已同步') item.syncStatus = '已同步'; });
+        equipmentMaster.vessels.forEach(item => { if (item.syncStatus !== '已同步') item.syncStatus = '已同步'; });
+        persistEquipmentMaster();
+        render();
+        pushButton.disabled = false;
+        pushButton.textContent = '同步至主业务平台';
+        showFeedback(`已同步至主业务平台：${pendingTanks} 条岸罐、${pendingVessels} 条船舱资料。`);
+      }, 650);
     });
     searchInput.addEventListener('input', render);
     render();

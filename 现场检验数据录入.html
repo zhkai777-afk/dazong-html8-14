@@ -59,15 +59,17 @@ a{color:var(--link); text-decoration:none;}
 .col-form{display:flex; flex-direction:column; min-width:0; overflow:hidden;}
 .form-col-scroll{flex:1; overflow-y:auto; min-height:0; padding-right:2px;}
 
-/* Unified compact mode: used both standalone and inside 系统框架.html. */
+/* Embedded mode: retain the inspection-stage rail so the complete workflow
+   remains visible while working inside 系统框架.html. */
 .embedded .main{height:auto; overflow:visible;}
 .embedded .ctxbar{display:none;}
-.embedded .workspace{grid-template-columns:1fr; padding:0; gap:0; overflow:visible; min-height:0;}
-.embedded .col-nav{display:none;}
+.embedded .workspace{grid-template-columns:264px minmax(560px,1fr); padding:0; gap:0; overflow:visible; min-height:0;}
+.embedded .col-nav{display:block; padding:12px; border-right:1px solid var(--border); background:var(--surface-muted);}
 .embedded .col-form{padding:0; overflow:visible;}
 .embedded .form-col-scroll{overflow:visible; padding:0;}
 .embedded .form-head{top:0; border-radius:0; position:static;}
 .embedded .form-card{border-radius:0; border-left:0; border-right:0; border-top:0;}
+.embedded .step-bar{display:none !important;}
 .embedded-step-frame{display:block; width:100%; height:calc(100dvh - 48px); min-height:720px; border:0; background:var(--background);}
 .first-meeting-frame{min-height:2400px;}
 
@@ -91,6 +93,31 @@ a{color:var(--link); text-decoration:none;}
 .ship-context .ship-add{border-style:dashed; color:var(--link);}
 .ship-context .ship-manage{border-color:transparent; background:transparent; color:var(--link);}
 .ship-context .ship-manage:hover{background:#eaf1f8;}
+.inspection-record-shell{min-height:100%; background:var(--background);}
+.inspection-record-toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 16px; border-bottom:1px solid var(--border); background:#f8fafc;}
+.inspection-record-toolbar .toolbar-label{color:var(--text-secondary); font-size:12px; font-weight:600;}
+.inspection-record-toolbar button{min-height:32px; padding:0 12px; border:1px solid var(--border); border-radius:4px; color:var(--text-secondary); background:var(--surface); font-size:12px; font-weight:600;}
+.inspection-record-toolbar button:hover{border-color:#91a8c0; color:var(--primary);}
+.inspection-record-toolbar .record-active{border-color:var(--primary); color:#fff; background:var(--primary);}
+.inspection-record-toolbar .record-active:hover{border-color:var(--primary-hover); color:#fff; background:var(--primary-hover);}
+.inspection-record-toolbar .record-add{border-style:dashed; color:var(--link);}
+.inspection-record-toolbar .record-edit{border-color:transparent; background:transparent; color:var(--link);}
+.record-divider{width:1px; height:20px; margin:0 2px; background:var(--border);}
+.record-report-panel{display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid var(--border); background:var(--surface);}
+.record-report-label{font-size:12px; font-weight:700; color:var(--text);}
+.record-report-option{display:inline-flex; align-items:center; gap:5px; color:var(--text-secondary); font-size:12px; white-space:nowrap;}
+.record-report-option input{accent-color:var(--primary);}
+.record-export{margin-left:auto; min-height:32px; padding:0 12px; border:1px solid var(--primary); border-radius:4px; color:#fff; background:var(--primary); font-weight:600; font-size:12px;}
+.record-export:hover{background:var(--primary-hover);}
+.record-view-tabs{display:flex; gap:4px; overflow-x:auto; padding:8px 16px 0; border-bottom:1px solid var(--border); background:var(--surface);}
+.record-view-tabs button{flex:0 0 auto; min-height:34px; padding:0 12px; border:0; border-bottom:2px solid transparent; color:var(--text-secondary); background:transparent; font-size:12px; font-weight:600;}
+.record-view-tabs button:hover{color:var(--primary); background:var(--surface-muted);}
+.record-view-tabs button.active{border-bottom-color:var(--primary); color:var(--primary);}
+.record-empty{display:grid; min-height:320px; padding:32px; color:var(--text-secondary); background:var(--surface); place-items:center; text-align:center;}
+.record-empty h2{margin:0 0 6px; color:var(--text); font-size:16px;}
+.record-empty p{margin:0 0 16px; font-size:13px;}
+.record-empty button{min-height:34px; padding:0 14px; border:1px solid var(--primary); border-radius:4px; color:#fff; background:var(--primary); font-weight:600;}
+@media (max-width:760px){.record-export{margin-left:0;}.record-divider{display:none;}}
 
 /* Step nav card */
 .nav-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); position:sticky; top:0;}
@@ -168,6 +195,10 @@ select.control{appearance:none; background-image:url("data:image/svg+xml,%3Csvg 
 .control.calc{background:var(--surface-muted); color:var(--text-secondary);}
 .field .hint{font-size:11px; color:var(--text-secondary); margin-top:4px;}
 .field .err{font-size:11px; color:var(--danger); margin-top:5px; display:none; align-items:center; gap:4px;}
+.record-target-options{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:10px; border:1px solid var(--border); border-radius:4px; background:var(--surface-muted);}
+.record-target-option{display:flex; align-items:center; gap:6px; min-height:28px; padding:4px 6px; border:1px solid var(--border); border-radius:3px; background:var(--surface); font-size:12px; color:var(--text); cursor:pointer;}
+.record-target-option:hover{border-color:var(--primary);}
+.record-target-option input{width:15px; height:15px; margin:0;}
 .field.invalid .control{border-color:var(--danger);}
 .field.invalid .err{display:flex;}
 .source-tag{display:inline-block; font-size:10px; padding:1px 7px; border-radius:10px; margin-left:8px; font-weight:500; vertical-align:middle;}
@@ -465,19 +496,12 @@ var IN_FRAME = window.parent !== window;
 
 var STEPS = [
   {id:'meeting', no:'01', name:'首次会议', en:'Initial Meeting', type:'firstMeeting'},
-  {id:'setup',   no:'02', name:'项目与报告设置', en:'Project & Report Setup', type:'generic'},
-  {id:'ship',    no:'03', name:'船舶计量', en:'Vessel Measurement', type:'group', children:[
-    {id:'arrival', name:'原始记录', en:'Original Records'},
-    {id:'calculation', name:'体积计算', en:'Volume Calculation'},
-    {id:'conversion', name:'单位换算', en:'Unit Conversion'},
-    {id:'rob', name:'ROB', en:'ROB'},
-    {id:'vef', name:'VEF 经验系数', en:'Vessel Experience Factor'}
-  ]},
-  {id:'shore',   no:'04', name:'岸罐计量', en:'Shore Tank Measurement', type:'group', children:[
-    {id:'shoreMeasurement', name:'岸罐计量', en:'Shore Tank Measurement'}
-  ]},
-  {id:'review',  no:'05', name:'数量核对', en:'Quantity Verification', type:'generic'},
-  {id:'final',   no:'06', name:'末次会议', en:'Final Meeting', type:'final'}
+  {id:'setup',   no:'02', name:'项目与报告参数设置', en:'Project & Report Setup', type:'generic'},
+  {id:'pre',     no:'03', name:'检验前', en:'Pre-inspection', type:'records'},
+  {id:'during',  no:'04', name:'检验中', en:'During Inspection', type:'records'},
+  {id:'post',    no:'05', name:'检验后', en:'Post-inspection', type:'records'},
+  {id:'final',   no:'06', name:'末次会议', en:'Final Meeting', type:'final'},
+  {id:'summary', no:'07', name:'检验进度汇总', en:'Inspection Progress Summary', type:'summary'}
 ];
 
 /* First meeting groups & 23 sub-items */
@@ -553,7 +577,9 @@ var TIMELOG_DEFAULT = {
    ============================================================ */
 function defaultState(){
   var s = {taskNo:TASK.taskNo, status:'进行中', completed:false, completedTime:'', snapshotVersion:'',
-    currentStep:'meeting', currentSubStep:'arrival', shipVessel:'MT SAIQ', shipVessels:['MT SAIQ'], shipSection:'arrival', fmCurrentGroup:'A', fmCurrentItem:'fm-goods',
+    currentStep:'meeting', currentSubStep:'arrival', shipVessel:'MT SAIQ', shipVessels:['MT SAIQ'], shipSection:'arrival',
+    inspectionRecords:{pre:[{id:'pre-1',name:'检验记录 1',currentView:'impact',reports:['原始记录','体积计算表']}],during:[],post:[]},
+    activeInspectionRecord:{pre:'pre-1',during:'',post:''}, fmCurrentGroup:'A', fmCurrentItem:'fm-goods',
     meetingInfo:{date:'2025-05-24 14:15', place:'MT SAIQ 会议室', host:'陈海峰', inspectors:['陈海峰'],
       shipRep:'Zhang Wei / Chief Officer', shoreRep:'赵海 / 仙人岛码头', clientRep:'刘洋 / 委托方',
       lang:'中英文', safety:'已完成', notes:'核对资料、计量条件、取样方案及作业计划'},
@@ -615,19 +641,16 @@ function loadState(){
       def.shipVessels=['MT SAIQ'];
       def.shipVessel='MT SAIQ';
     }
-    // Migrate drafts saved under the former flat 9-tab navigation.
-    var legacySubSteps={arrival:'arrival',rob:'rob',vef:'vef'};
-    if(legacySubSteps[def.currentStep]){
-      def.currentSubStep=legacySubSteps[def.currentStep];
-      def.currentStep='ship';
-    }else if(def.currentStep==='shore'){
-      def.currentSubStep='shoreMeasurement';
-    }else if(def.currentStep==='submit'){
-      def.currentStep='final';
-    }
+    // Migrate the former measurement flow into the new before / during /
+    // after record structure without discarding existing task drafts.
+    var legacySubSteps={arrival:'pre',rob:'post',vef:'post',ship:'pre',shore:'during',review:'post',submit:'summary'};
+    if(legacySubSteps[def.currentStep]) def.currentStep=legacySubSteps[def.currentStep];
+    if(!def.inspectionRecords || typeof def.inspectionRecords!=='object') def.inspectionRecords=defaultState().inspectionRecords;
+    ['pre','during','post'].forEach(function(phase){
+      if(!Array.isArray(def.inspectionRecords[phase])) def.inspectionRecords[phase]=[];
+    });
+    if(!def.activeInspectionRecord || typeof def.activeInspectionRecord!=='object') def.activeInspectionRecord={};
     if(!STEPS.some(function(step){ return step.id===def.currentStep; })) def.currentStep='meeting';
-    if(def.currentStep==='ship' && ['arrival','calculation','conversion','rob','vef'].indexOf(def.currentSubStep)<0) def.currentSubStep='arrival';
-    if(def.currentStep==='shore') def.currentSubStep='shoreMeasurement';
     state=def;
     return true;
   }catch(e){ return false; }
@@ -678,23 +701,20 @@ function computeStepStatuses(){
   FM_FLAT.forEach(function(it){ if(state.fmItems[it.id].status==='SUBMITTED') submitted++; });
   var meetingDone = submitted===total;
   res.meeting = meetingDone?'COMPLETED': (submitted>0?'IN_PROGRESS':'NOT_STARTED');
-  // Reused content pages report their completion state through their owning tab.
-  ['setup','arrival','calculation','conversion','rob','vef','shoreMeasurement','review'].forEach(function(id){
+  ['setup','final','summary'].forEach(function(id){
     res[id]= state['_done_'+id]? 'COMPLETED' : (state['_touched_'+id]? 'IN_PROGRESS':'NOT_STARTED');
   });
-  res.ship = ['arrival','calculation','conversion','rob','vef'].every(function(id){ return res[id]==='COMPLETED'; }) ? 'COMPLETED' :
-    (['arrival','calculation','conversion','rob','vef'].some(function(id){ return res[id]==='IN_PROGRESS'||res[id]==='COMPLETED'; }) ? 'IN_PROGRESS':'NOT_STARTED');
-  res.shore = res.shoreMeasurement;
-  // final
-  res.final = state._done_final? 'COMPLETED' : (state._touched_final?'IN_PROGRESS':'NOT_STARTED');
-  // submit
-  res.submit = state.completed? 'COMPLETED' : 'NOT_STARTED';
+  ['pre','during','post'].forEach(function(phase){
+    var records=(state.inspectionRecords&&state.inspectionRecords[phase])||[];
+    res[phase]=records.length ? 'IN_PROGRESS' : 'NOT_STARTED';
+  });
+  res.summary = state.completed? 'COMPLETED' : (state._touched_summary?'IN_PROGRESS':'NOT_STARTED');
   return res;
 }
 function renderStepNav(){
   var statuses=computeStepStatuses();
   // Retained for data/state compatibility; compact layout hides this sidebar.
-  var html='<div class="nav-card"><div class="nav-card-head"><span>主步骤</span><span class="sub">'+countDoneSteps()+'/6</span></div>';
+  var html='<div class="nav-card"><div class="nav-card-head"><span>主步骤</span><span class="sub">'+countDoneSteps()+'/7</span></div>';
   STEPS.forEach(function(s){
     var active = state.currentStep===s.id?'active':'';
     var done = (statuses[s.id]==='COMPLETED')?'done':'';
@@ -770,9 +790,10 @@ function renderForm(){
   }
   var step=STEPS.filter(function(s){return s.id===state.currentStep;})[0];
   if(state.currentStep==='meeting') renderMeetingForm();
-  else if(state.currentStep==='ship') renderShipWorkspace();
+  else if(['pre','during','post'].indexOf(state.currentStep)>=0) renderInspectionRecordsWorkspace(state.currentStep);
   else if(step && step.children) renderEmbeddedStep({id:state.currentSubStep, name:(step.children.filter(function(child){return child.id===state.currentSubStep;})[0]||step.children[0]).name});
   else if(state.currentStep==='final') renderEmbeddedStep(step);
+  else if(state.currentStep==='summary') renderProgressSummary();
   else renderGenericStep(step);
 }
 function stepHeader(no,name,en,desc){
@@ -804,6 +825,157 @@ function renderShipWorkspace(){
   $all('[data-ship-section]',host).forEach(function(button){ button.addEventListener('click',function(){ state.shipSection=button.dataset.shipSection; scheduleSave(); renderAll(); }); });
   var selected=sections.filter(function(item){ return item.id===section; })[0]||sections[0];
   renderEmbeddedStep({id:selected.page, name:selected.label, view:selected.view}, host);
+}
+
+var RECORD_VIEWS=[
+  {id:'impact', name:'计重影响参数'},
+  {id:'measurement', name:'原始记录'},
+  {id:'calculation', name:'体积计算'},
+  {id:'conversion', name:'单位换算'},
+  {id:'samples', name:'检验样品'}
+];
+var REPORT_OPTIONS=['原始记录','体积计算表','单位换算表','检验样品清单'];
+function phaseLabel(phase){ return {pre:'检验前',during:'检验中',post:'检验后'}[phase]||phase; }
+function ensureInspectionRecordState(phase){
+  state.inspectionRecords=state.inspectionRecords||{};
+  if(!Array.isArray(state.inspectionRecords[phase])) state.inspectionRecords[phase]=[];
+  state.activeInspectionRecord=state.activeInspectionRecord||{};
+  return state.inspectionRecords[phase];
+}
+function renderInspectionRecordsWorkspace(phase){
+  var host=$('#formCol');
+  var records=ensureInspectionRecordState(phase);
+  var activeId=state.activeInspectionRecord[phase];
+  var record=records.filter(function(item){ return item.id===activeId; })[0]||records[0];
+  if(record) state.activeInspectionRecord[phase]=record.id;
+  var toolbar='<div class="inspection-record-toolbar" aria-label="'+phaseLabel(phase)+'检验记录"><span class="toolbar-label">检验记录</span>'+
+    records.map(function(item){ return '<button type="button" class="'+(record&&item.id===record.id?'record-active':'')+'" data-record-id="'+esc(item.id)+'">'+esc(item.name)+'</button>'; }).join('')+
+    '<button type="button" class="record-add" data-add-record>＋ 添加检验记录</button>'+
+    (record?'<button type="button" class="record-edit" data-edit-record>编辑当前记录</button>':'')+'</div>';
+  if(!record){
+    host.innerHTML='<section class="inspection-record-shell">'+toolbar+'<div class="record-empty"><div><h2>'+phaseLabel(phase)+'暂无检验记录</h2><p>请添加一条检验记录后录入计重影响参数、原始记录、计算与样品数据。</p><button type="button" data-add-record>添加检验记录</button></div></div></section>';
+    bindInspectionRecordActions(phase);
+    return;
+  }
+  if(!RECORD_VIEWS.some(function(view){ return view.id===record.currentView; })) record.currentView='impact';
+  host.innerHTML='<section class="inspection-record-shell">'+toolbar+'</section>';
+  bindInspectionRecordActions(phase,record);
+  renderEmbeddedStep({id:'arrival', name:record.name+' · '+RECORD_VIEWS.filter(function(view){return view.id===record.currentView;})[0].name, view:record.currentView}, host.querySelector('.inspection-record-shell'));
+}
+function bindInspectionRecordActions(phase,record){
+  var host=$('#formCol');
+  $all('[data-record-id]',host).forEach(function(button){ button.addEventListener('click',function(){ state.activeInspectionRecord[phase]=button.dataset.recordId; scheduleSave(); renderAll(); }); });
+  $all('[data-add-record]',host).forEach(function(button){ button.addEventListener('click',function(){ openInspectionRecordModal(phase,'add'); }); });
+  var edit=$('[data-edit-record]',host);
+  if(edit) edit.addEventListener('click',function(){ openInspectionRecordModal(phase,'edit'); });
+  if(!record) return;
+  $all('[data-record-view]',host).forEach(function(button){ button.addEventListener('click',function(){ record.currentView=button.dataset.recordView; record.touched=true; scheduleSave(); renderAll(); }); });
+  $all('[data-report-toggle]',host).forEach(function(input){ input.addEventListener('change',function(){ var name=input.dataset.reportToggle; var i=record.reports.indexOf(name); if(input.checked && i<0) record.reports.push(name); if(!input.checked && i>=0) record.reports.splice(i,1); scheduleSave(); }); });
+  var exportButton=$('[data-export-record]',host);
+  if(exportButton) exportButton.addEventListener('click',function(){ exportInspectionReports(phase,record); });
+}
+function inspectionEquipmentCatalog(){
+  var vessels=[
+    {name:'MT SAIQ', compartments:['1C','2C','3C','1P','1S']},
+    {name:'MT OCEAN CREST', compartments:['2P']},
+    {name:'MT EASTERN STAR', compartments:['3S']}
+  ];
+  var tanks=[
+    {id:'G101', label:'G101 · 立式金属浮顶罐'},
+    {id:'TK-A02', label:'TK-A02 · 立式金属浮顶罐'},
+    {id:'TK-D08', label:'TK-D08 · 储油罐'}
+  ];
+  try{
+    var saved=JSON.parse(localStorage.getItem('offlineSurveyEquipmentMaster'));
+    if(saved&&typeof saved==='object'){
+      (saved.vessels||[]).forEach(function(item){
+        if(!item||!item.vesselName||!item.tankNo) return;
+        var vessel=vessels.filter(function(entry){return entry.name===item.vesselName;})[0];
+        if(!vessel){ vessel={name:item.vesselName,compartments:[]}; vessels.push(vessel); }
+        if(vessel.compartments.indexOf(item.tankNo)<0) vessel.compartments.push(item.tankNo);
+      });
+      (saved.tanks||[]).forEach(function(item){
+        if(!item||!item.equipmentNo) return;
+        if(!tanks.some(function(tank){return tank.id===item.equipmentNo;})) tanks.push({id:item.equipmentNo,label:item.equipmentNo+' · '+(item.instrumentName||'岸罐')});
+      });
+    }
+  }catch(e){}
+  return {vessels:vessels,tanks:tanks};
+}
+function inspectionTaskCargoes(){
+  var values=[];
+  [state.taskCargoes, state.goods&&state.goods.selectedCargoes, state.goods&&state.goods.cargoes, state.goods&&state.goods.cargoName, TASK.cargo].forEach(function(source){
+    (Array.isArray(source)?source:[source]).forEach(function(name){
+      if(typeof name==='string'&&name.trim()&&values.indexOf(name.trim())<0) values.push(name.trim());
+    });
+  });
+  return values;
+}
+function recordTargetFields(catalog,record){
+  var target=record.measurementTarget||'vessel';
+  var vesselName=record.vessel||TASK.vessel;
+  var vessel=catalog.vessels.filter(function(item){return item.name===vesselName;})[0]||catalog.vessels[0];
+  var compartments=record.compartments||[];
+  var shoreTanks=record.shoreTanks||[];
+  var vesselOptions=catalog.vessels.map(function(item){return '<option value="'+esc(item.name)+'"'+(item.name===vessel.name?' selected':'')+'>'+esc(item.name)+'</option>';}).join('');
+  var compartmentOptions=(vessel?vessel.compartments:[]).map(function(name){return '<label class="record-target-option"><input type="checkbox" value="'+esc(name)+'" data-record-compartment'+(compartments.indexOf(name)>=0?' checked':'')+'> '+esc(name)+'</label>';}).join('') || '<span class="hint">该船舶暂无可选船舱。</span>';
+  var tankOptions=catalog.tanks.map(function(item){return '<label class="record-target-option"><input type="checkbox" value="'+esc(item.id)+'" data-record-shore-tank'+(shoreTanks.indexOf(item.id)>=0?' checked':'')+'> '+esc(item.label)+'</label>';}).join('') || '<span class="hint">暂无可选岸罐。</span>';
+  return '<div class="field"><label class="lbl">计量对象 <span class="req">*</span></label><select id="recordTargetType" class="control"><option value="vessel"'+(target==='vessel'?' selected':'')+'>船舶</option><option value="shore"'+(target==='shore'?' selected':'')+'>岸罐</option></select></div>'+
+    '<div id="recordVesselFields"'+(target==='shore'?' hidden':'')+'><div class="field"><label class="lbl">船舶 <span class="req">*</span></label><select id="recordVessel" class="control">'+vesselOptions+'</select></div><div class="field"><label class="lbl">船舱 <span class="req">*</span></label><div class="record-target-options" id="recordCompartmentOptions">'+compartmentOptions+'</div><div class="hint">可选择本条记录涉及的一个或多个船舱。</div></div></div>'+
+    '<div id="recordShoreFields"'+(target==='vessel'?' hidden':'')+'><div class="field"><label class="lbl">岸罐 <span class="req">*</span></label><div class="record-target-options">'+tankOptions+'</div><div class="hint">请选择本条记录涉及的具体岸罐。</div></div></div>';
+}
+function openInspectionRecordModal(phase,mode){
+  var editing=mode==='edit';
+  var records=ensureInspectionRecordState(phase);
+  var activeId=state.activeInspectionRecord[phase];
+  var current=records.filter(function(item){return item.id===activeId;})[0];
+  var catalog=inspectionEquipmentCatalog();
+  var cargoes=inspectionTaskCargoes();
+  var selectedCargo=editing&&current&&current.cargo?current.cargo:cargoes[0];
+  var targetRecord=editing&&current?current:{};
+  openModal(editing?'编辑检验记录':'添加检验记录',
+    '<div class="field"><label class="lbl" for="recordModalName">记录名称 <span class="req">*</span></label><input id="recordModalName" class="control" maxlength="40" value="'+esc(editing&&current?current.name:'')+'" placeholder="例如：卸前船舶计量" autofocus></div>'+
+    recordTargetFields(catalog,targetRecord)+
+    '<div class="field"><label class="lbl" for="recordCargo">货物 <span class="req">*</span></label><select id="recordCargo" class="control">'+cargoes.map(function(name){return '<option value="'+esc(name)+'"'+(name===selectedCargo?' selected':'')+'>'+esc(name)+'</option>';}).join('')+'</select><div class="hint">仅显示当前任务单中已选择的货物。</div></div>',
+    (editing&&current?'<button type="button" class="btn btn-danger" data-delete-record>删除记录</button>':'')+'<button type="button" class="btn" data-cancel-record>取消</button><button type="button" class="btn btn-primary" data-save-record>'+ (editing?'保存修改':'添加记录') +'</button>',
+    {onOpen:function(){
+      var input=$('#recordModalName'); setTimeout(function(){input.focus();input.select();},0);
+      $('[data-cancel-record]').addEventListener('click',closeModal);
+      function updateCompartments(){
+        var vesselName=$('#recordVessel').value;
+        var vessel=catalog.vessels.filter(function(item){return item.name===vesselName;})[0];
+        $('#recordCompartmentOptions').innerHTML=(vessel?vessel.compartments:[]).map(function(name){return '<label class="record-target-option"><input type="checkbox" value="'+esc(name)+'" data-record-compartment> '+esc(name)+'</label>';}).join('') || '<span class="hint">该船舶暂无可选船舱。</span>';
+      }
+      $('#recordTargetType').addEventListener('change',function(){ var isVessel=this.value==='vessel'; $('#recordVesselFields').hidden=!isVessel; $('#recordShoreFields').hidden=isVessel; });
+      $('#recordVessel').addEventListener('change',updateCompartments);
+      $('[data-save-record]').addEventListener('click',function(){
+        var name=input.value.trim(); if(!name){toast('请输入检验记录名称','warn');input.focus();return;}
+        if(records.some(function(item){return item.name===name && (!current||item.id!==current.id);})){toast('该检验记录名称已存在','warn');input.focus();return;}
+        var target=$('#recordTargetType').value;
+        var vessel=target==='vessel'?$('#recordVessel').value:'';
+        var compartments=$all('[data-record-compartment]:checked').map(function(item){return item.value;});
+        var shoreTanks=$all('[data-record-shore-tank]:checked').map(function(item){return item.value;});
+        if(target==='vessel'&&!compartments.length){toast('请选择至少一个船舱','warn');return;}
+        if(target==='shore'&&!shoreTanks.length){toast('请选择至少一个岸罐','warn');return;}
+        var details={measurementTarget:target,vessel:vessel,compartments:compartments,shoreTanks:shoreTanks,cargo:$('#recordCargo').value};
+        if(editing&&current){Object.assign(current,{name:name},details);toast('检验记录已更新','success');}
+        else { var item=Object.assign({id:phase+'-'+Date.now(),name:name,currentView:'impact',reports:[]},details); records.push(item); state.activeInspectionRecord[phase]=item.id; toast('已添加 '+name,'success'); }
+        scheduleSave();closeModal();renderAll();
+      });
+      var del=$('[data-delete-record]');
+      if(del) del.addEventListener('click',function(){ records.splice(records.indexOf(current),1); state.activeInspectionRecord[phase]=records[0]?records[0].id:''; scheduleSave();closeModal();toast('已删除 '+current.name,'success');renderAll(); });
+    }});
+}
+function exportInspectionReports(phase,record){
+  if(!record.reports.length){toast('请至少选择一份导出报告','warn');return;}
+  var content='容量计重离线系统\\n'+phaseLabel(phase)+' · '+record.name+'\\n导出报告：'+record.reports.join('、')+'\\n导出时间：'+new Date().toLocaleString('zh-CN');
+  var url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'}));
+  var link=document.createElement('a'); link.href=url; link.download=record.name+'-所选报告.txt'; document.body.appendChild(link); link.click(); link.remove(); setTimeout(function(){URL.revokeObjectURL(url);},0);
+  toast('已导出 '+record.reports.length+' 份报告','success');
+}
+function renderProgressSummary(){
+  var rows=['pre','during','post'].map(function(phase){ var records=ensureInspectionRecordState(phase); var reports=records.reduce(function(total,item){return total+(item.reports||[]).length;},0); return '<tr><td>'+phaseLabel(phase)+'</td><td>'+records.length+'</td><td>'+reports+'</td><td>'+ (records.length?'进行中':'待添加记录')+'</td></tr>'; }).join('');
+  $('#formCol').innerHTML='<div class="form-card"><div class="form-body">'+stepHeader('07','检验进度汇总','Inspection Progress Summary','汇总各阶段的检验记录与已选择的报告，便于完成前核查。')+'<div class="panel"><div class="panel-head"><div class="ph-title"><span class="gpline"></span>检验记录与报告汇总</div></div><div class="panel-body"><div class="tbl-scroll"><table class="tbl"><thead><tr><th>阶段</th><th>检验记录</th><th>已选择报告</th><th>状态</th></tr></thead><tbody>'+rows+'</tbody></table></div><div class="hint">返回各阶段可继续新增记录、完善数据并选择需要导出的报告。</div></div></div></div></div>';
 }
 
 function openVesselModal(mode){
@@ -1099,7 +1271,7 @@ function renderMeetingForm(){
     }catch(e){}
   });
   host.replaceChildren(frame);
-  frame.src='./首次会议.html?embedded=1';
+  frame.src='./首次会议-任务类型版.html?embedded=1';
   return;
 
   var sub=0; FM_FLAT.forEach(function(it){ if(state.fmItems[it.id].status==='SUBMITTED') sub++; });

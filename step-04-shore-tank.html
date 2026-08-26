@@ -117,7 +117,8 @@
     .shore-quantity-overview th { text-align: left; }
     .shore-quantity-overview tr:last-child > * { border-bottom: 0; }
     .shore-quantity-overview .quantity-total { background: var(--accent-soft); font-weight: 700; }
-    .shore-entry-layout { display: grid; grid-template-columns: 230px minmax(640px, 1fr) 220px; gap: 14px; align-items: start; }
+    .shore-entry-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 14px; align-items: start; }
+    .embedded-step-frame { display: block; width: 100%; min-height: 980px; border: 0; border-radius: 7px; background: var(--background); }
     .tank-navigator, .current-tank-result { border: 1px solid var(--border); border-radius: var(--radius); background: #fff; overflow: hidden; }
     .tank-navigator header, .current-tank-result header { padding: 12px 14px; background: var(--surface-muted); border-bottom: 1px solid var(--border); }
     .tank-navigator header strong, .current-tank-result header strong { display: block; font-size: 13px; }
@@ -221,6 +222,7 @@
           <div class="workspace-mode-tabs" role="tablist" aria-label="岸罐作业内容">
             <button type="button" role="tab" id="rawRecordTab" aria-selected="true" aria-controls="rawRecordPanel">岸罐原始记录</button>
             <button type="button" role="tab" id="measurementTab" aria-selected="false" aria-controls="measurementPanel">岸罐计量</button>
+            <button type="button" role="tab" id="conversionTab" aria-selected="false" aria-controls="conversionPanel">单位换算</button>
             <button type="button" role="tab" id="samplesTab" aria-selected="false" aria-controls="samplesPanel">检验样品</button>
           </div>
 
@@ -237,6 +239,10 @@
           </div>
 
           <div id="panel-entry"><!-- rendered by JS --></div>
+          </div>
+
+          <div id="conversionPanel" role="tabpanel" aria-labelledby="conversionTab" hidden>
+            <iframe class="embedded-step-frame" src="数量单位换算.html" title="数量单位换算页面"></iframe>
           </div>
 
           <div id="samplesPanel" role="tabpanel" aria-labelledby="samplesTab" hidden>
@@ -440,9 +446,11 @@
       const measurement = activeWorkspaceTab === "measurement";
       $("rawRecordPanel").hidden = !raw;
       $("measurementPanel").hidden = !measurement;
+      $("conversionPanel").hidden = activeWorkspaceTab !== "conversion";
       $("samplesPanel").hidden = activeWorkspaceTab !== "samples";
       $("rawRecordTab").setAttribute("aria-selected", String(raw));
       $("measurementTab").setAttribute("aria-selected", String(measurement));
+      $("conversionTab").setAttribute("aria-selected", String(activeWorkspaceTab === "conversion"));
       $("samplesTab").setAttribute("aria-selected", String(activeWorkspaceTab === "samples"));
     }
 
@@ -574,7 +582,6 @@
         <div class="shore-entry-layout">
           <aside class="tank-navigator" aria-label="岸罐列表"><header><strong>岸罐列表</strong><small>选择岸罐后，在右侧录入数据</small></header><div class="tank-list">${tankNav}</div><button type="button" class="edit-selected-tank" id="editSelectedTankBtn">编辑当前岸罐</button><button type="button" class="add-tank" id="addTankBtn">＋ 新增岸罐</button></aside>
           <section class="shore-editor"><div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>按照原表顺序录入期初、期末数据；绿色项目由系统自动计算。</span></div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span></div><section class="table-card shore-excel-card"><div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>期初 / 期末</span></div><div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table"><thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">期初<small>卸货前</small></th><th class="close-column">期末<small>卸货后</small></th></tr></thead><tbody>${body}</tbody></table></div></section></section>
-          <aside class="current-tank-result" aria-label="当前岸罐结果"><header><strong>${row.tank} 接收结果</strong><small>期末 − 期初</small></header><dl><dt>毛量（15℃）</dt><dd>${fmt(close.gsv - open.gsv, 3)} m³</dd></dl><dl><dt>净量（15℃）</dt><dd>${fmt(close.nsv - open.nsv, 3)} m³</dd></dl><dl><dt>毛重（空气中）</dt><dd>${fmt(close.grossWeight - open.grossWeight, 3)} MT</dd></dl><dl><dt>净重（空气中）</dt><dd>${fmt(close.netWeight - open.netWeight, 3)} MT</dd></dl></aside>
         </div>`;
       $("panel-entry").querySelectorAll("[data-tank-id]").forEach((b) => b.addEventListener("click", () => { selectedTankId = Number(b.dataset.tankId); renderEntry(); }));
       $("addTankBtn").addEventListener("click", openAddTankDialog);
@@ -690,6 +697,10 @@
     });
     $("measurementTab").addEventListener("click", () => {
       activeWorkspaceTab = "measurement";
+      renderWorkspaceTab();
+    });
+    $("conversionTab").addEventListener("click", () => {
+      activeWorkspaceTab = "conversion";
       renderWorkspaceTab();
     });
     $("samplesTab").addEventListener("click", () => {

@@ -186,8 +186,9 @@
     .workspace { grid-column: 2; grid-row: 3; }
     .workspace { padding: 0; background: #fff; }
     .page-card { border: 0; border-radius: 0; box-shadow: none; }
+    /* 现场检验使用独立的阶段导航，隐藏系统级应用标题栏，避免两套导航并列。 */
     body.data-entry-mode .app { grid-template-columns: minmax(0, 1fr); }
-    body.data-entry-mode .titlebar { display: none; }
+    body.data-entry-mode .titlebar { display: none !important; }
     body.data-entry-mode .contextbar, body.data-entry-mode .workspace { grid-column: 1; }
   </style>
 </head>
@@ -299,8 +300,10 @@
       toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
     }
     function applyEntryMode(page) {
-      const isDataEntry = /现场检验数据录入\.html$/.test(page || '');
+      const isDataEntry = /现场检验数据录入\.html(?:\?|$)/.test(page || '');
       document.body.classList.toggle('data-entry-mode', isDataEntry);
+      document.querySelector('.titlebar').toggleAttribute('inert', isDataEntry);
+      document.querySelector('.titlebar').setAttribute('aria-hidden', String(isDataEntry));
     }
     function exitDataEntryPage() {
       let taskNo = '';
@@ -316,7 +319,7 @@
       closedState.classList.remove('show');
     }
     function syncEntryModeFromFrame() {
-      try { applyEntryMode(frame.contentWindow.location.pathname); } catch (error) {}
+      try { applyEntryMode(decodeURIComponent(frame.contentWindow.location.pathname)); } catch (error) {}
     }
     function showPage(page, title, crumb) {
       crumbPath.textContent = crumb;
@@ -382,6 +385,7 @@
       const data = event.data;
       if (!data) return;
       if (data.type === 'navigate') {
+        if (data.title === '现场检验数据录入') applyEntryMode('现场检验数据录入.html');
         if (data.crumb && data.title) {
           crumbPath.textContent = data.crumb;
           pageTitle.textContent = data.title;
