@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="step-common.css">
   <style>
     .shore-heading .context-actions { align-self: center; }
-    .metric-row.shore-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .workspace-mode-tabs { display: flex; gap: 0; width: 100%; margin: 0 0 16px; padding: 0; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; }
     .workspace-mode-tabs button { position: relative; min-height: 48px; padding: 0 24px; border: 0; border-radius: 0; background: transparent; color: var(--text-secondary); font-size: 14px; font-weight: 700; cursor: pointer; }
     .workspace-mode-tabs button:hover { color: var(--primary-strong); background: rgba(255, 255, 255, .42); }
@@ -231,8 +230,6 @@
           </div>
 
           <div id="measurementPanel" role="tabpanel" aria-labelledby="measurementTab" hidden>
-          <div class="metric-row shore-metrics" aria-label="岸罐计量汇总" id="shoreMetrics"><!-- rendered by JS --></div>
-
           <div class="tabbar shore-actions">
             <span class="calculation-status" id="calculationStatus">填写完成后运行计算</span>
             <button type="button" class="validate-action" id="validateBtn">运行计算 <small>更新计量汇总</small></button>
@@ -493,18 +490,10 @@
       }, { beforeGsv: 0, afterGsv: 0, receivedGsv: 0, receivedNsv: 0, receivedGrossWeight: 0, receivedNetWeight: 0 });
     }
 
-    function renderMetrics() {
-      const t = publishedTotals || totalsFor(shoreReadings);
-      $("shoreMetrics").innerHTML = `
-        <article><span>Open GSV · 期初标准毛体积</span><strong>${fmt(t.beforeGsv, 3)}</strong><small>m³ @15℃</small></article>
-        <article><span>Close GSV · 期末标准毛体积</span><strong>${fmt(t.afterGsv, 3)}</strong><small>m³ @15℃</small></article>
-        <article class="metric-accent"><span>Direction Result · 方向计算毛量</span><strong>${fmt(t.receivedGsv, 3)}</strong><small>${calculationMode === "RECEIVED" ? "Close − Open" : calculationMode === "DELIVERY" ? "Open − Close" : "Close inventory"}</small></article>`;
-    }
-
     function renderCell(row, phase, key, kind) {
       const m = row[phase];
       if (kind === "formula") return `<td class="shore-formula-cell"><strong>${fmt(shoreComputed(m)[key], 3)}</strong></td>`;
-      if (key === "measurementDateTime") return `<td><div class="measurement-datetime"><input type="date" value="${m.date}" data-field="date" data-phase="${phase}" data-id="${row.id}" aria-label="${phase === "open" ? "期初" : "期末"}测量日期"><input type="time" value="${m.time}" data-field="time" data-phase="${phase}" data-id="${row.id}" aria-label="${phase === "open" ? "期初" : "期末"}测量时间"></div></td>`;
+      if (key === "measurementDateTime") return `<td><div class="measurement-datetime"><input type="date" value="${m.date}" data-field="date" data-phase="${phase}" data-id="${row.id}" aria-label="卸货前测量日期"><input type="time" value="${m.time}" data-field="time" data-phase="${phase}" data-id="${row.id}" aria-label="卸货前测量时间"></div></td>`;
       const value = m[key];
       if (key === "shellMaterial") return `<td><select data-field="${key}" data-phase="${phase}" data-id="${row.id}"><option${value === "INSULATED" ? " selected" : ""}>INSULATED</option><option${value === "NON_INSULATED" ? " selected" : ""}>NON_INSULATED</option></select></td>`;
       if (key === "gaugeMethod") return `<td><select data-field="${key}" data-phase="${phase}" data-id="${row.id}"><option${value === "INNAGE" ? " selected" : ""}>INNAGE</option><option${value === "ULLAGE" ? " selected" : ""}>ULLAGE</option></select></td>`;
@@ -560,11 +549,11 @@
       const row = shoreReadings.find((item) => item.id === selectedTankId) || shoreReadings[0];
       selectedTankId = row.id;
       const body = fieldSections.map((section) => {
-        const fieldRows = section.fields.map(([key, en, zh, unit, kind, merged]) => {
-          const cells = merged ? renderMergedCell(row, key, kind) : renderCell(row, "open", key, kind) + renderCell(row, "close", key, kind);
+        const fieldRows = section.fields.filter(([, , , , kind, merged]) => !(merged && kind === "formula")).map(([key, en, zh, unit, kind]) => {
+          const cells = renderCell(row, "open", key, kind);
           return `<tr><th scope="row"><strong>${en}</strong><small>${zh}${unit ? ` · ${unit}` : ""}</small></th>${cells}</tr>`;
         }).join("");
-        return section.title ? `<tr class="shore-section-row"><th colSpan="3">${section.title}</th></tr>${fieldRows}` : fieldRows;
+        return section.title ? `<tr class="shore-section-row"><th colSpan="2">${section.title}</th></tr>${fieldRows}` : fieldRows;
       }).join("");
       const open = shoreComputed(row.open), close = shoreComputed(row.close);
       const receiptTanks = shoreReadings.filter((item) => item.assetType === "TANK");
@@ -578,10 +567,10 @@
         return { gsv: sum.gsv + end.gsv - start.gsv, nsv: sum.nsv + end.nsv - start.nsv, gross: sum.gross + end.grossWeight - start.grossWeight, net: sum.net + end.netWeight - start.netWeight };
       }, { gsv: 0, nsv: 0, gross: 0, net: 0 });
       $("panel-entry").innerHTML = `
-        <section class="shore-quantity-overview"><header><div><strong>各罐收货数量</strong><span>以立方米（15℃）为主，期末 − 期初</span></div><span>共 ${receiptTanks.length} 个岸罐</span></header><div class="table-scroll"><table><thead><tr><th>岸罐</th><th>毛量 m³</th><th>净量 m³</th><th class="optional-unit">毛重 MT</th><th class="optional-unit">净重 MT</th><th>状态</th></tr></thead><tbody>${overviewRows}<tr class="quantity-total"><th>收货数量合计</th><td>${fmt(overviewTotals.gsv, 3)}</td><td>${fmt(overviewTotals.nsv, 3)}</td><td class="optional-unit">${fmt(overviewTotals.gross, 3)}</td><td class="optional-unit">${fmt(overviewTotals.net, 3)}</td><td>已汇总</td></tr></tbody></table></div></section>
+        <section class="shore-quantity-overview"><header><div><strong>各罐收货数量</strong><span>以立方米（15℃）为主</span></div><span>共 ${receiptTanks.length} 个岸罐</span></header><div class="table-scroll"><table><thead><tr><th>岸罐</th><th>毛量 m³</th><th>净量 m³</th><th class="optional-unit">毛重 MT</th><th class="optional-unit">净重 MT</th><th>状态</th></tr></thead><tbody>${overviewRows}<tr class="quantity-total"><th>收货数量合计</th><td>${fmt(overviewTotals.gsv, 3)}</td><td>${fmt(overviewTotals.nsv, 3)}</td><td class="optional-unit">${fmt(overviewTotals.gross, 3)}</td><td class="optional-unit">${fmt(overviewTotals.net, 3)}</td><td>已汇总</td></tr></tbody></table></div></section>
         <div class="shore-entry-layout">
           <aside class="tank-navigator" aria-label="岸罐列表"><header><strong>岸罐列表</strong><small>选择岸罐后，在右侧录入数据</small></header><div class="tank-list">${tankNav}</div><button type="button" class="edit-selected-tank" id="editSelectedTankBtn">编辑当前岸罐</button><button type="button" class="add-tank" id="addTankBtn">＋ 新增岸罐</button></aside>
-          <section class="shore-editor"><div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>按照原表顺序录入期初、期末数据；绿色项目由系统自动计算。</span></div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span></div><section class="table-card shore-excel-card"><div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>期初 / 期末</span></div><div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table"><thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">期初<small>卸货前</small></th><th class="close-column">期末<small>卸货后</small></th></tr></thead><tbody>${body}</tbody></table></div></section></section>
+          <section class="shore-editor"><div class="tank-entry-toolbar"><div><strong>${row.tank} · 岸罐计量表</strong><span>录入卸货前计量数据；绿色项目由系统自动计算。</span></div><span class="asset-label">${row.assetType === "PIPELINE" ? "管线记录" : "岸罐"}</span></div><section class="table-card shore-excel-card"><div class="table-toolbar"><div class="excel-column-legend"><strong>岸罐计量明细</strong><span>白色 = 现场录入</span><span>绿色 = 自动计算</span></div><span>卸货前计量</span></div><div class="table-scroll shore-matrix-scroll"><table class="shore-matrix-table"><thead><tr><th>计量项目<small>单位 / 填写说明</small></th><th class="open-column">计量值</th></tr></thead><tbody>${body}</tbody></table></div></section></section>
         </div>`;
       $("panel-entry").querySelectorAll("[data-tank-id]").forEach((b) => b.addEventListener("click", () => { selectedTankId = Number(b.dataset.tankId); renderEntry(); }));
       $("addTankBtn").addEventListener("click", openAddTankDialog);
@@ -737,7 +726,6 @@
       row.tank = tank;
       row.assetType = $("editTankType").value;
       $("editTankDialog").close();
-      renderMetrics();
       renderEntry();
       renderRawRecords();
       flash("岸罐信息已更新");
@@ -746,12 +734,10 @@
     $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
     $("validateBtn").addEventListener("click", () => {
       publishedTotals = totalsFor(shoreReadings);
-      renderMetrics();
-      $("calculationStatus").textContent = "计算完成：计量汇总已更新";
-      flash("计算完成，结果已同步至计量汇总");
+      $("calculationStatus").textContent = "计算完成：计量结果已更新";
+      flash("计算完成，计量结果已更新");
     });
 
-    renderMetrics();
     renderEntry();
     renderRawRecords();
     renderSamples();

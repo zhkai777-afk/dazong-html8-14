@@ -44,7 +44,9 @@
     .embedded-step-frame { display: block; width: 100%; min-height: 980px; margin-top: 14px; border: 0; border-radius: 7px; background: var(--background); }
     .impact-parameter-card { margin-top: 14px; }.impact-parameter-card header { padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--primary-soft); }.impact-parameter-card h3 { margin: 0; font-size: 15px; }.impact-parameter-card header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 11px; }.impact-parameter-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }.impact-parameter-grid label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(140px, 42%); align-items: center; gap: 12px; min-height: 62px; padding: 10px 16px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); color: var(--text); font-size: 13px; font-weight: 700; }.impact-parameter-grid label:nth-child(2n) { border-right: 0; }.impact-parameter-grid label b { color: #c53939; margin-right: 4px; }.impact-parameter-grid input, .impact-parameter-grid select { width: 100%; min-height: 34px; border: 1px solid var(--border); border-radius: 4px; padding: 0 9px; background: #fff; color: var(--text); }.impact-parameter-grid input[readonly] { background: #edf3f8; color: var(--text-secondary); }.impact-field-note { color: var(--text-secondary); font-size: 10px; font-weight: 500; }
     .inspection-sample-card { margin-top: 14px; }.inspection-sample-card header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--primary-soft); }.inspection-sample-card h3 { margin: 0; font-size: 15px; }.inspection-sample-card header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 11px; }.sample-table-wrap { overflow-x: auto; }.sample-table { width: 100%; min-width: 980px; border-collapse: collapse; }.sample-table th, .sample-table td { padding: 8px 10px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; font-size: 12px; }.sample-table th:last-child, .sample-table td:last-child { border-right: 0; }.sample-table th { background: #f7fafc; color: var(--text-secondary); font-size: 11px; font-weight: 750; }.sample-table input, .sample-table select { width: 100%; min-width: 90px; min-height: 32px; border: 1px solid var(--border); border-radius: 4px; padding: 0 8px; background: #fff; color: var(--text); font-size: 12px; }.sample-table .sample-source { min-width: 210px; }.sample-table .sample-actions { width: 72px; text-align: center; }.sample-remove { min-height: 30px; border: 1px solid #e3b8b8; border-radius: 4px; background: #fff8f8; color: #b53d3d; font-size: 11px; font-weight: 700; }.sample-hint { margin: 0; padding: 10px 16px; color: var(--text-secondary); font-size: 11px; }
-    @media (max-width: 760px) { .impact-parameter-grid { grid-template-columns: 1fr; }.impact-parameter-grid label, .impact-parameter-grid label:nth-child(2n) { border-right: 0; }.ullage-tab-toolbar { align-items: stretch; flex-wrap: wrap; gap: 6px; }.measurement-tabs { flex-basis: 100%; gap: 0; }.measurement-tabs button { flex: 1 1 50%; padding: 0 12px; }.tank-maintenance-trigger { margin-left: auto; } }
+    .wedge-calculation-card { margin-top: 14px; }.wedge-calculation-card header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--primary-soft); }.wedge-calculation-card h3 { margin: 0; font-size: 15px; }.wedge-calculation-card header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 11px; }.wedge-meta-grid { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); }.wedge-meta-grid label { display: grid; gap: 5px; color: var(--text-secondary); font-size: 11px; font-weight: 700; }.wedge-meta-grid input, .wedge-meta-grid select { min-height: 34px; border: 1px solid var(--border); border-radius: 4px; padding: 0 9px; background: #fff; color: var(--text); }.wedge-meta-grid .wedge-derived-input { background: #edf3f8; color: var(--text-secondary); }.wedge-summary { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 16px 14px; }.wedge-summary span { padding: 7px 10px; border: 1px solid #d9e5ee; border-radius: 4px; background: #f8fbfd; color: var(--text-secondary); font-size: 11px; }.wedge-summary strong { margin-left: 5px; color: var(--primary); font-size: 13px; }.wedge-table-wrap { overflow-x: auto; }.wedge-table { width: 100%; min-width: 1420px; border-collapse: collapse; }.wedge-table th, .wedge-table td { padding: 7px 8px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: center; vertical-align: middle; font-size: 11px; }.wedge-table th:last-child, .wedge-table td:last-child { border-right: 0; }.wedge-table th { background: #f7fafc; color: var(--text-secondary); font-weight: 750; white-space: nowrap; }.wedge-table th small { display: block; margin-top: 3px; color: #8191a3; font-size: 10px; font-weight: 500; }.wedge-table input { width: 100%; min-width: 76px; min-height: 31px; border: 1px solid var(--border); border-radius: 4px; padding: 0 7px; text-align: right; }.wedge-table .wedge-tank { min-width: 72px; color: var(--primary); font-weight: 750; }.wedge-table .wedge-result { min-width: 88px; background: #eef5f9; color: #244967; font-variant-numeric: tabular-nums; }.wedge-table .wedge-volume { color: #256046; font-weight: 750; }.wedge-condition { min-width: 92px; font-weight: 700; }.wedge-condition.ok { color: #287252; }.wedge-condition.no { color: #a35b32; }.wedge-irregular { display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; }.wedge-note { margin: 0; padding: 12px 16px; color: var(--text-secondary); font-size: 11px; line-height: 1.65; }.wedge-empty { color: var(--text-secondary); }
+    .wedge-table select { width: 100%; min-width: 76px; min-height: 31px; border: 1px solid var(--border); border-radius: 4px; padding: 0 7px; background: #fff; color: var(--text); }
+    @media (max-width: 760px) { .impact-parameter-grid { grid-template-columns: 1fr; }.impact-parameter-grid label, .impact-parameter-grid label:nth-child(2n) { border-right: 0; }.ullage-tab-toolbar { align-items: stretch; flex-wrap: wrap; gap: 6px; }.measurement-tabs { flex-basis: 100%; gap: 0; }.measurement-tabs button { flex: 1 1 50%; padding: 0 12px; }.tank-maintenance-trigger { margin-left: auto; }.wedge-meta-grid { grid-template-columns: 1fr 1fr; } }
     .tank-maintenance-dialog { width: min(740px, calc(100vw - 32px)); border: 0; border-radius: 10px; padding: 0; color: var(--text); box-shadow: 0 20px 60px rgba(18, 37, 60, .3); }.tank-maintenance-dialog::backdrop { background: rgba(17, 31, 48, .38); }.tank-maintenance-dialog header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); background: var(--primary-soft); }.tank-maintenance-dialog h3, .tank-maintenance-dialog p { margin: 0; }.tank-maintenance-dialog h3 { font-size: 16px; }.tank-maintenance-dialog header p { margin-top: 4px; color: var(--text-secondary); font-size: 11px; }.tank-maintenance-body { padding: 16px 18px; }.tank-maintenance-list { display: grid; gap: 8px; max-height: 46vh; overflow: auto; }.tank-maintenance-row { display: grid; grid-template-columns: 58px 1fr 112px 62px; align-items: center; gap: 8px; }.tank-maintenance-row span { color: var(--text-secondary); font-size: 11px; font-weight: 700; }.tank-maintenance-row input, .tank-maintenance-row select { min-height: 34px; border: 1px solid var(--border); border-radius: 4px; padding: 0 8px; }.tank-maintenance-row button { min-height: 32px; border: 1px solid #e3b8b8; border-radius: 4px; background: #fff8f8; color: #b53d3d; font-size: 11px; font-weight: 700; }.tank-sync-option { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 11px; border-radius: 5px; background: #f5f9fd; font-size: 12px; font-weight: 700; }.tank-sync-option small { display: block; color: var(--text-secondary); font-weight: 400; }.tank-maintenance-dialog footer { display: flex; justify-content: space-between; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); }.tank-maintenance-dialog footer div { display: flex; gap: 8px; }
     .tank-measurement-card { margin-top: 14px; }
     .tank-measurement-card header { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--primary-soft); }
@@ -134,6 +136,7 @@
               <button type="button" role="tab" data-view="impact" aria-selected="true">计重影响参数</button>
               <button type="button" role="tab" data-view="measurement" aria-selected="false">原始记录</button>
               <button type="button" role="tab" data-view="calculation" aria-selected="false">体积计算</button>
+              <button type="button" role="tab" data-view="wedge" aria-selected="false">楔形计算</button>
               <button type="button" role="tab" data-view="conversion" aria-selected="false">单位换算</button>
               <button type="button" role="tab" data-view="samples" aria-selected="false">检验样品</button>
             </div>
@@ -152,6 +155,7 @@
           <div id="panel-entry"><!-- rendered by JS --></div>
           </div>
           <div id="panel-auxiliary" hidden></div>
+          <div id="panel-wedge" hidden></div>
 
           <dialog class="interpolation-modal" id="interpolationDialog" aria-labelledby="interpolationTitle">
             <header><div><h3 id="interpolationTitle">内插计算</h3><p id="interpolationTankLabel">选择舱位后录入相邻舱容表节点</p></div><button type="button" class="button tertiary" id="closeInterpolationBtn">关闭</button></header>
@@ -252,6 +256,11 @@
       { status: "卸货前", source: "Vessel Tanks 1-5/C/P/S&S L P&SLS", category: "组合样", quantity: "1", capacity: "2 L", allocation: "分析样品", seal: "CCIC 21323234" },
       { status: "卸货前", source: "Vessel Tanks 1-5/C/P/S&S L P&SLS", category: "组合样", quantity: "1", capacity: "2 L", allocation: "CCIC 保留", seal: "CCIC 21323235" }
     ];
+    const wedgeTankNames = ["1中", "2中", "3中", "4中", "5中", "1左", "1右", "2左", "2右", "3左", "3右", "4左", "4右", "5左", "5右", "左污油舱", "右污油舱"];
+    const wedgeState = {
+      forwardDraft: "", aftDraft: "", perpendicularDistance: "", list: "无横倾", liquidLevelTool: "", temperatureTool: "", freeWaterTool: "", waterPasteBrand: "",
+      rows: wedgeTankNames.map(tank => ({ tank, u: "", d: "", s: "", l: "", a: "", wedgeLength: "", wedgeCondition: "", halfDepth: "", capacityVolume: "", irregular: false, w: "" }))
+    };
     const $ = (id) => document.getElementById(id);
     function selectedQuantityUnitIds() {
       try {
@@ -637,15 +646,60 @@
       $("panel-auxiliary").innerHTML = `<section class="table-card inspection-sample-card"><header><div><h3>检验样品</h3><p>登记取样状态、来源、类别、规格与分配信息。</p></div><button type="button" class="button secondary" id="addSampleBtn">＋ 添加样品</button></header><div class="sample-table-wrap"><table class="sample-table"><thead><tr><th>取样状态</th><th>样品来源</th><th>样品类别</th><th>个数</th><th>容积</th><th>样品分配</th><th>封号</th><th class="sample-actions">操作</th></tr></thead><tbody>${inspectionSamples.map(row).join("")}</tbody></table></div><p class="sample-hint">取样状态、样品来源、样品类别和样品分配可选择；其余字段支持手动录入。</p></section>`;
     }
 
+    function wedgeNumber(value) {
+      return value === "" || value == null || Number.isNaN(Number(value)) ? null : Number(value);
+    }
+
+    function wedgeResults(row) {
+      const fwd = wedgeNumber(wedgeState.forwardDraft);
+      const aft = wedgeNumber(wedgeState.aftDraft);
+      const distance = wedgeNumber(wedgeState.perpendicularDistance);
+      const f = fwd == null || aft == null || !distance ? null : (aft - fwd) / distance;
+      const l = wedgeNumber(row.l), a = wedgeNumber(row.a), capacity = wedgeNumber(row.capacityVolume), w = wedgeNumber(row.w);
+      const wedgeLength = wedgeNumber(row.wedgeLength);
+      const condition = row.wedgeCondition === "成立";
+      const halfDepth = wedgeNumber(row.halfDepth);
+      let volume = null;
+      if (condition && a != null && f != null && f > 0) {
+        volume = row.irregular
+          ? (w == null ? null : (a * a * w) / (2 * f))
+          : (capacity == null || l == null || l <= 0 ? null : (capacity * a) / (l * f));
+      }
+      return { f, a, wedgeLength, condition, halfDepth, volume };
+    }
+
+    function displayWedge(value, digits = 3) {
+      return value == null || !Number.isFinite(value) ? "—" : fmt(value, digits);
+    }
+
+    function renderWedgeCalculation() {
+      const fwd = wedgeNumber(wedgeState.forwardDraft);
+      const aft = wedgeNumber(wedgeState.aftDraft);
+      const distance = wedgeNumber(wedgeState.perpendicularDistance);
+      const f = fwd == null || aft == null || !distance ? null : (aft - fwd) / distance;
+      const results = wedgeState.rows.map(wedgeResults);
+      const validCount = results.filter(result => result.condition && result.volume != null).length;
+      const total = results.reduce((sum, result) => sum + (result.volume ?? 0), 0);
+      const input = (field, label, step = "0.001", type = "number") => `<label>${label}<input type="${type}" ${type === "number" ? `step="${step}"` : ""} value="${wedgeState[field]}" data-wedge-meta="${field}" /></label>`;
+      const wedgeRow = (item, index) => {
+        const result = results[index];
+        const numeric = (field, label) => `<input type="number" step="0.001" value="${item[field]}" aria-label="${item.tank} ${label}" data-wedge-field="${field}" data-wedge-index="${index}" />`;
+        return `<tr><th class="wedge-tank" scope="row">${item.tank}</th><td>${numeric("u", "U")}</td><td>${numeric("d", "D")}</td><td>${numeric("s", "S")}</td><td>${numeric("l", "L")}</td><td>${numeric("a", "A")}</td><td>${numeric("wedgeLength", "楔形长度 A/F")}</td><td><select aria-label="${item.tank} 楔形条件" data-wedge-field="wedgeCondition" data-wedge-index="${index}"><option value=""${item.wedgeCondition === "" ? " selected" : ""}>请选择</option><option${item.wedgeCondition === "成立" ? " selected" : ""}>成立</option><option${item.wedgeCondition === "不成立" ? " selected" : ""}>不成立</option></select></td><td>${numeric("halfDepth", "A/2")}</td><td>${numeric("capacityVolume", "舱容表体积")}</td><td><label class="wedge-irregular"><input type="checkbox" ${item.irregular ? "checked" : ""} data-wedge-field="irregular" data-wedge-index="${index}" />弧形舱壁</label></td><td>${numeric("w", "W")}</td><td class="wedge-result wedge-volume">${displayWedge(result.volume, 2)}</td></tr>`;
+      };
+      $("panel-wedge").innerHTML = `<section class="table-card wedge-calculation-card"><header><div><h3>楔形计算</h3><p>按楔形计算报告录入各舱参数；楔形体积由已录入的 A 值、楔形条件及舱型参数计算。</p></div><button type="button" class="button primary" id="runWedgeCalculationBtn">运行楔形计算</button></header><div class="wedge-meta-grid">${input("forwardDraft", "前吃水 · m")}${input("aftDraft", "后吃水 · m")}${input("perpendicularDistance", "垂线间距 · m")}<label>F（吃水差 / 垂线间距）<input class="wedge-derived-input" type="text" value="${displayWedge(f, 6)}" readonly /></label><label>横倾<select data-wedge-meta="list"><option${wedgeState.list === "无横倾" ? " selected" : ""}>无横倾</option><option${wedgeState.list === "左倾" ? " selected" : ""}>左倾</option><option${wedgeState.list === "右倾" ? " selected" : ""}>右倾</option></select></label>${input("liquidLevelTool", "液位计量工具", "", "text")}${input("temperatureTool", "温度计量工具", "", "text")}${input("freeWaterTool", "游离水计量工具", "", "text")}${input("waterPasteBrand", "编号／试水膏品牌", "", "text")}</div><div class="wedge-summary"><span>楔形条件成立<strong>${validCount} 舱</strong></span><span>楔形总体积<strong>${fmt(total, 2)} Bbls</strong></span><span>计算状态<strong>${f != null && f > 0 ? "可计算" : "请录入正的 F 值"}</strong></span></div><div class="wedge-table-wrap"><table class="wedge-table"><thead><tr><th>舱号</th><th>U<small>m</small></th><th>D<small>m</small></th><th>S<small>m</small></th><th>L<small>m</small></th><th>A<small>手动输入 · m</small></th><th>楔形长度 A/F<small>手动输入 · m</small></th><th>楔形条件<small>手动选择</small></th><th>A/2<small>手动输入 · m</small></th><th>舱容表体积<small>Bbls</small></th><th>不规则形状船舱<small>弧形舱壁</small></th><th>W<small>m</small></th><th>楔形体积<small>Bbls</small></th></tr></thead><tbody>${wedgeState.rows.map(wedgeRow).join("")}</tbody></table></div><p class="wedge-note"><strong>计算说明：</strong>F =（后吃水 − 前吃水）÷ 垂线间距。A、楔形长度 A/F、楔形条件及 A/2 均由业务人员手动录入；楔形条件选择“成立”后，常规舱按“舱容表体积 × A ÷（L × F）”计算，弧形舱壁按“A² × W ÷（2 × F）”计算。</p></section>`;
+    }
+
     function renderAll() {
       $("panel-measurement").hidden = activeView !== "measurement";
       $("panel-calculation").hidden = activeView !== "calculation";
+      $("panel-wedge").hidden = activeView !== "wedge";
       $("panel-auxiliary").hidden = !["impact", "conversion", "samples"].includes(activeView);
       document.querySelectorAll(".measurement-tabs button").forEach(button => button.setAttribute("aria-selected", String(button.dataset.view === activeView)));
       if (activeView === "measurement") renderMeasurement();
       else if (activeView === "calculation") {
         renderMetrics(); renderEntry();
       }
+      else if (activeView === "wedge") renderWedgeCalculation();
       else if (activeView === "impact") {
         renderImpactParameters();
       }
@@ -655,6 +709,16 @@
 
     $("workspace").addEventListener("change", (e) => {
       const t = e.target;
+      if (t.dataset.wedgeMeta) {
+        wedgeState[t.dataset.wedgeMeta] = t.value;
+        return;
+      }
+      if (t.dataset.wedgeField && t.dataset.wedgeIndex !== undefined) {
+        const row = wedgeState.rows[Number(t.dataset.wedgeIndex)];
+        if (!row) return;
+        row[t.dataset.wedgeField] = t.type === "checkbox" ? t.checked : t.value;
+        return;
+      }
       if (t.dataset.impactField) {
         impactParams[t.dataset.impactField] = t.type === "number" ? (t.value === "" ? "" : Number(t.value)) : t.value;
         if (activeView === "impact") renderImpactParameters();
@@ -701,6 +765,7 @@
     $("saveCorrectionDialogBtn").addEventListener("click", () => { const row = readings.find(item => item.id === correctionEditingId); if (!row) return; row.corrections = correctionDraft.map((item, index) => ({ name: item.name.trim() || `修正项目 ${index + 1}`, value: Number(item.value || 0) })); applyLevelCorrections(row); $("correctionDialog").close(); renderAll(); flash("修正项目已保存"); });
 
     $("workspace").addEventListener("click", (e) => {
+      if (e.target.closest("#runWedgeCalculationBtn")) { renderWedgeCalculation(); flash("楔形计算已完成，已更新各舱楔形条件与体积"); return; }
       const correctionEditor = e.target.closest("[data-edit-correction]");
       if (correctionEditor) { openCorrectionDialog(Number(correctionEditor.dataset.editCorrection)); return; }
       if (e.target.closest("#addSampleBtn")) { inspectionSamples.push({ status: "卸货前", source: "Tank Composite", category: "组合样", quantity: "1", capacity: "2 L", allocation: "分析样品", seal: "" }); renderInspectionSamples(); return; }
