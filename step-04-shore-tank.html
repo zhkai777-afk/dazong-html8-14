@@ -22,6 +22,7 @@
     .raw-record-switch button { min-height: 30px; padding: 0 11px; border: 0; border-radius: 3px; color: var(--text-secondary); background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; }
     .raw-record-switch button[aria-pressed="true"] { color: #fff; background: var(--primary); }
     .raw-record-actions { display: flex; align-items: center; gap: 8px; }
+    .raw-record-switch { display: none; }
     .raw-section { padding: 16px; border-bottom: 1px solid var(--border); }
     .raw-section:last-child { border-bottom: 0; }
     .raw-section > h3 { margin: 0 0 12px; color: var(--primary-strong); font-size: 14px; }
@@ -31,12 +32,15 @@
     .raw-field span { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
     .raw-field input, .raw-field select { box-sizing: border-box; width: 100%; min-height: 38px; padding: 6px 9px; border: 1px solid #d8e1eb; border-radius: 4px; background: #fff; color: var(--text); font: inherit; font-size: 14px; }
     .raw-field input[readonly] { color: var(--text-secondary); background: #f5f8fb; }
-    .raw-reading-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .raw-reading-group { padding: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fbfcfe; }
+    .raw-reading-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+    .raw-reading-group { padding: 16px; border: 1px solid var(--border); border-radius: 6px; background: #fbfcfe; }
     .raw-reading-group header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
     .raw-reading-group h4 { margin: 0; font-size: 13px; }
     .raw-reading-group h4 span { margin-left: 5px; color: var(--text-secondary); font-size: 11px; font-weight: 500; }
     .raw-reading-group .raw-average-value { color: #126044; font-size: 12px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .raw-reading-group.has-critical-level { border-color: #e7b95c; background: #fffdf7; }
+    .raw-critical-warning { margin: 2px 0 10px; padding: 9px 10px; border: 1px solid #efd18a; border-radius: 4px; color: #7a5100; background: #fff6dc; font-size: 12px; line-height: 1.55; }
+    .raw-critical-warning strong { display: block; margin-bottom: 2px; color: #9a6500; font-size: 12px; }
     .raw-reading-group label { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 8px; align-items: center; margin-top: 7px; color: var(--text-secondary); font-size: 12px; }
     .raw-reading-group input, .raw-reading-group select { box-sizing: border-box; min-height: 36px; padding: 5px 8px; border: 1px solid #d8e1eb; border-radius: 4px; background: #fff; color: var(--text); font: inherit; font-size: 13px; }
     .raw-reading-row { display: grid; grid-template-columns: 72px minmax(0, 1fr) 28px; gap: 8px; align-items: center; margin-top: 7px; color: var(--text-secondary); font-size: 12px; }
@@ -332,24 +336,22 @@
       const tov = round3(vSum + m.hydrostaticVolume);
       const shellTemperature = m.shellMaterial === "INSULATED" ? m.oilTemp : (7 * m.oilTemp + m.ambientTemp) / 8;
       const correctedVolume = round3(Math.max(tov - m.freeWaterVolume, 0) * m.shellCorrection + m.pipelineVolume);
-      const gov = round3(Math.max(correctedVolume - m.floatingRoofCorrection, 0));
+      const nonMeasurableUpper = Math.max(Number(m.nonMeasLower) || 0, Number(m.nonMeasUpper) || 0);
+      const canCalculateFloatingRoofCorrection = Number(m.floatingRoofWeight) > 0 && Number(m.vcf) > 0 && Number(m.wcf) > 0 && liquidLevel > nonMeasurableUpper;
+      const floatingRoofCorrection = canCalculateFloatingRoofCorrection ? round3(m.floatingRoofWeight / (m.vcf * m.wcf)) : 0;
+      const gov = round3(Math.max(correctedVolume - floatingRoofCorrection, 0));
       const gsv = round3(gov * m.vcf);
       const nsv = round3(gsv * (1 - m.sandWaterPct / 100));
       const grossWeight = round3(gsv * m.wcf);
       const netWeight = round3(nsv * m.wcf);
-      const bbl = 6.289812;
-      const grossObservedBbl = round3(gov * bbl);
-      const grossStandardBbl = round3(gsv * bbl);
-      const netStandardBbl = round3(nsv * bbl);
-      const floatingRoofCorrectionBbl = round3(m.floatingRoofCorrection * bbl);
       const api60 = m.density > 0 ? round3(141.5 / m.density - 131.5) : 0;
-      return { liquidLevel, vSum, tov, shellTemperature, correctedVolume, gov, gsv, nsv, grossWeight, netWeight, grossObservedBbl, grossStandardBbl, netStandardBbl, floatingRoofCorrectionBbl, api60 };
+      return { liquidLevel, vSum, tov, shellTemperature, correctedVolume, floatingRoofCorrection, gov, gsv, nsv, grossWeight, netWeight, api60 };
     };
 
     const fieldSections = [
       { title: "", fields: [["date", "日期", "", "", "input"], ["time", "时间", "", "", "input"], ["density", "密度（15℃）", "克/立方厘米", "g/cm³", "input"], ["sandWaterPct", "水分和杂质", "% (V/V)", "% (V/V)", "input"], ["referenceHeight", "参考高度", "米", "m", "input", true], ["observedReferenceHeight", "实测参考高度", "米", "m", "input"], ["floatingRoofWeight", "浮顶重量（空气中）", "公吨", "MT", "input", true], ["gaugeResult", "货物液位", "米", "m", "input"], ["waterHeight", "游离水液深", "米", "m", "input"], ["oilTemp", "货物温度（平均温度）", "℃", "℃", "input"], ["ambientTemp", "环境温度（平均温度）", "℃", "℃", "input"]] },
-      { title: "", fields: [["tov", "总观测体积", "立方米", "m³", "formula"], ["freeWaterVolume", "游离水体积", "立方米", "m³", "input"], ["shellCorrection", "罐壁温度修正", "", "", "input"], ["pipelineVolume", "管线体积", "立方米", "m³", "input"], ["floatingRoofCorrectionBbl", "浮顶修正", "美制桶", "bbl", "formula"], ["grossObservedBbl", "净表观体积", "美制桶", "bbl", "formula"], ["receiptNetObserved", "罐收量--净表观体积", "美制桶", "bbl", "formula", true]] },
-      { title: "", fields: [["vcf", "体积修正系数表", "T-6A（2004版）", "", "input"], ["grossStandardBbl", "总标准体积", "美制桶", "bbl", "formula"], ["receiptGrossStandard", "罐收量--总标准体积", "美制桶", "bbl", "formula", true], ["netStandardBbl", "净标准体积", "美制桶", "bbl", "formula"], ["receiptNetStandard", "罐收量--净标准体积", "美制桶", "bbl", "formula", true], ["api60", "API（60°F）", "°API", "°API", "formula"], ["wcf", "#VALUE!", "", "", "input"], ["grossWeight", "总标准重量（空气中）", "长吨", "LT", "formula"], ["receiptGrossWeight", "罐收量--总标准重量（空气中）", "长吨", "LT", "formula", true], ["netWeight", "净标准重量（空气中）", "长吨", "LT", "formula"], ["receiptNetWeight", "罐收量--净标准重量（空气中）", "长吨", "LT", "formula", true]] },
+      { title: "", fields: [["tov", "总观测体积", "立方米", "m³", "formula"], ["freeWaterVolume", "游离水体积", "立方米", "m³", "input"], ["shellCorrection", "罐壁温度修正", "", "", "input"], ["pipelineVolume", "管线体积", "立方米", "m³", "input"], ["floatingRoofCorrection", "浮顶修正", "立方米", "m³", "formula"], ["gov", "净表观体积", "立方米", "m³", "formula"], ["receiptNetObserved", "罐收量--净表观体积", "立方米", "m³", "formula", true]] },
+      { title: "", fields: [["vcf", "体积修正系数表", "T-54A（2004版）", "", "input"], ["gsv", "总标准体积", "立方米（15℃）", "m³ @15℃", "formula"], ["receiptGrossStandard", "罐收量--总标准体积", "立方米（15℃）", "m³ @15℃", "formula", true], ["nsv", "净标准体积", "立方米（15℃）", "m³ @15℃", "formula"], ["receiptNetStandard", "罐收量--净标准体积", "立方米（15℃）", "m³ @15℃", "formula", true], ["api60", "API（60°F）", "°API", "°API", "formula"], ["wcf", "空气中重量换算系数（WCF）", "公吨（空气中）/立方米（15℃）", "MT(in air)/m³ @15℃", "input"], ["grossWeight", "总标准重量（空气中）", "公吨", "MT", "formula"], ["receiptGrossWeight", "罐收量--总标准重量（空气中）", "公吨", "MT", "formula", true], ["netWeight", "净标准重量（空气中）", "公吨", "MT", "formula"], ["receiptNetWeight", "罐收量--净标准重量（空气中）", "公吨", "MT", "formula", true]] },
     ];
 
     const masterTankOptions = ["01TK-201", "01TK-202", "01TK-206", "02TK-101", "04TK-706", "04TK-708", "04TK-709"];
@@ -401,16 +403,35 @@
       const row = shoreReadings.find((item) => item.id === selectedTankId) || shoreReadings[0];
       selectedTankId = row.id;
       const record = rawRecordFor(row);
+      const isInNonMeasurableZone = (level) => {
+        const lower = Number(record.basic.nonMeterLower);
+        const upper = Number(record.basic.nonMeterUpper);
+        const value = Number(level);
+        return Number.isFinite(value) && Number.isFinite(lower) && Number.isFinite(upper) && Math.min(lower, upper) <= value && value <= Math.max(lower, upper);
+      };
       const field = (label, key, value, unit = "", type = "text", scope = "basic", choices = null, readOnly = false) => `<label class="raw-field">${label}<span>${unit}</span>${choices ? `<select data-raw-field="${key}" data-raw-scope="${scope}" data-raw-id="${row.id}" aria-label="${label}">${optionList(choices, value)}</select>` : `<input type="${type}" value="${escapeHTML(value)}" data-raw-field="${key}" data-raw-scope="${scope}" data-raw-id="${row.id}"${readOnly ? " readonly" : ""} aria-label="${label}">`}</label>`;
       const readingGroup = (title, unit, group, methodKey, methodValue, methodChoices) => {
         const readings = record.data[group];
         const labels = group === "temperatureReadings" ? ["上部", "中部", "下部"] : ["第一尺读数", "第二尺读数", "第三尺读数"];
         const method = methodKey ? `<label>计量方法<select data-raw-field="${methodKey}" data-raw-scope="data" data-raw-id="${row.id}" aria-label="${title}计量方法">${optionList(methodChoices, methodValue)}</select></label>` : "";
         const inputs = readings.map((value, index) => { const label = labels[index] || `第 ${index + 1} 次读数`; return `<div class="raw-reading-row"><span>${label}</span><input type="number" step="0.001" value="${escapeHTML(value)}" data-raw-reading="${group}" data-raw-index="${index}" data-raw-id="${row.id}" aria-label="${title}${label}"><button type="button" data-remove-raw-reading="${group}" data-raw-index="${index}" data-raw-id="${row.id}" aria-label="删除${title}${label}">×</button></div>`; }).join("");
-        return `<section class="raw-reading-group"><header><h4>${title}<span>${unit}</span></h4><span class="raw-average-value">平均 ${averageReadings(readings)} ${unit}</span></header>${method}${inputs}<button type="button" class="raw-add-reading" data-add-raw-reading="${group}" data-raw-id="${row.id}">＋ 添加一次测量</button></section>`;
+        const average = averageReadings(readings);
+        const isCriticalLevel = group === "liquidReadings" && isInNonMeasurableZone(average);
+        const warning = isCriticalLevel ? `<aside class="raw-critical-warning" role="alert"><strong>液位处于非计量区间</strong>当前液位处于浮顶起浮/落腿临界区，浮顶排液量不确定，不建议将本次液位作为正式交接计量依据。请调整液位至临界区外并待液面稳定后重新计量，或按经确认的替代计量方法处理。</aside>` : "";
+        return `<section class="raw-reading-group${isCriticalLevel ? " has-critical-level" : ""}"><header><h4>${title}<span>${unit}</span></h4><span class="raw-average-value">平均 ${average} ${unit}</span></header>${warning}${method}${inputs}<button type="button" class="raw-add-reading" data-add-raw-reading="${group}" data-raw-id="${row.id}">＋ 添加一次测量</button></section>`;
       };
       const rawNav = shoreReadings.map((item) => `<button type="button" data-raw-tank-id="${item.id}" aria-current="${item.id === selectedTankId}"><strong>${item.tank}</strong></button>`).join("");
-      $("rawRecordContent").innerHTML = `<div class="raw-entry-layout"><aside class="tank-navigator" aria-label="岸罐原始记录列表"><header><strong>岸罐列表</strong><small>选择岸罐后录入原始记录</small></header><div class="tank-list">${rawNav}</div><button type="button" class="add-tank" id="rawAddTankBtn">＋ 新增岸罐</button></aside><section class="raw-record-card"><header class="raw-record-header"><div><strong>${row.tank} · ${activeRawPhase === "pre" ? "前尺" : "后尺"}原始记录</strong><small>原始测量数据会保留多次读数，并自动计算平均值。</small></div><div class="raw-record-actions"><div class="raw-record-switch" role="group" aria-label="原始记录时点"><button type="button" data-raw-phase-switch="pre" aria-pressed="${activeRawPhase === "pre"}">前尺</button><button type="button" data-raw-phase-switch="post" aria-pressed="${activeRawPhase === "post"}">后尺</button></div><button type="button" class="tank-edit-btn" id="rawEditTankBtn">编辑岸罐信息</button></div></header><section class="raw-section"><h3>储罐基本信息</h3><div class="raw-field-grid">${field("计量笔状态", "meteringStatus", record.basic.meteringStatus, "", "text", "basic", ["在用", "停用", "待校验"])}${field("计量基准板的位置", "referenceBoardPosition", record.basic.referenceBoardPosition)}${field("标定参照温度", "calibrationReferenceTemp", record.basic.calibrationReferenceTemp, "℃", "number")}${field("标定到期日期", "calibrationDueDate", record.basic.calibrationDueDate, "", "date")}${field("是否为保温罐", "insulated", record.basic.insulated, "", "text", "basic", ["是", "否"])}${field("参照高度", "referenceHeight", record.basic.referenceHeight, "m", "number")}${field("非计量区间上限", "nonMeterUpper", record.basic.nonMeterUpper, "m", "number")}${field("非计量区间下限", "nonMeterLower", record.basic.nonMeterLower, "m", "number")}</div></section><section class="raw-section"><h3>计量数据</h3><div class="raw-field-grid">${field("计量节点", "measurementNode", record.data.measurementNode, "", "text", "data", ["卸货前", "卸货后"])}${field("日期", "date", record.data.date, "", "date", "data")}${field("时间", "time", record.data.time, "", "time", "data")}</div></section><section class="raw-section"><h3>远程计量设备读数（ATG）</h3><div class="raw-field-grid">${field("货物液位", "remoteAtgLevel", record.data.remoteAtgLevel, "实高 · m", "number", "data")}${field("温度（平均温度）", "remoteAtgTemp", record.data.remoteAtgTemp, "℃", "number", "data")}</div></section><section class="raw-section"><h3>手工计量数据</h3><div class="raw-field-grid">${field("实测参照高度", "actualReferenceHeight", record.data.actualReferenceHeight, "m", "number", "data")}</div><div class="raw-reading-grid">${readingGroup("货物液位（液体高度）", "m", "liquidReadings", "liquidMethod", record.data.liquidMethod, ["人工检尺", "手工测深"])}${readingGroup("游离水", "m", "waterReadings", "waterMethod", record.data.waterMethod, ["人工测量", "试水膏"])}${readingGroup("温度", "℃", "temperatureReadings", null, null, null)}</div></section></section></div>`;
+      $("rawRecordContent").innerHTML = `<div class="raw-entry-layout"><aside class="tank-navigator" aria-label="岸罐原始记录列表"><header><strong>岸罐列表</strong><small>选择岸罐后录入原始记录</small></header><div class="tank-list">${rawNav}</div><button type="button" class="add-tank" id="rawAddTankBtn">＋ 新增岸罐</button></aside><section class="raw-record-card"><header class="raw-record-header"><div><strong>${row.tank} · ${activeRawPhase === "pre" ? "前尺" : "后尺"}原始记录</strong><small>原始测量数据会保留多次读数，并自动计算平均值。</small></div><div class="raw-record-actions"><div class="raw-record-switch" role="group" aria-label="原始记录时点"><button type="button" data-raw-phase-switch="pre" aria-pressed="${activeRawPhase === "pre"}">前尺</button><button type="button" data-raw-phase-switch="post" aria-pressed="${activeRawPhase === "post"}">后尺</button></div><button type="button" class="tank-edit-btn" id="rawEditTankBtn">编辑岸罐信息</button></div></header><section class="raw-section"><h3>储罐基本信息</h3><div class="raw-field-grid">${field("计量笔状态", "meteringStatus", record.basic.meteringStatus, "", "text", "basic", ["在用", "停用", "待校验"])}${field("计量基准板的位置", "referenceBoardPosition", record.basic.referenceBoardPosition)}${field("标定参照温度", "calibrationReferenceTemp", record.basic.calibrationReferenceTemp, "℃", "number")}${field("标定到期日期", "calibrationDueDate", record.basic.calibrationDueDate, "", "date")}${field("是否为保温罐", "insulated", record.basic.insulated, "", "text", "basic", ["是", "否"])}${field("参照高度", "referenceHeight", record.basic.referenceHeight, "m", "number")}${field("非计量区间上限", "nonMeterUpper", record.basic.nonMeterUpper, "m", "number")}${field("非计量区间下限", "nonMeterLower", record.basic.nonMeterLower, "m", "number")}</div></section><section class="raw-section"><h3>计量数据</h3><div class="raw-field-grid">${field("日期", "date", record.data.date, "", "date", "data")}${field("时间", "time", record.data.time, "", "time", "data")}</div></section><section class="raw-section"><h3>远程计量设备读数（ATG）</h3><div class="raw-field-grid">${field("货物液位", "remoteAtgLevel", record.data.remoteAtgLevel, "实高 · m", "number", "data")}${field("温度（平均温度）", "remoteAtgTemp", record.data.remoteAtgTemp, "℃", "number", "data")}</div></section><section class="raw-section"><h3>手工计量数据</h3><div class="raw-field-grid">${field("实测参照高度", "actualReferenceHeight", record.data.actualReferenceHeight, "m", "number", "data")}</div><div class="raw-reading-grid">${readingGroup("货物液位（液体高度）", "m", "liquidReadings", "liquidMethod", record.data.liquidMethod, ["人工检尺", "手工测深"])}${readingGroup("游离水", "m", "waterReadings", "waterMethod", record.data.waterMethod, ["人工测量", "试水膏"])}${readingGroup("温度", "℃", "temperatureReadings", null, null, null)}</div></section></section></div>`;
+      const rawBasicGrid = $("rawRecordContent").querySelector(".raw-section .raw-field-grid");
+      rawBasicGrid.insertAdjacentHTML("beforeend", field("浮顶重量（空气中）", "floatingRoofWeight", row.open.floatingRoofWeight, "MT", "number", "basic"));
+      rawBasicGrid.querySelector('[data-raw-field="floatingRoofWeight"]').addEventListener("change", (event) => {
+        const value = event.target.value === "" ? 0 : Number(event.target.value);
+        row.open.floatingRoofWeight = value;
+        row.close.floatingRoofWeight = value;
+        renderEntry();
+        renderRawRecords();
+        flash("浮顶重量已更新，浮顶修正将自动重算");
+      });
       $("rawRecordContent").querySelectorAll("[data-raw-tank-id]").forEach((button) => button.addEventListener("click", () => { selectedTankId = Number(button.dataset.rawTankId); renderRawRecords(); }));
       $("rawAddTankBtn").addEventListener("click", openAddTankDialog);
       $("rawEditTankBtn").addEventListener("click", () => {
@@ -418,10 +439,6 @@
         $("editTankType").value = row.assetType;
         $("editTankDialog").showModal();
       });
-      $("rawRecordContent").querySelectorAll("[data-raw-phase-switch]").forEach((button) => button.addEventListener("click", () => {
-        activeRawPhase = button.dataset.rawPhaseSwitch;
-        renderRawRecords();
-      }));
       $("rawRecordContent").querySelectorAll("[data-add-raw-reading]").forEach((button) => button.addEventListener("click", () => {
         const active = shoreReadings.find((item) => item.id === Number(button.dataset.rawId));
         if (!active) return;
@@ -506,9 +523,9 @@
       if (kind === "formula") {
         const open = shoreComputed(row.open), close = shoreComputed(row.close);
         const receiptValues = {
-          receiptNetObserved: close.grossObservedBbl - open.grossObservedBbl,
-          receiptGrossStandard: close.grossStandardBbl - open.grossStandardBbl,
-          receiptNetStandard: close.netStandardBbl - open.netStandardBbl,
+          receiptNetObserved: close.gov - open.gov,
+          receiptGrossStandard: close.gsv - open.gsv,
+          receiptNetStandard: close.nsv - open.nsv,
           receiptGrossWeight: close.grossWeight - open.grossWeight,
           receiptNetWeight: close.netWeight - open.netWeight,
         };
@@ -549,7 +566,7 @@
       const row = shoreReadings.find((item) => item.id === selectedTankId) || shoreReadings[0];
       selectedTankId = row.id;
       const body = fieldSections.map((section) => {
-        const fieldRows = section.fields.filter(([, , , , kind, merged]) => !(merged && kind === "formula")).map(([key, en, zh, unit, kind]) => {
+        const fieldRows = section.fields.filter(([key, , , , kind, merged]) => key !== "date" && key !== "time" && !(merged && kind === "formula")).map(([key, en, zh, unit, kind]) => {
           const cells = renderCell(row, "open", key, kind);
           return `<tr><th scope="row"><strong>${en}</strong><small>${zh}${unit ? ` · ${unit}` : ""}</small></th>${cells}</tr>`;
         }).join("");

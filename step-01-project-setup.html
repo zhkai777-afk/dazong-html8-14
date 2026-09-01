@@ -31,9 +31,46 @@
     .calculation-method-readout.pending { border-color: var(--warning); background: var(--warning-soft); }
     .calculation-method-readout.pending strong, .calculation-method-readout.pending em { color: #744602; }
     .calculation-method-field small.needs-recalc { color: #8a5410; font-weight: 650; }
+    .cargo-section-header { align-items: center; }
+    .cargo-section-header > div { min-width: 0; }
+    .cargo-section-header p { margin-left: auto; }
+    .cargo-toolbar { display: flex; align-items: center; gap: 12px; margin: 14px 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-muted); }
+    .cargo-toolbar p { margin: 0; color: var(--text-secondary); font-size: 11px; }
+    .cargo-toolbar strong { color: var(--primary-strong); font-variant-numeric: tabular-nums; }
+    .cargo-toolbar .button { margin-left: auto; min-height: 36px; }
+    .cargo-tabs { display: flex; gap: 6px; margin: 0 0 12px; padding: 0 2px; overflow-x: auto; scrollbar-width: thin; }
+    .cargo-tab { flex: 0 0 auto; min-width: 132px; max-width: 210px; min-height: 46px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 5px; color: var(--text-secondary); background: var(--surface); cursor: pointer; text-align: left; }
+    .cargo-tab strong, .cargo-tab small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cargo-tab strong { color: var(--text); font-size: 11px; }
+    .cargo-tab small { margin-top: 2px; font-size: 9px; }
+    .cargo-tab[aria-selected="true"] { border-color: var(--primary); box-shadow: inset 0 -2px 0 var(--primary); background: #f4f8ff; }
+    .cargo-tab[aria-selected="true"] strong { color: var(--primary-strong); }
+    .cargo-tab:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .cargo-list { display: grid; gap: 14px; }
+    .cargo-card { border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+    .cargo-card-header { min-height: 48px; padding: 9px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); background: var(--surface-muted); }
+    .cargo-card-index { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; color: #fff; background: var(--primary-strong); font: 700 11px ui-monospace, monospace; }
+    .cargo-card-title { min-width: 0; display: grid; gap: 1px; }
+    .cargo-card-title strong { font-size: 13px; }
+    .cargo-card-title small { overflow: hidden; color: var(--text-secondary); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .cargo-card-actions { display: flex; gap: 8px; margin-left: auto; }
+    .cargo-card-actions .button { min-height: 32px; padding: 5px 9px; font-size: 11px; }
+    .cargo-card-actions .button.danger { color: #a53636; border-color: #d8a6a6; background: #fffafa; }
+    .cargo-card .form-grid { padding: 14px; }
+    .cargo-card .calculation-method-field { grid-column: span 2; }
+    .cargo-card .legacy-standard-warning { margin: 0 14px 14px; }
+    .weight-conversion-field { grid-column: span 2; min-width: 0; margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 4px; }
+    .weight-conversion-field legend { padding: 0 5px; color: var(--text); font-size: 11px; font-weight: 700; }
+    .weight-choice { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11px; }
+    .weight-choice > span { color: var(--text-secondary); }
+    .weight-choice label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+    .weight-choice input { accent-color: var(--primary); }
+    .weight-conversion-field small { display: block; margin-top: 7px; color: var(--text-secondary); }
+    .settings-action-buttons { display: flex; gap: 8px; align-items: center; }
     @media (max-width: 920px) { .quantity-unit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .quantity-unit-option:nth-child(n) { padding-left: 0; border-left: 0; } .quantity-unit-option:nth-child(2n) { padding-left: 12px; border-left: 1px solid var(--border); } }
-    @media (max-width: 920px) { .calculation-method-field { grid-column: span 2; } .calculation-method-readout { grid-template-columns: 1fr; gap: 3px; } .calculation-method-readout em { text-align: left; } }
+    @media (max-width: 920px) { .calculation-method-field, .cargo-card .calculation-method-field, .weight-conversion-field { grid-column: span 2; } .calculation-method-readout { grid-template-columns: 1fr; gap: 3px; } .calculation-method-readout em { text-align: left; } }
     @media (max-width: 920px) { #reportGroup { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .cargo-toolbar { align-items: flex-start; flex-wrap: wrap; } .cargo-toolbar .button { margin-left: 0; width: 100%; } .cargo-card-header { align-items: flex-start; flex-wrap: wrap; } .cargo-card-actions { width: 100%; margin-left: 34px; } .cargo-card-actions .button { flex: 1; } .cargo-card .form-grid { padding: 12px; } .settings-action-buttons { width: 100%; } .settings-action-buttons .button { flex: 1; } }
   </style>
 </head>
 <body class="embedded-content">
@@ -80,7 +117,7 @@
       </header>
 
       <div class="project-strip">
-        <dl><dt>COMMODITY <small>货物</small></dt><dd>OMAN EXPORT BLEND CRUDE OIL</dd></dl>
+        <dl><dt>COMMODITY <small>货物</small></dt><dd id="projectCargoSummary">OMAN EXPORT BLEND CRUDE OIL</dd></dl>
         <dl><dt>PORT / TERMINAL <small>港口 / 码头</small></dt><dd>营口港 · 仙人岛原油码头</dd></dl>
         <dl><dt>MEASUREMENT STANDARD <small>计量标准</small></dt><dd>2004 / API MPMS 11.5 (2013)</dd></dl>
         <dl><dt>INSPECTION DATE <small>检验日期</small></dt><dd>2025-05-24 — 2025-05-26</dd></dl>
@@ -113,49 +150,14 @@
 
           <form class="settings-form" id="settingsForm">
             <section class="settings-section">
-              <header><div><span>01</span><h3>基本信息</h3></div><p>项目级数据</p></header>
-              <div class="form-grid">
-                <label class="setting-field"><span class="field-label"><span>报告日期<b>*</b></span></span><input type="date" id="reportDate" value="2025-05-26" /></label>
-                <label class="setting-field"><span class="field-label"><span>检验开始<b>*</b></span></span><input type="datetime-local" id="inspectionStart" value="2025-05-24T08:20" /></label>
-                <label class="setting-field"><span class="field-label"><span>检验结束</span></span><input type="datetime-local" id="inspectionEnd" value="2025-05-26T18:00" /></label>
-                <label class="setting-field"><span class="field-label"><span>作业类型<b>*</b></span></span><select id="operationType"><option value="DISCHARGE">卸货检验</option><option value="LOAD">装货检验</option><option value="STS">船对船 STS</option><option value="ITT">罐对罐 ITT</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>航次</span></span><input id="voyageNo" value="SAIQ-2505" /></label>
-              </div>
+              <header class="cargo-section-header"><div><span>01</span><h3>货物与计算参数</h3></div><p>每种货物独立设置，关键字段变化需要重新计算</p></header>
+              <div class="cargo-toolbar" aria-live="polite"><p>本任务单共 <strong id="cargoCount">1</strong> 种货物；后续计量和报告将按货物分别归集。</p><button type="button" class="button secondary" id="addCargoBtn">+ 添加货物</button></div>
+              <div class="cargo-tabs" id="cargoTabs" role="tablist" aria-label="货物切换"></div>
+              <div class="cargo-list" id="cargoList"></div>
             </section>
 
             <section class="settings-section">
-              <header><div><span>02</span><h3>参与方与作业地点</h3></div><p>选择基础资料并确认作业地点</p></header>
-              <div class="form-grid">
-                <label class="setting-field"><span class="field-label"><span>客户名称<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="clientName"><option>中国石油国际事业有限公司</option><option>中国联合石油有限责任公司</option><option>示例能源贸易有限公司</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>客户名称（英文）</span><em class="source-badge master">基础资料</em></span><input id="clientNameEn" value="PETROCHINA INTERNATIONAL CO., LTD." /></label>
-                <label class="setting-field"><span class="field-label"><span>船舶<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="vesselName" aria-label="船舶"><option>MT SAIQ</option><option>MT OCEAN CREST</option><option>MT EASTERN STAR</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>港口<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="portName"><option>营口港</option><option>青岛港</option><option>大连港</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>码头 / 油库<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="terminalName"><option>仙人岛原油码头</option><option>董家口原油码头</option><option>新港油库</option></select></label>
-              </div>
-            </section>
-
-            <section class="settings-section">
-              <header><div><span>03</span><h3>货物与计算参数</h3></div><p>关键字段变化需要重新计算</p></header>
-              <div class="form-grid">
-                <label class="setting-field"><span class="field-label"><span>货物类型<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoType"><option value="LIQUID_CHEMICALS">液体化学品</option><option value="CLEAN_OIL" selected>清洁油</option><option value="SLOP_OIL">污油</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>货物子类型<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoSubType"></select></label>
-                <label class="setting-field"><span class="field-label"><span>货物名称（中文）<b>*</b></span><em class="source-badge master">基础资料</em></span><select id="cargoName"></select></label>
-                <label class="setting-field"><span class="field-label"><span>货物名称（英文）</span><em class="source-badge master">基础资料</em></span><input id="cargoNameEn" value="OMAN EXPORT BLEND CRUDE OIL" readonly /></label>
-                <label class="setting-field"><span class="field-label"><span>密度类型<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="densityType"><option value="DENSITY_15C">密度 @15℃</option><option value="DENSITY_20C">密度 @20℃</option><option value="API">API Gravity @60℉</option><option value="SG_60F">相对密度 SG 60/60℉</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>密度值<b>*</b></span><em class="source-badge project">项目填写</em></span><div class="compound-input" id="densityCompound"><input id="densityValue" type="number" step="0.0001" value="0.8598" aria-label="密度值" /><select id="densityUnit" aria-label="密度单位"></select></div><small id="densityHelper">当前解释为：15℃基准密度</small></label>
-                <label class="setting-field"><span class="field-label"><span>VCF 标准<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="vcfStandard"><option>ASTM D1250 / API MPMS 11.1</option><option>GB/T 1885</option><option>ASTM-IP Petroleum Measurement Tables</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>VCF 版本<b>*</b></span><em class="source-badge rule">系统规则</em></span><select id="vcfVersion"></select></label>
-                <label class="setting-field" id="chemicalMethodField" hidden><span class="field-label"><span>化学品换算方法<b>*</b></span></span><select id="chemicalConversionMethod"><option value="">请选择 TEC 或 DCF</option><option value="TEC">TEC</option><option value="DCF">DCF</option></select><small>该货物未设置预设方法，确认后才可进行正式计算。</small></label>
-                <div class="setting-field calculation-method-field" id="vcfMethodField"><span class="field-label"><span>体积换算方法 / VCF计算表</span></span><div class="calculation-method-readout" id="vcfMethodReadout" role="status" aria-live="polite"><strong id="vcfMethodCode">T-54A</strong><span id="vcfMethodDescription">15℃密度 / 原油</span><em id="vcfMethodStatus">系统自动匹配</em></div><small id="vcfMethodHint">系统根据货物及密度类型自动匹配。</small></div>
-                <label class="setting-field"><span class="field-label"><span>WCF 标准</span><em class="source-badge rule">系统规则</em></span><select id="wcfStandard"><option>API MPMS 11.5 (2013)</option><option>ASTM D1250 (1980)</option></select></label>
-                <label class="setting-field"><span class="field-label"><span>沉淀物和水 S&amp;W %</span><em class="source-badge project">项目填写</em></span><input type="number" min="0" max="100" step="0.01" id="sedimentWaterPct" value="0.12" /></label>
-                <label class="setting-field"><span class="field-label"><span>允许船岸差率 %</span><em class="source-badge rule">系统规则</em></span><input type="number" min="0" step="0.001" id="allowedVariancePct" value="0.3" /></label>
-              </div>
-              <div class="legacy-standard-warning" role="status" id="legacyWarning" hidden><strong>历史/替代标准组合</strong><span>该组合不应作为新项目默认值，需要记录客户合同、作业规程或复核人批准依据。</span></div>
-            </section>
-
-            <section class="settings-section">
-              <header><div><span>04</span><h3>现场计量条件与工具</h3></div><p>记录测量时的船舶状态、工具和数据来源</p></header>
+              <header><div><span>02</span><h3>现场计量条件与工具</h3></div><p>记录测量时的船舶状态、工具和数据来源</p></header>
               <div class="form-grid">
                 <label class="setting-field"><span class="field-label"><span>海况</span></span><select id="seaState"><option value="CALM">平静（0–1 级）</option><option value="SLIGHT" selected>轻浪（2–3 级）</option><option value="MODERATE">中浪（4–5 级）</option><option value="ROUGH">大浪（6 级及以上）</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>液位检测工具</span></span><select id="liquidLevelTool"><option>电子液位计</option><option>钢卷尺 / 量油尺</option><option>雷达液位计</option><option>其他</option></select></label>
@@ -166,7 +168,7 @@
             </section>
 
             <section class="settings-section">
-              <header><div><span>05</span><h3>报告输出设置</h3></div><p>替代 Excel 的报告首选项</p></header>
+              <header><div><span>03</span><h3>报告输出设置</h3></div><p>替代 Excel 的报告首选项</p></header>
               <div class="form-grid compact-grid">
                 <label class="setting-field"><span class="field-label"><span>报告语言</span><em class="source-badge project">项目填写</em></span><select id="reportLanguage"><option value="ZH_EN">中英文</option><option value="ZH">仅中文</option><option value="EN">仅英文</option></select></label>
                 <label class="setting-field"><span class="field-label"><span>报告类型</span><em class="source-badge project">项目填写</em></span><select id="reportType"><option value="FIELD">现场报告</option><option value="FINAL">正式报告</option></select></label>
@@ -210,7 +212,7 @@
               </div></fieldset>
             </section>
 
-            <footer class="settings-actions"><div><span id="settingsFooterMsg">应用后，顶部摘要、报告预览和后续计算将使用本项目设置。</span></div><button type="submit" class="button primary" id="applyBtn" disabled>保存并应用设置</button></footer>
+            <footer class="settings-actions"><div><span id="settingsFooterMsg">应用后，顶部摘要、报告预览和后续计算将使用本项目设置。</span></div><div class="settings-action-buttons"><button type="button" class="button secondary" id="cancelBtn" disabled>取消调整</button><button type="submit" class="button primary" id="applyBtn" disabled>保存并应用设置</button></div></footer>
           </form>
 
           <footer class="workspace-footer">
@@ -275,37 +277,24 @@
       } catch (_) { return defaultCargoCatalog; }
     })();
 
-    const settings = {
-      reportDate: "2025-05-26", inspectionStart: "2025-05-24T08:20", inspectionEnd: "2025-05-26T18:00",
-      operationType: "DISCHARGE", voyageNo: "SAIQ-2505", clientName: "中国石油国际事业有限公司", clientNameEn: "PETROCHINA INTERNATIONAL CO., LTD.",
-      vesselName: "MT SAIQ", vesselNames: ["MT SAIQ"], portName: "营口港", terminalName: "仙人岛原油码头", cargoType: "CLEAN_OIL", cargoSubType: "CRUDE_CONDENSATE", cargoName: "阿曼出口混合原油", cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL",
+    const createCargo = (overrides = {}) => ({
+      id: `cargo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      cargoType: "CLEAN_OIL", cargoSubType: "CRUDE_CONDENSATE", cargoName: "阿曼出口混合原油", cargoNameEn: "OMAN EXPORT BLEND CRUDE OIL",
       densityType: "DENSITY_15C", densityValue: 0.8598, densityUnit: "g/cm³", vcfStandard: "ASTM D1250 / API MPMS 11.1", chemicalConversionMethod: "",
-      vcfVersion: "2004", wcfStandard: "API MPMS 11.5 (2013)", sedimentWaterPct: 0.12, allowedVariancePct: 0.3,
-      calculationNeedsRecalc: false,
+      vcfVersion: "2004", requiresWcf: true, wcfStandard: "API MPMS 11.5 (2013)", sedimentWaterPct: 0.12, allowedVariancePct: 0.3, calculationNeedsRecalc: false, ...overrides,
+    });
+    const settings = {
+      cargos: [createCargo({ id: "cargo-1" })],
       seaState: "SLIGHT",
       liquidLevelTool: "电子液位计", freeWaterTool: "试水膏", waterPasteBrand: "Kolor Kut", densitySource: "实验室化验报告",
       reportLanguage: "ZH_EN", reportType: "FINAL", quantityUnits: ["bbl60", "m315", "mtair", "ltair"], selectedReports: ["COVER", "DISCHARGE_SUMMARY", "QUANTITY", "ULLAGE_SLOP_A_DISCHARGE_B4", "SHORE_SLOP_A_DISCHARGE", "ROB", "SAMPLE", "TIME", "VEF", "OIL_WATER", "BUNKER"],
     };
 
     let changed = false;
+    let appliedSettings;
+    let activeCargoId = "cargo-1";
     const $ = (id) => document.getElementById(id);
-    const vesselStorageKey = "offlineSurveySelectedVessels";
     const quantityUnitStorageKey = "offlineSurveyQuantityUnits";
-
-    function syncVesselSelection(persist = true) {
-      const selected = [$("vesselName").value];
-      settings.vesselNames = selected;
-      settings.vesselName = selected[0];
-      if (persist) localStorage.setItem(vesselStorageKey, JSON.stringify(selected));
-    }
-
-    function restoreVesselSelection() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(vesselStorageKey));
-        if (Array.isArray(saved) && saved.length && [...$("vesselName").options].some((option) => option.value === saved[0])) $("vesselName").value = saved[0];
-      } catch (_) { /* 保留默认船舶选择 */ }
-      syncVesselSelection(false);
-    }
 
     function persistQuantityUnits() {
       localStorage.setItem(quantityUnitStorageKey, JSON.stringify({ units: settings.quantityUnits }));
@@ -318,71 +307,40 @@
       } catch (_) { /* 保留默认单位设置 */ }
       $("unitGroup").querySelectorAll("input").forEach((input) => { input.checked = settings.quantityUnits.includes(input.value); });
     }
-
-    function syncDensityUnitOptions() {
-      const rule = densityRules[settings.densityType];
-      const sel = $("densityUnit");
-      sel.innerHTML = rule.units.map((u) => `<option${u === settings.densityUnit ? " selected" : ""}>${u}</option>`).join("");
-      if (!rule.units.includes(settings.densityUnit)) {
-        settings.densityUnit = rule.units[0];
-        sel.value = settings.densityUnit;
-      }
-    }
-    function syncVcfVersionOptions() {
-      const versions = vcfStandardVersions[settings.vcfStandard] || [];
-      const sel = $("vcfVersion");
-      sel.innerHTML = versions.map((v) => `<option${v === settings.vcfVersion ? " selected" : ""}>${v}</option>`).join("");
-      if (!versions.includes(settings.vcfVersion)) {
-        settings.vcfVersion = versions[0];
-        sel.value = settings.vcfVersion;
-      }
+    function syncAirWeightRequirement() {
+      const requiresWcf = settings.quantityUnits.some((unit) => unit === "mtair" || unit === "ltair");
+      settings.cargos.forEach((cargo) => { cargo.requiresWcf = requiresWcf; });
+      $("unitGroup").querySelectorAll("input").forEach((input) => { input.checked = settings.quantityUnits.includes(input.value); });
     }
 
-    function syncCargoDetails() {
-      const cargos = cargoCatalog[settings.cargoType].subtypes[settings.cargoSubType].cargos;
-      if (!cargos.length) {
-        settings.cargoName = "";
-        settings.cargoNameEn = "";
-        $("cargoNameEn").value = "";
-        return;
-      }
-      const item = cargos.find((cargo) => cargo.name === $("cargoName").value) || cargos[0];
-      settings.cargoName = item.name;
-      settings.cargoNameEn = item.nameEn;
-      $("cargoNameEn").value = item.nameEn;
-    }
-
-    function getSelectedCargo() {
-      const subtype = cargoCatalog[settings.cargoType]?.subtypes?.[settings.cargoSubType];
-      return subtype?.cargos?.find((cargo) => cargo.name === settings.cargoName) || null;
-    }
+    function getSelectedCargo(cargo) { return cargoCatalog[cargo.cargoType]?.subtypes?.[cargo.cargoSubType]?.cargos?.find((item) => item.name === cargo.cargoName) || null; }
 
     function normalizeCalculationMethod(method) {
       const value = String(method || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
       return ({ "API": "API_TABLE", "API_TABLE": "API_TABLE", "TEC": "TEC", "DCF": "DCF", "ASTM_D1555": "ASTM_D1555", "D1555": "ASTM_D1555", "ASTM_D4311/D4311M": "ASTM_D4311", "ASTM_D4311_D4311M": "ASTM_D4311", "ASTM_D4311": "ASTM_D4311" })[value] || "";
     }
 
-    function resolveCalculationRoute() {
-      const cargo = getSelectedCargo();
-      const subtype = settings.cargoSubType;
+    function resolveCalculationRoute(cargo) {
+      const cargoItem = getSelectedCargo(cargo);
+      const subtype = cargo.cargoSubType;
       const categoryFromSubtype = { NAPHTHA_GASOLINE_JET: "B", DIESEL: "B", LUBRICANT: "D", CRUDE_CONDENSATE: "A", FUEL_OIL: "B" };
-      const categoryFromCargo = /A\s*·|原油|凝析油/.test(cargo?.category || "") ? "A" : /D\s*·|润滑油/.test(cargo?.category || "") ? "D" : /B\s*·|成品油|燃料油|柴油|石脑油|汽油|喷气/.test(cargo?.category || "") ? "B" : "";
-      let method = normalizeCalculationMethod(cargo?.calculationMethod);
-      if (!method && /（TEC）|\(TEC\)/i.test(cargo?.name || "")) method = "TEC";
-      if (!method && /（DCF）|\(DCF\)/i.test(cargo?.name || "")) method = "DCF";
+      const categoryFromCargo = /A\s*·|原油|凝析油/.test(cargoItem?.category || "") ? "A" : /D\s*·|润滑油/.test(cargoItem?.category || "") ? "D" : /B\s*·|成品油|燃料油|柴油|石脑油|汽油|喷气/.test(cargoItem?.category || "") ? "B" : "";
+      let method = normalizeCalculationMethod(cargoItem?.calculationMethod);
+      if (!method && /（TEC）|\(TEC\)/i.test(cargoItem?.name || "")) method = "TEC";
+      if (!method && /（DCF）|\(DCF\)/i.test(cargoItem?.name || "")) method = "DCF";
       if (!method) method = ({ AROMATICS_CYCLOHEXANE: "ASTM_D1555", NAPHTHA_GASOLINE_JET: "API_TABLE", DIESEL: "API_TABLE", LUBRICANT: "API_TABLE", CRUDE_CONDENSATE: "API_TABLE", FUEL_OIL: "API_TABLE", ASPHALT_TAR: "ASTM_D4311" })[subtype] || "";
-      if (!method && subtype === "CHEMICALS") method = normalizeCalculationMethod(settings.chemicalConversionMethod);
+      if (!method && subtype === "CHEMICALS") method = normalizeCalculationMethod(cargo.chemicalConversionMethod);
 
-      const density = densityRules[settings.densityType];
-      const densityLabel = { DENSITY_15C: "15℃密度", DENSITY_20C: "20℃密度", API: "API@60℉", SG_60F: "SG@60℉/60℉" }[settings.densityType];
-      const category = cargo?.calculationCategory || categoryFromSubtype[subtype] || categoryFromCargo;
+      const density = densityRules[cargo.densityType];
+      const densityLabel = { DENSITY_15C: "15℃密度", DENSITY_20C: "20℃密度", API: "API@60℉", SG_60F: "SG@60℉/60℉" }[cargo.densityType];
+      const category = cargoItem?.calculationCategory || categoryFromSubtype[subtype] || categoryFromCargo;
       const categoryLabel = { A: "原油", B: "成品油", D: "润滑油" }[category] || "";
-      const requiresChemicalMethod = subtype === "CHEMICALS" && !normalizeCalculationMethod(cargo?.calculationMethod) && !/（TEC）|\(TEC\)|（DCF）|\(DCF\)/i.test(cargo?.name || "");
+      const requiresChemicalMethod = subtype === "CHEMICALS" && !normalizeCalculationMethod(cargoItem?.calculationMethod) && !/（TEC）|\(TEC\)|（DCF）|\(DCF\)/i.test(cargoItem?.name || "");
 
-      if (!method) return { code: "待确认", description: "普通化学品需确认 TEC 或 DCF", status: "需要确认", pending: true, requiresChemicalMethod };
+      if (!method) return { code: "待确认", description: "普通化学品需确认 TEC 或 DCF", status: "需要确认", pending: true, requiresChemicalMethod, mode: "PENDING" };
       if (method === "API_TABLE") {
-        if (!category) return { code: "待确认", description: "缺少货物内部类别（A/B/D）", status: "需要确认", pending: true, requiresChemicalMethod: false };
-        return { code: `T-${density.tableFamily}${category}`, description: `${densityLabel} / ${categoryLabel}`, status: "系统自动匹配", method, category, pending: false, requiresChemicalMethod: false };
+        if (!category) return { code: "待确认", description: "缺少货物内部类别（A/B/D）", status: "需要确认", pending: true, requiresChemicalMethod: false, mode: "PENDING" };
+        return { code: `T-${density.tableFamily}${category}`, description: `${densityLabel} / ${categoryLabel}`, status: "系统自动匹配", method, category, pending: false, requiresChemicalMethod: false, mode: "VCF" };
       }
       const direct = {
         TEC: ["TEC", "普通化学品 / TEC"],
@@ -390,130 +348,143 @@
         ASTM_D1555: ["ASTM D1555", "芳香烃及环己烷"],
         ASTM_D4311: ["ASTM D4311/D4311M", "沥青 / 柏油"],
       }[method];
-      return { code: direct[0], description: direct[1], status: "系统自动匹配", method, pending: false, requiresChemicalMethod: false };
+      return { code: direct[0], description: direct[1], status: "系统自动匹配", method, pending: false, requiresChemicalMethod: false, mode: method === "TEC" ? "TEC" : method === "DCF" ? "DCF" : "SPECIAL" };
     }
 
-    function syncCargoOptions(preferredName = "") {
-      const cargos = cargoCatalog[settings.cargoType].subtypes[settings.cargoSubType].cargos;
-      if (!cargos.length) {
-        $("cargoName").innerHTML = '<option value="">请先在基础数据管理中维护货物</option>';
-        syncCargoDetails();
-        return;
-      }
-      const selectedName = cargos.some((cargo) => cargo.name === preferredName) ? preferredName : cargos[0].name;
-      $("cargoName").innerHTML = cargos.map((cargo) => `<option${cargo.name === selectedName ? " selected" : ""}>${cargo.name}</option>`).join("");
-      syncCargoDetails();
-    }
-
-    function syncCargoSubTypeOptions(preferredSubType = "", preferredName = "") {
-      const subtypes = cargoCatalog[settings.cargoType].subtypes;
-      const selectedSubType = subtypes[preferredSubType] ? preferredSubType : Object.keys(subtypes)[0];
-      settings.cargoSubType = selectedSubType;
-      $("cargoSubType").innerHTML = Object.entries(subtypes).map(([value, subtype]) => `<option value="${value}"${value === selectedSubType ? " selected" : ""}>${subtype.label}</option>`).join("");
-      syncCargoOptions(preferredName);
-    }
-
-    function syncCargoTypeOptions(preferredType = "", preferredSubType = "", preferredName = "") {
-      const selectedType = cargoCatalog[preferredType] ? preferredType : Object.keys(cargoCatalog)[0];
-      settings.cargoType = selectedType;
-      $("cargoType").innerHTML = Object.entries(cargoCatalog).map(([value, type]) => `<option value="${value}"${value === selectedType ? " selected" : ""}>${type.label || value}</option>`).join("");
-      syncCargoSubTypeOptions(preferredSubType, preferredName);
-    }
-
-    function markCalculationNeedsRecalc(reason) {
-      settings.calculationNeedsRecalc = true;
+    function markCalculationNeedsRecalc(cargo, reason) {
+      cargo.calculationNeedsRecalc = true;
       try {
         localStorage.setItem("offlineSurveyCalculationState", JSON.stringify({ status: "NEEDS_RECALC", fields: ["VCF", "GSV", "NSV", "WEIGHT"], reason, updatedAt: new Date().toISOString() }));
       } catch (_) { /* 离线存储不可用时保留本页状态 */ }
     }
 
-    function updateCalcRoute(reason = "") {
-      const rule = densityRules[settings.densityType];
-      const route = resolveCalculationRoute();
-      settings.calculationRoute = route;
-      if (reason) markCalculationNeedsRecalc(reason);
-      $("densityHelper").textContent = settings.densityValue === "" || settings.densityValue === null ? `请重新输入${rule.label}的原始检验值` : `当前解释为：${rule.inputBasis}`;
-      $("densityCompound").classList.toggle("invalid", settings.densityValue === "" || settings.densityValue === null);
-      $("legacyWarning").hidden = !(settings.vcfVersion !== "2004" || settings.vcfStandard !== "ASTM D1250 / API MPMS 11.1");
-      $("chemicalMethodField").hidden = !route.requiresChemicalMethod;
-      $("chemicalConversionMethod").value = settings.chemicalConversionMethod;
-      $("vcfMethodCode").textContent = route.code;
-      $("vcfMethodDescription").textContent = route.description;
-      $("vcfMethodStatus").textContent = route.status;
-      $("vcfMethodReadout").classList.toggle("pending", route.pending);
-      const hint = $("vcfMethodHint");
-      hint.classList.toggle("needs-recalc", Boolean(settings.calculationNeedsRecalc && !route.pending));
-      hint.textContent = route.pending ? "请确认化学品换算方法；在确认前，不能保存并进入正式计算。" : settings.calculationNeedsRecalc ? "货物、密度基础或标准版本已变化：VCF、GSV、NSV 和重量需要重新计算。" : "系统根据最具体货物记录、密度类型、VCF 标准和版本自动匹配。";
+    function options(values, selected, labels = {}) { return values.map((value) => `<option value="${value}"${value === selected ? " selected" : ""}>${labels[value] || value}</option>`).join(""); }
+    function wcfStandardOptions(cargo) {
+      return cargo.cargoType === "LIQUID_CHEMICALS"
+        ? { values: ["", "CHEMICAL_CONTRACT"], labels: { "": "请选择合同或货物专用方法", CHEMICAL_CONTRACT: "合同 / 货物专用空气浮力换算依据" } }
+        : { values: ["API MPMS 11.5 (2013)", "ASTM D1250 (1980)"], labels: {} };
+    }
+    function cardMarkup(cargo, index) {
+      const subtypes = cargoCatalog[cargo.cargoType].subtypes;
+      const cargos = subtypes[cargo.cargoSubType].cargos;
+      const route = resolveCalculationRoute(cargo); const density = densityRules[cargo.densityType];
+      const typeOptions = options(Object.keys(cargoCatalog), cargo.cargoType, Object.fromEntries(Object.entries(cargoCatalog).map(([key, value]) => [key, value.label])));
+      const subtypeOptions = options(Object.keys(subtypes), cargo.cargoSubType, Object.fromEntries(Object.entries(subtypes).map(([key, value]) => [key, value.label])));
+      const cargoOptions = cargos.length ? options(cargos.map((item) => item.name), cargo.cargoName) : '<option value="">请先在基础数据管理中维护货物</option>';
+      const versionOptions = options(vcfStandardVersions[cargo.vcfStandard] || [], cargo.vcfVersion);
+      const wcfOptions = wcfStandardOptions(cargo);
+      return `<article class="cargo-card" data-cargo-id="${cargo.id}"><header class="cargo-card-header"><span class="cargo-card-index">${String(index + 1).padStart(2, "0")}</span><span class="cargo-card-title"><strong>货物 ${index + 1}</strong><small>${cargo.cargoNameEn || "请完成货物选择"}</small></span><span class="cargo-card-actions"><button type="button" class="button" data-action="duplicate">复制参数</button><button type="button" class="button danger" data-action="remove" ${settings.cargos.length === 1 ? "disabled" : ""}>删除货物</button></span></header><div class="form-grid">
+        <label class="setting-field"><span class="field-label"><span>货物类型<b>*</b></span></span><select data-field="cargoType">${typeOptions}</select></label>
+        <label class="setting-field"><span class="field-label"><span>货物子类型<b>*</b></span></span><select data-field="cargoSubType">${subtypeOptions}</select></label>
+        <label class="setting-field"><span class="field-label"><span>货物名称（中文）<b>*</b></span></span><select data-field="cargoName">${cargoOptions}</select></label>
+        <label class="setting-field"><span class="field-label"><span>货物名称（英文）</span></span><input data-field="cargoNameEn" value="${cargo.cargoNameEn}" readonly /></label>
+        <label class="setting-field"><span class="field-label"><span>密度类型<b>*</b></span></span><select data-field="densityType">${options(Object.keys(densityRules), cargo.densityType, Object.fromEntries(Object.entries(densityRules).map(([key, value]) => [key, value.label])))}</select></label>
+        <label class="setting-field"><span class="field-label"><span>密度值<b>*</b></span></span><div class="compound-input ${cargo.densityValue === "" ? "invalid" : ""}"><input data-field="densityValue" type="number" step="${density.step}" value="${cargo.densityValue}" aria-label="密度值" /><select data-field="densityUnit" aria-label="密度单位">${options(density.units, cargo.densityUnit)}</select></div><small> ${cargo.densityValue === "" ? `请重新输入${density.label}的原始检验值` : `当前解释为：${density.inputBasis}`}</small></label>
+        <div class="setting-field calculation-method-field"><span class="field-label"><span>体积标准化路线</span></span><div class="calculation-method-readout ${route.pending ? "pending" : ""}" role="status"><strong>${route.code}</strong><span>${route.description}</span><em>${route.status}</em></div><small class="${cargo.calculationNeedsRecalc && !route.pending ? "needs-recalc" : ""}">${route.pending ? "基础资料未指定路线，请确认 TEC 或 DCF；确认前不能保存并进入正式计算。" : route.mode === "VCF" ? "已匹配 VCF 路线；TEC 和 DCF 不适用。" : `${route.mode === "TEC" || route.mode === "DCF" ? "已匹配化学品路线；VCF 不适用。" : "已匹配该货物的专用标准化方法。"}`}</small></div>
+        <label class="setting-field" ${route.mode === "VCF" ? "" : "hidden"}><span class="field-label"><span>VCF 标准<b>*</b></span></span><select data-field="vcfStandard">${options(Object.keys(vcfStandardVersions), cargo.vcfStandard)}</select></label>
+        <label class="setting-field" ${route.mode === "VCF" ? "" : "hidden"}><span class="field-label"><span>VCF 版本<b>*</b></span></span><select data-field="vcfVersion">${versionOptions}</select></label>
+        <label class="setting-field" ${route.requiresChemicalMethod ? "" : "hidden"}><span class="field-label"><span>化学品换算方法<b>*</b></span></span><select data-field="chemicalConversionMethod"><option value="">请选择 TEC 或 DCF</option><option value="TEC"${cargo.chemicalConversionMethod === "TEC" ? " selected" : ""}>TEC</option><option value="DCF"${cargo.chemicalConversionMethod === "DCF" ? " selected" : ""}>DCF</option></select><small>确认后才可进行正式计算。</small></label>
+        <fieldset class="weight-conversion-field"><legend>重量换算</legend><div class="weight-choice"><span>输出空气中重量？</span><label><input type="radio" name="wcf-${cargo.id}" data-field="requiresWcf" value="true"${cargo.requiresWcf ? " checked" : ""} /> 是</label><label><input type="radio" name="wcf-${cargo.id}" data-field="requiresWcf" value="false"${!cargo.requiresWcf ? " checked" : ""} /> 否</label></div><small>仅在输出 MT in Air 或 LT in Air 时启用；WCF 用于将 GSV / NSV 换算为 GSW / NSW。</small></fieldset>
+        <label class="setting-field" ${cargo.requiresWcf ? "" : "hidden"}><span class="field-label"><span>${cargo.cargoType === "LIQUID_CHEMICALS" ? "空气浮力换算依据" : "WCF 标准"}<b>*</b></span></span><select data-field="wcfStandard">${options(wcfOptions.values, cargo.wcfStandard, wcfOptions.labels)}</select><small>${cargo.cargoType === "LIQUID_CHEMICALS" ? "化学品不自动使用 API MPMS 11.5，须按合同或货物专用方法确认。" : "仅输出空气中重量时必填。"}</small></label>
+        <label class="setting-field"><span class="field-label"><span>沉淀物和水 S&amp;W %</span></span><input data-field="sedimentWaterPct" type="number" min="0" max="100" step="0.01" value="${cargo.sedimentWaterPct}" /></label>
+        <label class="setting-field"><span class="field-label"><span>允许船岸差率 %</span></span><input data-field="allowedVariancePct" type="number" min="0" step="0.001" value="${cargo.allowedVariancePct}" /></label>
+      </div>${cargo.vcfVersion !== "2004" || cargo.vcfStandard !== "ASTM D1250 / API MPMS 11.1" ? '<div class="legacy-standard-warning" role="status"><strong>历史/替代标准组合</strong><span>该组合不应作为新项目默认值，需要记录批准依据。</span></div>' : ""}</article>`;
+    }
+    function renderCargos() {
+      if (!settings.cargos.some((cargo) => cargo.id === activeCargoId)) activeCargoId = settings.cargos[0]?.id || "";
+      $("cargoCount").textContent = settings.cargos.length;
+      $("cargoTabs").innerHTML = settings.cargos.map((cargo, index) => `<button type="button" class="cargo-tab" role="tab" data-cargo-tab="${cargo.id}" aria-selected="${cargo.id === activeCargoId}" aria-controls="cargoPanel"><strong>货物 ${index + 1}</strong><small>${cargo.cargoNameEn || "待选择货物"}</small></button>`).join("");
+      const activeIndex = settings.cargos.findIndex((cargo) => cargo.id === activeCargoId);
+      $("cargoList").innerHTML = activeIndex >= 0 ? cardMarkup(settings.cargos[activeIndex], activeIndex).replace('class="cargo-card"', 'class="cargo-card" id="cargoPanel" role="tabpanel"') : "";
+      const names = settings.cargos.map((cargo) => cargo.cargoNameEn).filter(Boolean);
+      $("projectCargoSummary").textContent = names.length > 1 ? `${names[0]} + ${names.length - 1}` : (names[0] || "待选择货物");
+    }
+    function cloneSettings(value) { return JSON.parse(JSON.stringify(value)); }
+    function syncTaskControls() {
+      ["seaState", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => { $(id).value = settings[id]; });
+      $("unitGroup").querySelectorAll("input").forEach((input) => { input.checked = settings.quantityUnits.includes(input.value); });
+      $("reportGroup").querySelectorAll("input").forEach((input) => { input.checked = settings.selectedReports.includes(input.value); });
+    }
+    function restoreAppliedSettings() {
+      Object.keys(settings).forEach((key) => delete settings[key]);
+      Object.assign(settings, cloneSettings(appliedSettings));
+      persistQuantityUnits(); syncAirWeightRequirement(); syncTaskControls(); renderCargos();
+      changed = false; $("changeWarning").hidden = true;
+      $("settingsFooterMsg").className = "";
+      $("settingsFooterMsg").textContent = "已取消未应用的调整，恢复至上次应用的设置。";
+      revalidate(); flash("已恢复上次应用的设置");
     }
 
     function revalidate() {
-      const densityRule = densityRules[settings.densityType];
-      const densityComplete = settings.densityValue !== "" && settings.densityValue !== null && Number(settings.densityValue) > 0 && densityRule.units.includes(settings.densityUnit);
-      const vcfComplete = (vcfStandardVersions[settings.vcfStandard] || []).includes(settings.vcfVersion);
-      const routeComplete = Boolean(settings.calculationRoute && !settings.calculationRoute.pending);
-      const requiredComplete = Boolean(settings.reportDate && settings.vesselName && settings.cargoName && settings.clientName && densityComplete && vcfComplete && routeComplete && settings.quantityUnits.length > 0);
+      const cargosComplete = settings.cargos.every((cargo) => {
+        const densityComplete = cargo.densityValue !== "" && cargo.densityValue !== null && Number(cargo.densityValue) > 0 && densityRules[cargo.densityType].units.includes(cargo.densityUnit);
+        const route = resolveCalculationRoute(cargo);
+        const vcfComplete = route.mode !== "VCF" || (vcfStandardVersions[cargo.vcfStandard] || []).includes(cargo.vcfVersion);
+        const wcfComplete = !cargo.requiresWcf || Boolean(cargo.wcfStandard);
+        return Boolean(cargo.cargoName && densityComplete && vcfComplete && wcfComplete && !route.pending);
+      });
+      const requiredComplete = cargosComplete && settings.quantityUnits.length > 0;
       const applyBtn = $("applyBtn");
       applyBtn.disabled = !(requiredComplete && changed);
+      $("cancelBtn").disabled = !changed;
       const msg = $("settingsFooterMsg");
       if (changed) {
         if (!requiredComplete) msg.className = "form-error";
         else msg.className = "";
-        msg.textContent = requiredComplete ? "应用后，顶部摘要、报告预览和后续计算将使用本项目设置。" : "请补齐必填信息、有效密度组合、已确认的体积换算方法、VCF标准版本和至少一个报告数量单位。";
+        msg.textContent = requiredComplete ? "应用后，顶部摘要、报告预览和后续计算将按货物分别使用本项目设置。" : "请补齐每种货物的必填信息、适用的标准化路线、VCF 标准版本（如适用）、WCF 标准（如输出空气中重量）和至少一个报告数量单位。";
       }
     }
 
     function markChanged() { changed = true; $("changeWarning").hidden = false; revalidate(); }
 
-    // 绑定文本/数字输入
-    ["reportDate", "inspectionStart", "inspectionEnd", "voyageNo", "clientNameEn", "portName", "terminalName", "cargoNameEn", "wcfStandard", "sedimentWaterPct", "allowedVariancePct", "seaState", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => {
+    // 任务单级字段
+    ["seaState", "liquidLevelTool", "freeWaterTool", "waterPasteBrand", "densitySource", "reportLanguage", "reportType"].forEach((id) => {
       $(id).addEventListener("input", (e) => { settings[id] = e.target.value; markChanged(); });
       $(id).addEventListener("change", (e) => { settings[id] = e.target.value; markChanged(); });
     });
-    $("vesselName").addEventListener("change", () => { syncVesselSelection(); markChanged(); });
     window.addEventListener("storage", (event) => {
       if (event.key === "offlineSurveyCargoMaster") window.location.reload();
     });
-    ["densityValue"].forEach((id) => {
-      $(id).addEventListener("input", (e) => { settings[id] = e.target.value === "" ? "" : Number(e.target.value); updateCalcRoute("密度值已变化"); markChanged(); });
+    $("cargoList").addEventListener("input", handleCargoChange);
+    $("cargoList").addEventListener("change", handleCargoChange);
+    $("cargoTabs").addEventListener("click", (event) => {
+      const tab = event.target.closest("[data-cargo-tab]"); if (!tab) return;
+      activeCargoId = tab.dataset.cargoTab; renderCargos();
     });
-
-    // 联动选择
-    $("clientName").addEventListener("change", (e) => {
-      settings.clientName = e.target.value;
-      const map = { "中国石油国际事业有限公司": "PETROCHINA INTERNATIONAL CO., LTD.", "中国联合石油有限责任公司": "CHINAOIL CO., LTD.", "示例能源贸易有限公司": "DEMO ENERGY TRADING CO., LTD." };
-      settings.clientNameEn = map[e.target.value] || ""; $("clientNameEn").value = settings.clientNameEn; markChanged();
+    $("cargoTabs").addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const current = settings.cargos.findIndex((cargo) => cargo.id === activeCargoId);
+      const next = event.key === "Home" ? 0 : event.key === "End" ? settings.cargos.length - 1 : (current + (event.key === "ArrowRight" ? 1 : -1) + settings.cargos.length) % settings.cargos.length;
+      activeCargoId = settings.cargos[next].id; renderCargos();
+      $("cargoTabs").querySelector(`[data-cargo-tab="${activeCargoId}"]`)?.focus();
     });
-    $("portName").addEventListener("change", (e) => {
-      settings.portName = e.target.value;
-      const first = { "营口港": "仙人岛原油码头", "青岛港": "董家口原油码头", "大连港": "新港油库" }[e.target.value];
-      if (first) { settings.terminalName = first; $("terminalName").value = first; }
-      markChanged();
+    $("cargoList").addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-action]"); if (!button) return;
+      const card = button.closest("[data-cargo-id]"); const index = settings.cargos.findIndex((cargo) => cargo.id === card.dataset.cargoId); if (index < 0) return;
+      if (button.dataset.action === "duplicate") { const { id, ...copy } = settings.cargos[index]; const newCargo = createCargo(copy); settings.cargos.splice(index + 1, 0, newCargo); activeCargoId = newCargo.id; renderCargos(); markChanged(); }
+      if (button.dataset.action === "remove" && settings.cargos.length > 1 && confirm(`删除“${settings.cargos[index].cargoName}”及其计算参数？`)) { settings.cargos.splice(index, 1); activeCargoId = settings.cargos[Math.max(0, index - 1)].id; renderCargos(); markChanged(); }
     });
-    $("cargoType").addEventListener("change", (e) => {
-      settings.cargoType = e.target.value;
-      settings.chemicalConversionMethod = "";
-      syncCargoSubTypeOptions(); updateCalcRoute("货物类型已变化"); markChanged();
-    });
-    $("cargoSubType").addEventListener("change", (e) => {
-      settings.cargoSubType = e.target.value;
-      settings.chemicalConversionMethod = "";
-      syncCargoOptions(); updateCalcRoute("货物子类型已变化"); markChanged();
-    });
-    $("cargoName").addEventListener("change", () => { settings.chemicalConversionMethod = ""; syncCargoDetails(); updateCalcRoute("货物基础数据已变化"); markChanged(); });
-    $("densityType").addEventListener("change", (e) => {
-      settings.densityType = e.target.value;
-      settings.densityUnit = densityRules[e.target.value].units[0];
-      settings.densityValue = ""; $("densityValue").value = "";
-      syncDensityUnitOptions(); updateCalcRoute("密度基础已变化，原密度值已清空"); markChanged();
-    });
-    $("densityUnit").addEventListener("change", (e) => { settings.densityUnit = e.target.value; settings.densityValue = ""; $("densityValue").value = ""; updateCalcRoute("密度单位已变化，原密度值已清空"); markChanged(); });
-    $("vcfStandard").addEventListener("change", (e) => {
-      settings.vcfStandard = e.target.value;
-      settings.vcfVersion = vcfStandardVersions[e.target.value][0];
-      syncVcfVersionOptions(); updateCalcRoute("VCF 标准已变化"); markChanged();
-    });
-    $("vcfVersion").addEventListener("change", (e) => { settings.vcfVersion = e.target.value; updateCalcRoute("VCF 版本已变化"); markChanged(); });
-    $("chemicalConversionMethod").addEventListener("change", (e) => { settings.chemicalConversionMethod = e.target.value; updateCalcRoute("化学品换算方法已确认"); markChanged(); });
+    function handleCargoChange(event) {
+      const field = event.target.dataset.field; if (!field) return;
+      const card = event.target.closest("[data-cargo-id]"); const cargo = settings.cargos.find((item) => item.id === card.dataset.cargoId); if (!cargo) return;
+      const reason = { cargoType: "货物类型已变化", cargoSubType: "货物子类型已变化", cargoName: "货物基础数据已变化", densityType: "密度基础已变化，原密度值已清空", densityUnit: "密度单位已变化，原密度值已清空", densityValue: "密度值已变化", vcfStandard: "VCF 标准已变化", vcfVersion: "VCF 版本已变化", chemicalConversionMethod: "化学品换算方法已确认", requiresWcf: "空气中重量换算设置已变化", wcfStandard: "WCF 标准已变化" }[field] || "计算参数已变化";
+      cargo[field] = field === "requiresWcf" ? event.target.value === "true" : ["densityValue", "sedimentWaterPct", "allowedVariancePct"].includes(field) ? (event.target.value === "" ? "" : Number(event.target.value)) : event.target.value;
+      if (event.type === "input") { if (["densityValue", "sedimentWaterPct", "allowedVariancePct"].includes(field)) markCalculationNeedsRecalc(cargo, reason); markChanged(); return; }
+      if (field === "cargoType") { cargo.cargoSubType = Object.keys(cargoCatalog[cargo.cargoType].subtypes)[0]; cargo.cargoName = cargoCatalog[cargo.cargoType].subtypes[cargo.cargoSubType].cargos[0]?.name || ""; cargo.chemicalConversionMethod = ""; cargo.wcfStandard = cargo.cargoType === "LIQUID_CHEMICALS" ? "" : "API MPMS 11.5 (2013)"; }
+      if (field === "cargoSubType") { cargo.cargoName = cargoCatalog[cargo.cargoType].subtypes[cargo.cargoSubType].cargos[0]?.name || ""; cargo.chemicalConversionMethod = ""; }
+      if (field === "cargoName") cargo.chemicalConversionMethod = "";
+      if (["cargoType", "cargoSubType", "cargoName"].includes(field)) cargo.cargoNameEn = getSelectedCargo(cargo)?.nameEn || "";
+      if (field === "densityType") { cargo.densityUnit = densityRules[cargo.densityType].units[0]; cargo.densityValue = ""; }
+      if (field === "densityUnit") cargo.densityValue = "";
+      if (field === "vcfStandard") cargo.vcfVersion = vcfStandardVersions[cargo.vcfStandard][0];
+      if (field === "requiresWcf") {
+        settings.quantityUnits = cargo.requiresWcf ? [...new Set([...settings.quantityUnits, "mtair"])] : settings.quantityUnits.filter((unit) => unit !== "mtair" && unit !== "ltair");
+        persistQuantityUnits(); syncAirWeightRequirement();
+      }
+      markCalculationNeedsRecalc(cargo, reason); renderCargos(); markChanged();
+    }
+    $("addCargoBtn").addEventListener("click", () => { const { id, ...copy } = settings.cargos.at(-1); const newCargo = createCargo(copy); settings.cargos.push(newCargo); activeCargoId = newCargo.id; renderCargos(); markChanged(); });
 
     // 选择组
     function bindChoiceGroup(groupId, field) {
@@ -522,18 +493,20 @@
         const arr = settings[field];
         if (cb.checked) { if (!arr.includes(cb.value)) arr.push(cb.value); }
         else settings[field] = arr.filter((v) => v !== cb.value);
-        if (field === "quantityUnits") persistQuantityUnits();
-        updateCalcRoute(); markChanged();
+        if (field === "quantityUnits") { persistQuantityUnits(); syncAirWeightRequirement(); renderCargos(); }
+        markChanged();
       });
     }
     bindChoiceGroup("unitGroup", "quantityUnits");
     bindChoiceGroup("reportGroup", "selectedReports");
     $("settingsForm").addEventListener("submit", (e) => {
       e.preventDefault();
+      appliedSettings = cloneSettings(settings);
       changed = false; $("changeWarning").hidden = true; revalidate();
       $("saveState").textContent = "设置已应用（演示）";
       setTimeout(() => { $("saveState").textContent = "草稿已保存"; }, 1800);
     });
+    $("cancelBtn").addEventListener("click", restoreAppliedSettings);
 
     // 顶栏按钮（演示，不持久化）
     const saveState = $("saveState");
@@ -542,12 +515,11 @@
     $("reportBtn").addEventListener("click", () => flash("（演示）报告预览见步骤 08"));
 
     // 初始化
-    restoreVesselSelection();
     restoreQuantityUnits();
-    syncCargoTypeOptions(settings.cargoType, settings.cargoSubType, settings.cargoName);
-    syncDensityUnitOptions();
-    syncVcfVersionOptions();
-    updateCalcRoute();
+    syncAirWeightRequirement();
+    renderCargos();
+    syncTaskControls();
+    appliedSettings = cloneSettings(settings);
     revalidate();
   </script>
   <script src="save-guard.js"></script>

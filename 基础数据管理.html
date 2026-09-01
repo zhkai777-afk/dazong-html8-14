@@ -68,6 +68,7 @@
     .search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30, 58, 95, .12); outline: none; }
     .manage-button { min-height: 36px; padding: 0 12px; border: 1px solid var(--primary); border-radius: 4px; color: #fff; background: var(--primary); font-size: 12px; font-weight: 650; white-space: nowrap; }
     .manage-button:hover { background: var(--primary-hover); }
+    .master-actions { display: flex; align-items: center; gap: 8px; }
     .row-input { width: 100%; min-height: 30px; padding: 0 6px; border: 1px solid transparent; border-radius: 3px; color: inherit; background: transparent; }
     .row-input:hover, .row-input:focus { border-color: var(--border-strong); background: #fff; outline: none; }
     .row-action { padding: 3px 7px; border: 1px solid #cbd5e1; border-radius: 3px; color: #41536a; background: #fff; font-size: 11px; }
@@ -89,7 +90,7 @@
     .empty strong { display: block; color: #536174; font-size: 14px; }
     .empty p { margin: 4px 0 0; font-size: 12px; }
     .modal-backdrop { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(19, 35, 55, .42); }
-    .modal { width: min(920px, 100%); max-height: calc(100vh - 40px); overflow: auto; border: 1px solid var(--border); border-radius: 7px; background: #fff; box-shadow: 0 18px 50px rgba(16, 35, 58, .24); }
+    .modal { width: min(1160px, 100%); max-height: calc(100vh - 40px); overflow: auto; border: 1px solid var(--border); border-radius: 7px; background: #fff; box-shadow: 0 18px 50px rgba(16, 35, 58, .24); }
     .modal-header, .modal-footer { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .modal-header { border-bottom: 1px solid var(--border); }
     .modal-header h2 { margin: 0; font-size: 16px; }
@@ -97,6 +98,8 @@
     .modal-close { width: 30px; height: 30px; border: 0; border-radius: 4px; color: #526276; background: transparent; font-size: 21px; line-height: 1; }
     .modal-close:hover { background: #eef3f8; }
     .form-grid { padding: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px 16px; }
+    .form-grid.ship-form { gap: 10px 28px; }
+    .form-grid.ship-form::before { grid-column: 1 / -1; padding-bottom: 9px; border-bottom: 1px solid var(--border); color: var(--primary); content: "基本信息"; font-size: 14px; font-weight: 700; }
     .field { display: grid; gap: 5px; color: #43536a; font-size: 12px; font-weight: 650; }
     .field input, .field select { width: 100%; min-height: 34px; padding: 0 9px; border: 1px solid #cbd5e1; border-radius: 4px; color: var(--text); background: #fff; font-weight: 400; }
     .field input:focus, .field select:focus { border-color: var(--primary); outline: 0; box-shadow: 0 0 0 3px rgba(30,58,95,.12); }
@@ -151,9 +154,10 @@
     <section class="card workspace" aria-label="基础数据列表">
       <div class="tabs" role="tablist" aria-label="基础数据类型" aria-orientation="vertical">
         <button class="tab" type="button" role="tab" aria-selected="true" data-key="clients">客户</button>
-        <button class="tab" type="button" role="tab" aria-selected="false" data-key="vessels">船舶与舱容</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-key="vessels">船舶管理</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="tanks">岸罐</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="ports">港口码头</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-key="inspectionEquipmentTypes">检验设备类型</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="cargoTypes">货物类型</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-key="cargoes">货物</button>
       </div>
@@ -166,7 +170,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
             <input id="searchInput" type="search" placeholder="搜索名称、编号或关键字">
           </label>
-          <button class="manage-button" id="addMasterItemButton" type="button" hidden>新增</button>
+          <div class="master-actions"><button class="manage-button" id="addMasterItemButton" type="button" hidden>新增</button><button class="button-secondary" id="downloadVesselTemplate" type="button" hidden>下载模板</button><button class="button-secondary" id="importVesselButton" type="button" hidden>导入</button><input id="importVesselFile" type="file" accept=".csv,text/csv" hidden></div>
         </div>
 
         <div class="table-scroll" id="tableWrap">
@@ -203,15 +207,7 @@
           ['CUS-003', '中国石化燃料油销售有限公司', 'SINOPEC FUEL OIL SALES CO., LTD.', '王经理', '有效', '2026-05-09']
         ]
       },
-      vessels: {
-        title: '船舶与船舱资料', description: '维护船舶基本信息及船舱计量参数；可手动新增后同步至主业务平台。',
-        columns: ['IMO 编号', '船舶名称', '舱号', '船型', '舱容', '同步状态'],
-        rows: [
-          ['IMO 9384721', 'MT SAIQ', '1C', '原油船', '28,460 m³', '已同步'],
-          ['IMO 9457810', 'MT OCEAN CREST', '2P', '成品油船', '12,860 m³', '已同步'],
-          ['IMO 9321458', 'MT EASTERN STAR', '3S', '原油船', '24,120 m³', '已同步']
-        ]
-      },
+      vessels: { title: '船舶管理', description: '维护船舶基本信息、计量参数及联系人；保存后临时任务单将自动读取最新船舶数据。', columns: [] },
       tanks: {
         title: '岸罐资料', description: '维护检定证书、罐体参数及罐容表关联；可手动新增后同步至主业务平台。',
         columns: ['设备编号', '器具名称', '申检单位', '标称容积', '有效日期', '同步状态'],
@@ -265,6 +261,13 @@
     } catch (error) { cargoMaster = defaultCargoMaster; }
 
     const equipmentMasterKey = 'offlineSurveyEquipmentMaster';
+    const inspectionEquipmentTypesKey = 'offlineSurveyInspectionEquipmentTypes';
+    const defaultInspectionEquipmentTypes = ['测深钢卷尺', '温度计', '密度计', '取样器', '气体检测仪'];
+    let inspectionEquipmentTypes;
+    try {
+      const storedTypes = JSON.parse(localStorage.getItem(inspectionEquipmentTypesKey));
+      inspectionEquipmentTypes = Array.isArray(storedTypes) && storedTypes.length ? storedTypes : [...defaultInspectionEquipmentTypes];
+    } catch (error) { inspectionEquipmentTypes = [...defaultInspectionEquipmentTypes]; }
     const equipmentFields = {
       tanks: [
         ['certificateNo', '证书编号', 'text', true], ['equipmentNo', '设备编号', 'text', true], ['applicant', '申检单位', 'text', true],
@@ -276,11 +279,32 @@
         ['verificationLocation', '检定地点', 'text'], ['gaugeHeight', '液面计高度（mm）', 'number']
       ],
       vessels: [
-        ['imoNo', 'IMO 编号', 'text', true], ['vesselName', '船舶名称', 'text', true], ['tankNo', '舱号', 'text', true],
-        ['vesselType', '船型', 'text'], ['capacity', '舱容（m³）', 'number', true], ['referenceHeight', '参照高度（mm）', 'number'],
-        ['calibrationDate', '检定日期', 'date'], ['validUntil', '有效日期', 'date'], ['measurementOrg', '检定单位', 'text'], ['remarks', '备注', 'text']
+        ['vesselName', '船舶名称', 'text', true], ['vesselNameEn', '船舶英文名称', 'text'], ['formerName', '曾用名', 'text'],
+        ['imoNo', 'IMO号', 'text', true], ['mmsiNo', 'MMSI号', 'text'], ['vesselType', '船舶种类', 'select', false, ['客货船', '散货船', '油船', '集装箱船', '其他']],
+        ['owner', '船舶所有人', 'text'], ['operator', '船舶经营人', 'text'], ['contactPhone', '船舶联系电话', 'tel'],
+        ['flag', '船籍', 'text'], ['homePort', '船籍港', 'text'], ['shipyard', '造船厂', 'text'],
+        ['launchDate', '下水时间', 'date'], ['loadManual', '装载手册', 'text'], ['grossTonnage', '总吨', 'number'],
+        ['netTonnage', '净吨', 'number'], ['length', '船舶长度', 'number'], ['breadth', '船舶型宽', 'number'],
+        ['mouldedDepth', '船舶型深', 'number'], ['summerDraft', '满载吃水/夏季水线d', 'number'], ['summerDisplacement', '满载排水/夏季水线', 'number'],
+        ['dwt', '总载重吨DWT', 'number'], ['lightship', '空船重量lightship(MT)', 'number'], ['tpc', 'TPC@夏季载重线', 'number'],
+        ['density', '装载密度g/cm3', 'number'], ['lightshipAftDraft', '轻载时船重距离m(df)', 'number'], ['loadedAftDraft', '重载时船重距离m(Df)', 'number'],
+        ['lightshipForeDraft', '轻载时船重距离m(da)', 'number'], ['forwardDistance', '艏垂距离', 'number'], ['loadedForeDraft', '重载时艏垂距离m(Da)', 'number'],
+        ['keelThickness', '龙骨厚度', 'number'], ['conT', '常数MT(Con.T)', 'number'], ['constantDate', '常数鉴定日期', 'date']
       ]
     };
+    const vesselMasterKey = 'offlineSurveyVesselMaster';
+    const defaultVesselMaster = [
+      { imoNo: '9628207', mmsiNo: '414028000', vesselName: 'CHANG HANG CANG HAI', vesselNameEn: '', vesselType: '客货船' },
+      { imoNo: '9628207', mmsiNo: '414028000', vesselName: '长航沧海', vesselNameEn: 'CHANG HANG CANG HAI', vesselType: '散货船', owner: 'SHANGHAI MINGWAH SHIPPING', operator: 'SHANGHAI MINGWAH SHIPPING', contactPhone: '0086 17499950252' },
+      { imoNo: '9429170', mmsiNo: '414522000', vesselName: '恒泰红', vesselNameEn: 'HENG TAI HONG', vesselType: '散货船', owner: 'SHANDONG HENGQIANG SHIPPING', operator: 'NANTONG AMIGER SHIPPING', contactPhone: '13372185033' },
+      { imoNo: '9405966', mmsiNo: '422039600', vesselName: '罗莎克', vesselNameEn: 'ROSHAK', vesselType: '散货船', owner: 'SAFIRAN PAYAM DARYA', operator: 'SAFIRAN PAYAM DARYA', contactPhone: '00441157180442' },
+      { imoNo: '9169380', mmsiNo: '374482000', vesselName: '尤里斯', vesselNameEn: 'EUNICE', vesselType: '散货船', owner: 'EUNICE SHIPPING LIMITED', operator: 'ITG HOLDING CO.,LIMITED', contactPhone: '437300265' },
+      { imoNo: '9538359', mmsiNo: '412302820', vesselName: '瑞宁2', vesselNameEn: 'RUI NING 2', vesselType: '散货船', owner: 'ICBC FINANCIAL LEADING', operator: 'SHANGHAI LEADING ENERGY', contactPhone: '86-15901949921' },
+      { imoNo: '8555673', mmsiNo: '41318600', vesselName: '安茂山', vesselNameEn: 'ANMAOSHAN', vesselType: '散货船', owner: '中远海运', contactPhone: '021-36816563' },
+      { imoNo: '9457725', mmsiNo: '538007741', vesselName: '德阳', vesselNameEn: 'KSL DEYANG', vesselType: '散货船', owner: 'KSL DEYANG SHIPPING CO.', operator: 'NANJING KING SHIP MANAGEMENT', contactPhone: '025-58884791' }
+    ];
+    let vesselMaster;
+    try { const storedVessels = JSON.parse(localStorage.getItem(vesselMasterKey)); vesselMaster = Array.isArray(storedVessels) && storedVessels.length ? storedVessels : defaultVesselMaster; } catch (error) { vesselMaster = defaultVesselMaster; }
     let equipmentMaster = { tanks: [], vessels: [] };
     try {
       const storedEquipment = JSON.parse(localStorage.getItem(equipmentMasterKey));
@@ -302,6 +326,9 @@
     const syncFeedback = document.querySelector('#syncFeedback');
     const lastSyncTime = document.querySelector('#lastSyncTime');
     const addMasterItemButton = document.querySelector('#addMasterItemButton');
+    const downloadVesselTemplate = document.querySelector('#downloadVesselTemplate');
+    const importVesselButton = document.querySelector('#importVesselButton');
+    const importVesselFile = document.querySelector('#importVesselFile');
     const pushButton = document.querySelector('#pushButton');
     const masterModal = document.querySelector('#masterModal');
     const masterForm = document.querySelector('#masterForm');
@@ -328,10 +355,14 @@
     }
 
     function render() {
+      if (currentKey === 'inspectionEquipmentTypes') { renderInspectionEquipmentTypes(); return; }
       if (currentKey === 'cargoTypes' || currentKey === 'cargoes') { renderCargoMaster(); return; }
+      if (currentKey === 'vessels') { renderVesselMaster(); return; }
       const source = sources[currentKey];
-      const equipmentKey = currentKey === 'tanks' || currentKey === 'vessels' ? currentKey : null;
+      const equipmentKey = currentKey === 'tanks' ? currentKey : null;
       addMasterItemButton.hidden = !equipmentKey;
+      downloadVesselTemplate.hidden = true;
+      importVesselButton.hidden = true;
       if (equipmentKey) addMasterItemButton.textContent = currentKey === 'tanks' ? '新增岸罐' : '新增船舱';
       const query = searchInput.value.trim().toLowerCase();
       const manualRows = equipmentKey ? equipmentMaster[equipmentKey].map(item => equipmentKey === 'tanks'
@@ -356,6 +387,36 @@
     }
     function persistEquipmentMaster() {
       try { localStorage.setItem(equipmentMasterKey, JSON.stringify(equipmentMaster)); } catch (error) {}
+    }
+    function persistVesselMaster() {
+      try { localStorage.setItem(vesselMasterKey, JSON.stringify(vesselMaster)); } catch (error) {}
+    }
+    function renderVesselMaster() {
+      const source = sources.vessels;
+      const query = searchInput.value.trim().toLowerCase();
+      const columns = ['序号', '操作', 'IMO号', 'MMSI号', '船舶名称', '船舶英文名称', '船舶种类', '船舶所有人', '船舶经营人', '船舶联系电话'];
+      const rows = vesselMaster.filter(item => Object.values(item).some(value => String(value || '').toLowerCase().includes(query)));
+      listTitle.textContent = source.title;
+      listDescription.textContent = source.description;
+      addMasterItemButton.hidden = false;
+      addMasterItemButton.textContent = '新增船舶';
+      downloadVesselTemplate.hidden = false;
+      importVesselButton.hidden = false;
+      tableHead.innerHTML = columns.map(column => `<th scope="col">${column}</th>`).join('');
+      tableBody.innerHTML = rows.map((item, index) => `<tr>
+        <td data-label="序号">${index + 1}</td>
+        <td data-label="操作"><button class="row-action" type="button" data-edit-vessel="${vesselMaster.indexOf(item)}">编辑</button><button class="row-action danger" type="button" data-delete-vessel="${vesselMaster.indexOf(item)}">删除</button></td>
+        <td data-label="IMO号">${esc(item.imoNo || '—')}</td><td data-label="MMSI号">${esc(item.mmsiNo || '—')}</td>
+        <td data-label="船舶名称">${esc(item.vesselName || '—')}</td><td data-label="船舶英文名称">${esc(item.vesselNameEn || '—')}</td>
+        <td data-label="船舶种类">${esc(item.vesselType || '—')}</td><td data-label="船舶所有人">${esc(item.owner || '—')}</td>
+        <td data-label="船舶经营人">${esc(item.operator || '—')}</td><td data-label="船舶联系电话">${esc(item.contactPhone || '—')}</td>
+      </tr>`).join('');
+      tableWrap.hidden = rows.length === 0;
+      emptyState.classList.toggle('show', rows.length === 0);
+    }
+    function persistInspectionEquipmentTypes() {
+      try { localStorage.setItem(inspectionEquipmentTypesKey, JSON.stringify(inspectionEquipmentTypes)); } catch (error) {}
+      showFeedback('检验设备类型已保存，临时任务单将读取最新选项。');
     }
     function showFeedback(message) {
       syncFeedback.textContent = message;
@@ -388,12 +449,29 @@
       emptyState.classList.toggle('show', filtered.length === 0);
     }
 
-    function openEquipmentModal(key) {
-      modalTitle.textContent = key === 'tanks' ? '新增岸罐' : '新增船舱';
-      document.querySelector('#modalDescription').textContent = '保存后将作为本机待同步数据，可通过顶部“同步至主业务平台”提交。';
+    function renderInspectionEquipmentTypes() {
+      const query = searchInput.value.trim().toLowerCase();
+      const types = inspectionEquipmentTypes.filter(type => type.toLowerCase().includes(query));
+      listTitle.textContent = '检验设备类型维护';
+      listDescription.textContent = '维护临时任务单可选择的检验设备类型；保存后任务单自动读取。';
+      addMasterItemButton.hidden = false;
+      addMasterItemButton.textContent = '新增设备类型';
+      tableHead.innerHTML = ['设备类型', '操作'].map(column => `<th scope="col">${column}</th>`).join('');
+      tableBody.innerHTML = types.map(type => `<tr><td data-label="设备类型"><input class="row-input" value="${esc(type)}" data-equipment-type="${esc(type)}"></td><td data-label="操作"><button class="row-action danger" type="button" data-delete-equipment-type="${esc(type)}">删除</button></td></tr>`).join('');
+      tableWrap.hidden = types.length === 0;
+      emptyState.classList.toggle('show', types.length === 0);
+    }
+
+    function openEquipmentModal(key, editingIndex = null) {
+      const isVessel = key === 'vessels';
+      const item = isVessel && editingIndex !== null ? vesselMaster[editingIndex] : null;
+      modalTitle.textContent = isVessel ? (item ? '编辑船舶' : '新增船舶') : '新增岸罐';
+      document.querySelector('#modalDescription').textContent = isVessel ? '维护船舶基础信息；保存后创建临时任务单时可直接选择。' : '保存后将作为本机待同步数据，可通过顶部“同步至主业务平台”提交。';
       formError.textContent = '';
-      formFields.innerHTML = equipmentFields[key].map(([name, label, type, required]) => `<label class="field"><span>${esc(label)}${required ? ' <b class="required">*</b>' : ''}</span><input name="${name}" type="${type}" value="${esc(key === 'tanks' ? (tankDefaults[name] || '') : '')}"${required ? ' required' : ''}></label>`).join('');
+      formFields.classList.toggle('ship-form', isVessel);
+      formFields.innerHTML = equipmentFields[key].map(([name, label, type, required, options]) => `<label class="field"><span>${esc(label)}${required ? ' <b class="required">*</b>' : ''}</span>${type === 'select' ? `<select name="${name}"${required ? ' required' : ''}><option value="">请选择</option>${(options || []).map(option => `<option value="${esc(option)}"${(item?.[name] || '') === option ? ' selected' : ''}>${esc(option)}</option>`).join('')}</select>` : `<input name="${name}" type="${type}" value="${esc(isVessel ? (item?.[name] || '') : (tankDefaults[name] || ''))}"${required ? ' required' : ''}>`}</label>`).join('');
       masterForm.dataset.key = key;
+      masterForm.dataset.editingIndex = editingIndex === null ? '' : String(editingIndex);
       masterModal.hidden = false;
       window.setTimeout(() => formFields.querySelector('input')?.focus(), 0);
     }
@@ -403,11 +481,22 @@
       currentKey = tab.dataset.key;
       tabs.forEach(item => item.setAttribute('aria-selected', String(item === tab)));
       searchInput.value = '';
+      downloadVesselTemplate.hidden = currentKey !== 'vessels';
+      importVesselButton.hidden = currentKey !== 'vessels';
       render();
     }));
     addMasterItemButton.addEventListener('click', () => {
       if (currentKey === 'tanks' || currentKey === 'vessels') {
         openEquipmentModal(currentKey);
+        return;
+      }
+      if (currentKey === 'inspectionEquipmentTypes') {
+        const name = window.prompt('请输入检验设备类型名称');
+        if (!name || !name.trim()) return;
+        if (inspectionEquipmentTypes.includes(name.trim())) return showFeedback('该检验设备类型已存在。');
+        inspectionEquipmentTypes.push(name.trim());
+        persistInspectionEquipmentTypes();
+        render();
         return;
       }
       if (currentKey === 'cargoTypes') {
@@ -436,10 +525,48 @@
     document.querySelector('#modalClose').addEventListener('click', closeEquipmentModal);
     document.querySelector('#modalCancel').addEventListener('click', closeEquipmentModal);
     masterModal.addEventListener('click', event => { if (event.target === masterModal) closeEquipmentModal(); });
+    downloadVesselTemplate.addEventListener('click', () => {
+      const header = ['船舶名称', '船舶英文名称', '曾用名', 'IMO号', 'MMSI号', '船舶种类', '船舶所有人', '船舶经营人', '船舶联系电话'];
+      const example = ['示例船舶', 'EXAMPLE VESSEL', '', '1234567', '413000000', '散货船', '', '', ''];
+      const url = URL.createObjectURL(new Blob([`\ufeff${header.join(',')}\n${example.join(',')}\n`], { type: 'text/csv;charset=utf-8' }));
+      const link = document.createElement('a'); link.href = url; link.download = '船舶导入模板.csv'; link.click(); URL.revokeObjectURL(url);
+    });
+    importVesselButton.addEventListener('click', () => importVesselFile.click());
+    importVesselFile.addEventListener('change', () => {
+      const file = importVesselFile.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const lines = String(reader.result || '').replace(/^\ufeff/, '').split(/\r?\n/).filter(Boolean);
+        const headers = (lines.shift() || '').split(',').map(value => value.trim());
+        const fieldMap = { 船舶名称: 'vesselName', 船舶英文名称: 'vesselNameEn', 曾用名: 'formerName', IMO号: 'imoNo', MMSI号: 'mmsiNo', 船舶种类: 'vesselType', 船舶所有人: 'owner', 船舶经营人: 'operator', 船舶联系电话: 'contactPhone' };
+        let imported = 0;
+        lines.forEach(line => {
+          const values = line.split(',').map(value => value.trim());
+          const item = Object.fromEntries(headers.map((header, index) => [fieldMap[header], values[index] || '']).filter(([key]) => key));
+          if (!item.vesselName || !item.imoNo || vesselMaster.some(vessel => vessel.vesselName === item.vesselName && vessel.imoNo === item.imoNo)) return;
+          vesselMaster.push({ ...item, createdAt: new Date().toISOString() }); imported += 1;
+        });
+        persistVesselMaster(); render(); showFeedback(imported ? `已导入 ${imported} 条船舶数据，临时任务单将同步更新。` : '未导入数据：请检查模板内容或重复记录。');
+      };
+      reader.readAsText(file, 'UTF-8'); importVesselFile.value = '';
+    });
     masterForm.addEventListener('submit', event => {
       event.preventDefault();
       const key = masterForm.dataset.key;
       const data = Object.fromEntries(new FormData(masterForm).entries());
+      if (key === 'vessels') {
+        const editingIndex = masterForm.dataset.editingIndex === '' ? null : Number(masterForm.dataset.editingIndex);
+        const duplicate = vesselMaster.some((item, index) => index !== editingIndex && item.imoNo === data.imoNo && item.vesselName === data.vesselName);
+        if (duplicate) { formError.textContent = '相同 IMO 号和船舶名称的记录已存在。'; return; }
+        if (editingIndex === null) vesselMaster.push({ ...data, createdAt: new Date().toISOString() });
+        else vesselMaster[editingIndex] = { ...vesselMaster[editingIndex], ...data, updatedAt: new Date().toISOString() };
+        persistVesselMaster();
+        closeEquipmentModal();
+        render();
+        showFeedback(editingIndex === null ? '船舶已保存，临时任务单将读取最新船舶数据。' : '船舶信息已更新，临时任务单将读取最新船舶数据。');
+        return;
+      }
       const identity = key === 'tanks' ? data.equipmentNo : `${data.imoNo}-${data.tankNo}`;
       const duplicate = equipmentMaster[key].some(item => (key === 'tanks' ? item.equipmentNo : `${item.imoNo}-${item.tankNo}`) === identity);
       if (duplicate) { formError.textContent = '该基础数据已在本机待同步列表中。'; return; }
@@ -450,6 +577,19 @@
       showFeedback(`${key === 'tanks' ? '岸罐' : '船舱'}已保存为本机数据，等待同步至主业务平台。`);
     });
     tableBody.addEventListener('change', event => {
+      const equipmentTypeInput = event.target.closest('[data-equipment-type]');
+      if (equipmentTypeInput) {
+        const previous = equipmentTypeInput.dataset.equipmentType;
+        const next = equipmentTypeInput.value.trim();
+        if (!next || (next !== previous && inspectionEquipmentTypes.includes(next))) {
+          equipmentTypeInput.value = previous;
+          return showFeedback(!next ? '设备类型不能为空。' : '该检验设备类型已存在。');
+        }
+        inspectionEquipmentTypes = inspectionEquipmentTypes.map(type => type === previous ? next : type);
+        persistInspectionEquipmentTypes();
+        render();
+        return;
+      }
       const input = event.target.closest('[data-master-field]');
       if (!input) return;
       const type = cargoMaster[input.dataset.type];
@@ -466,6 +606,28 @@
       persistCargoMaster();
     });
     tableBody.addEventListener('click', event => {
+      const editVesselButton = event.target.closest('[data-edit-vessel]');
+      if (editVesselButton) { openEquipmentModal('vessels', Number(editVesselButton.dataset.editVessel)); return; }
+      const deleteVesselButton = event.target.closest('[data-delete-vessel]');
+      if (deleteVesselButton) {
+        const index = Number(deleteVesselButton.dataset.deleteVessel);
+        const vessel = vesselMaster[index];
+        if (!vessel || !window.confirm(`确认删除船舶“${vessel.vesselName}”吗？`)) return;
+        vesselMaster.splice(index, 1);
+        persistVesselMaster();
+        render();
+        showFeedback('船舶已删除，临时任务单的可选船舶已同步更新。');
+        return;
+      }
+      const equipmentTypeButton = event.target.closest('[data-delete-equipment-type]');
+      if (equipmentTypeButton) {
+        const name = equipmentTypeButton.dataset.deleteEquipmentType;
+        if (!window.confirm(`确认删除检验设备类型“${name}”吗？`)) return;
+        inspectionEquipmentTypes = inspectionEquipmentTypes.filter(type => type !== name);
+        persistInspectionEquipmentTypes();
+        render();
+        return;
+      }
       const button = event.target.closest('[data-delete-subtype], [data-delete-cargo]');
       if (!button || !window.confirm('确认删除该基础数据吗？')) return;
       const type = cargoMaster[button.dataset.type];

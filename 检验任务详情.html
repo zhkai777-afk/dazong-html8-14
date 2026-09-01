@@ -150,6 +150,8 @@
     .safety-entry strong { font-size: 12px; }
     .safety-entry span { margin-top: 2px; color: var(--text-secondary); font-size: 11px; }
     .safety-entry .button { height: 32px; flex: none; font-size: 11px; }
+    .safety-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+    .safety-actions .tag { margin: 0; white-space: nowrap; }
     .safety-modal { width: min(820px, 92vw); max-height: min(820px, 88vh); display: flex; flex-direction: column; overflow: hidden; border-radius: 6px; background: var(--surface); box-shadow: 0 24px 60px rgba(11,24,40,.28); }
     .safety-modal header { padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid var(--border); background: var(--surface-muted); }
     .safety-modal h2 { margin: 0; font-size: 15px; }
@@ -399,13 +401,13 @@
         <div class="summary-left">
           <a class="back" id="btnBack" href="./检验任务管理.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回检验任务列表</a>
           <div class="summary-title-row">
-            <span class="summary-title">MT SAIQ 卸货检验</span>
-            <span class="tag idle">正式任务单</span>
+            <span class="summary-title" id="summaryTaskName">MT SAIQ 卸货检验</span>
+            <span class="tag idle" id="summaryBusinessType">正式任务单</span>
             <span class="tag" id="sumStatus" data-status="进行中">进行中</span>
             <span class="tag sync-tag" id="sumSync" data-sync="待上传">待上传</span>
           </div>
           <div class="summary-sub">
-            <span>任务单编号 RW-202505-0087</span><span class="sep">·</span><span>卸货检验</span>
+            <span id="summaryTaskNo">任务单编号 RW-202505-0087</span><span class="sep">·</span><span id="summaryTaskType">卸货检验</span>
           </div>
         </div>
         <div class="summary-center">
@@ -438,13 +440,13 @@
           <div class="group">
             <div class="group-head"><span class="idx">01</span><h3>任务信息</h3><span class="hint">任务识别及来源</span></div>
             <dl class="desc">
-              <div><dt>任务单编号</dt><dd class="num">RW-202505-0087</dd></div>
-              <div><dt>任务单名称</dt><dd>MT SAIQ 卸货检验</dd></div>
-              <div><dt>任务类型</dt><dd><span class="tag idle">正式任务单</span></dd></div>
-              <div><dt>检验类型</dt><dd>卸货检验</dd></div>
+              <div><dt>任务单编号</dt><dd class="num" id="detailTaskNo">RW-202505-0087</dd></div>
+              <div><dt>任务单名称</dt><dd id="detailTaskName">MT SAIQ 卸货检验</dd></div>
+              <div><dt>任务类型</dt><dd><span class="tag idle" id="detailBusinessType">正式任务单</span></dd></div>
+              <div><dt>检验类型</dt><dd id="detailTaskType">卸货检验</dd></div>
               <div><dt>任务状态</dt><dd><span class="tag active" id="basicStatus">进行中</span></dd></div>
               <div><dt>同步状态</dt><dd><span class="tag sync-tag waiting" id="basicSync">待上传</span></dd></div>
-              <div><dt>创建时间</dt><dd class="num">2025-05-23 09:42</dd></div>
+              <div><dt>创建时间</dt><dd class="num" id="detailCreatedAt">2025-05-23 09:42</dd></div>
               <div><dt>最后更新</dt><dd class="num">2025-05-25 15:06</dd></div>
             </dl>
             <div class="task-relation" id="taskRelation" aria-label="关联临时任务"></div>
@@ -452,14 +454,14 @@
           <div class="group">
             <div class="group-head"><span class="idx">02</span><h3>检验对象与人员</h3><span class="hint">船舶、货物、现场与负责人员</span></div>
             <dl class="desc">
-              <div><dt>船舶名称</dt><dd>MT SAIQ</dd></div>
+              <div><dt>船舶名称</dt><dd id="detailVessel">MT SAIQ</dd></div>
               <div><dt>IMO 编号</dt><dd class="num">9723792</dd></div>
               <div><dt>航次</dt><dd class="num">SAIQ-2505</dd></div>
-              <div><dt>货物</dt><dd>阿曼出口混合原油</dd></div>
-              <div><dt>客户名称</dt><dd>中国石油国际事业有限公司</dd></div>
-              <div><dt>港口</dt><dd>营口港 · 仙人岛原油码头</dd></div>
-              <div><dt>跟单人</dt><dd>刘洋</dd></div>
-              <div><dt>联系方式</dt><dd class="num">138 0000 2486</dd></div>
+              <div><dt>货物</dt><dd id="detailCargo">阿曼出口混合原油</dd></div>
+              <div><dt>客户名称</dt><dd id="detailCustomer">中国石油国际事业有限公司</dd></div>
+              <div><dt>港口</dt><dd id="detailLocation">营口港 · 仙人岛原油码头</dd></div>
+              <div><dt>跟单人</dt><dd id="detailAgent">刘洋</dd></div>
+              <div><dt>联系方式</dt><dd class="num" id="detailContact">138 0000 2486</dd></div>
               <div><dt>所属公司</dt><dd>容量计重检验部</dd></div>
               <div><dt>现场联系人</dt><dd>赵经理 / 139 0000 6618</dd></div>
             </dl>
@@ -482,7 +484,7 @@
                 <tbody id="equipmentRows"></tbody>
               </table>
             </div>
-            <div class="safety-entry"><div><strong>容量计重安全核查表</strong><span>检验开始前完成现场安全核查并留存记录。</span></div><button class="button primary" type="button" id="openSafetyChecklist">填写安全核查表</button></div>
+            <div class="safety-entry"><div><strong id="safetyChecklistName">容量计重安全核查表</strong><span>检验开始前完成现场安全核查并留存记录。</span></div><div class="safety-actions"><span class="tag idle" id="safetyChecklistStatus">未填写</span><button class="button primary" type="button" id="openSafetyChecklist">填写安全核查表</button></div></div>
           </div>
         </div>
       </section>
@@ -616,7 +618,18 @@
       const ico = text === "已签发" ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 7"/></svg>' : "";
       return '<span class="tag ' + cls + '"' + (cls === "danger" || cls === "pending" || cls === "idle" ? ' role="status"' : "") + '>' + ico + text + '</span>';
     }
-    const TASK_NO = "RW-202505-0087";
+    const temporaryTasksKey = "offlineSurveyTemporaryTasks";
+    const requestedTaskNo = new URLSearchParams(window.location.search).get("taskNo");
+    const defaultTask = {
+      taskNo: "RW-202505-0087", taskName: "MT SAIQ 卸货检验", taskType: "卸货检验", businessType: "正式任务单", status: "进行中", syncStatus: "待上传", createdAt: "2025-05-23 09:42",
+      vessel: "MT SAIQ", cargo: "阿曼出口混合原油", customer: "中国石油国际事业有限公司", location: "营口港 · 仙人岛原油码头",
+      agent: "刘洋", contact: "138 0000 2486", inspectors: ["陈海峰", "刘洋"], formData: { safetyChecklist: "容量计重-安全核查表" }
+    };
+    function readTemporaryTasks() {
+      try { const tasks = JSON.parse(localStorage.getItem(temporaryTasksKey) || "[]"); return Array.isArray(tasks) ? tasks : []; } catch (error) { return []; }
+    }
+    const activeTask = readTemporaryTasks().find(task => task.taskNo === requestedTaskNo) || defaultTask;
+    const TASK_NO = activeTask.taskNo;
     const DATA_TIME = "2025-05-25 15:06";
     const tempTasks = [
       { id: "LS-202505-0005", name: "MT SAIQ 现场临时卸货检验", type: "卸货检验", place: "营口港 · 仙人岛原油码头", createdAt: "2025-05-24 07:58", status: "进行中" },
@@ -996,6 +1009,46 @@
       { name: "徐娜", login: "xu.na", role: "检验员" },
       { name: "王磊", login: "wang.lei", role: "检验员" }
     ];
+    function setText(id, value, fallback) {
+      $("#" + id).textContent = value || fallback || "—";
+    }
+    function populateTaskDetails() {
+      const formData = activeTask.formData || {};
+      setText("summaryTaskName", activeTask.taskName);
+      setText("summaryBusinessType", activeTask.businessType);
+      setText("summaryTaskNo", "任务单编号 " + TASK_NO);
+      setText("summaryTaskType", activeTask.taskType);
+      setText("detailTaskNo", TASK_NO);
+      setText("detailTaskName", activeTask.taskName);
+      setText("detailBusinessType", activeTask.businessType);
+      setText("detailTaskType", activeTask.taskType);
+      setText("detailCreatedAt", activeTask.createdAt);
+      setText("detailVessel", activeTask.vessel || formData.transport);
+      setText("detailCargo", activeTask.cargo || formData.cargo);
+      setText("detailCustomer", activeTask.customer);
+      setText("detailLocation", activeTask.location || formData.place);
+      setText("detailAgent", formData.agent || activeTask.agent, "未填写");
+      setText("detailContact", formData.contact || activeTask.contact, "未填写");
+      setText("safetyChecklistName", (formData.safetyChecklist || "容量计重-安全核查表").replace(/-/g, ""));
+      document.title = (activeTask.taskName || "检验任务") + " - 检验任务详情";
+      const safetyInfo = $$(".safety-info strong");
+      if (safetyInfo.length === 4) {
+        safetyInfo[0].textContent = TASK_NO;
+        safetyInfo[1].textContent = activeTask.taskName || "—";
+        safetyInfo[2].textContent = activeTask.location || formData.place || "—";
+      }
+      const people = Array.isArray(activeTask.inspectors) && activeTask.inspectors.length ? activeTask.inspectors : ["陈海峰", "刘洋"];
+      inspectorRows.replaceChildren(...people.map((name, index) => {
+        const row = document.createElement("tr");
+        const known = { "陈海峰": "chen.hf", "刘洋": "liu.yang" }[name] || "—";
+        row.innerHTML = `<td>${index + 1}</td><td><input class="inspector-check" type="checkbox" aria-label="选择"></td><td></td><td class="login"></td><td>${index === 0 ? "检验组长" : "检验员"}</td>`;
+        row.cells[2].textContent = name;
+        row.cells[3].textContent = known;
+        row.querySelector(".inspector-check").setAttribute("aria-label", "选择" + name);
+        return row;
+      }));
+      if (safetyInfo.length === 4) safetyInfo[3].textContent = people.map((name, index) => name + "（" + (index === 0 ? "检验组长" : "检验员") + "）").join("、");
+    }
     function renumberInspectors() {
       $$("tr", inspectorRows).forEach((row, index) => {
         row.cells[0].textContent = index + 1;
@@ -1033,7 +1086,14 @@
       { id: "JY0005", name: "取样器", type: "取样设备" },
       { id: "JY0006", name: "压力表", type: "计量设备" }
     ];
-    let selectedDevices = ["JY0001", "JY0002", "ZN0001", "HW0001"];
+    const deviceStorageKey = "offlineSurveyTaskDevices:" + TASK_NO;
+    function readSelectedDevices() {
+      try { const devices = JSON.parse(localStorage.getItem(deviceStorageKey) || "[]"); return Array.isArray(devices) ? devices.filter(id => deviceCatalog.some(device => device.id === id)) : []; } catch (error) { return []; }
+    }
+    function saveSelectedDevices() {
+      try { localStorage.setItem(deviceStorageKey, JSON.stringify(selectedDevices)); } catch (error) {}
+    }
+    let selectedDevices = readSelectedDevices();
     const equipmentRows = $("#equipmentRows");
     const devicePickerModal = $("#devicePickerModal");
     function renderEquipmentRows() {
@@ -1057,6 +1117,7 @@
       const button = event.target.closest("[data-remove-device]");
       if (!button) return;
       selectedDevices = selectedDevices.filter(id => id !== button.dataset.removeDevice);
+      saveSelectedDevices();
       renderEquipmentRows();
       showToast("已移除检验设备");
     });
@@ -1074,6 +1135,7 @@
       const added = $$(".device-picker-check:checked").map(box => box.value);
       if (!added.length) return showToast("请选择要添加的检验设备");
       selectedDevices = selectedDevices.concat(added);
+      saveSelectedDevices();
       renderEquipmentRows();
       closeDevicePicker();
       showToast("已添加 " + added.length + " 台检验设备");
@@ -1081,6 +1143,29 @@
     devicePickerModal.addEventListener("mousedown", e => { if (e.target === devicePickerModal) closeDevicePicker(); });
     renderEquipmentRows();
     const safetyChecklistModal = $("#safetyChecklistModal");
+    const safetyStorageKey = "offlineSurveySafetyChecklist:" + TASK_NO;
+    let safetyChecklistCompleted = false;
+    function updateSafetyChecklistStatus() {
+      const status = $("#safetyChecklistStatus");
+      const button = $("#openSafetyChecklist");
+      status.textContent = safetyChecklistCompleted ? "已完成" : "未填写";
+      status.className = "tag " + (safetyChecklistCompleted ? "done" : "idle");
+      button.textContent = safetyChecklistCompleted ? "查看安全核查表" : "填写安全核查表";
+    }
+    function restoreSafetyChecklist() {
+      let saved;
+      try { saved = JSON.parse(localStorage.getItem(safetyStorageKey) || "null"); } catch (error) { saved = null; }
+      $$(".safety-answer", safetyChecklistModal).forEach(box => { box.checked = false; });
+      if (saved && Array.isArray(saved.answers)) {
+        saved.answers.forEach(answer => {
+          const box = $(".safety-answer[data-item='" + answer.item + "'][aria-label$='" + answer.answer + "']", safetyChecklistModal);
+          if (box) box.checked = true;
+        });
+        $("#safetyRemark").value = saved.remark || "";
+        safetyChecklistCompleted = Boolean(saved.completed);
+      }
+      updateSafetyChecklistStatus();
+    }
     function closeSafetyChecklist() {
       safetyChecklistModal.classList.remove("show");
       $("#openSafetyChecklist").focus();
@@ -1098,6 +1183,14 @@
     $("#saveSafetyChecklist").addEventListener("click", () => {
       const incomplete = Array.from({ length: 15 }, (_, index) => String(index + 1)).some(item => !$$(".safety-answer[data-item='" + item + "']:checked", safetyChecklistModal).length);
       if (incomplete) return showToast("请完成全部安全核查项目后再保存");
+      const answers = Array.from({ length: 15 }, (_, index) => {
+        const item = String(index + 1);
+        const checked = $(".safety-answer[data-item='" + item + "']:checked", safetyChecklistModal);
+        return { item, answer: checked?.getAttribute("aria-label").replace("项目" + item, "") || "" };
+      });
+      try { localStorage.setItem(safetyStorageKey, JSON.stringify({ completed: true, answers, remark: $("#safetyRemark").value })); } catch (error) {}
+      safetyChecklistCompleted = true;
+      updateSafetyChecklistStatus();
       closeSafetyChecklist();
       showToast("容量计重安全核查表已保存");
     });
@@ -1198,8 +1291,12 @@
     });
 
     /* ---------- init ---------- */
+    populateTaskDetails();
     renderTaskRelation();
-    applyState("进行中");
+    restoreSafetyChecklist();
+    const initialState = summaryCfg[activeTask.status] ? activeTask.status : "进行中";
+    $("#demoStatus").value = initialState;
+    applyState(initialState);
     activateTab("tab-basic");
     // notify the host frame (系统框架.html) so its top bar shows 检验任务详情
     notifyParent("navigate", { title: "检验任务详情", crumb: "项目管理 / 检验任务 / 任务详情" });

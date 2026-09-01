@@ -310,12 +310,19 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const tasks = [
+    const defaultTasks = [
       { id: 1, taskNo: 'RW-202505-0087', taskName: 'MT SAIQ 卸货检验', taskType: '卸货检验', businessType: '正式任务单', status: '进行中', syncStatus: '待上传', workOrderNo: '210225050087', workOrderName: '营口港原油卸货计量', engineer: '陈海峰', cargo: '阿曼出口混合原油', location: '仙人岛原油码头', createdAt: '2025-05-23 09:42' },
       { id: 2, taskNo: 'RW-202505-0084', taskName: 'PACIFIC HORIZON 装货检验', taskType: '装货检验', businessType: '正式任务单', status: '待开始', syncStatus: '待上传', workOrderNo: '210225050084', workOrderName: '大连港成品油装货', engineer: '李文博', cargo: '航空煤油', location: '大连新港', createdAt: '2025-05-22 15:18' },
       { id: 3, taskNo: 'RW-202505-0079', taskName: 'OCEAN CREST 岸罐计量', taskType: '岸罐计量', businessType: '正式任务单', status: '已完成', syncStatus: '已同步', workOrderNo: '210225050079', workOrderName: '青岛港岸罐交接', engineer: '王志远', cargo: '低硫燃料油', location: '青岛董家口码头', createdAt: '2025-05-20 11:06' },
       { id: 4, taskNo: 'RW-202505-0071', taskName: 'EASTERN STAR 船对船检验', taskType: '船对船 STS', businessType: '正式任务单', status: '已完成', syncStatus: '已同步', workOrderNo: '210225050071', workOrderName: '宁波锚地过驳作业', engineer: '周宇', cargo: '轻质原油', location: '宁波舟山港', createdAt: '2025-05-18 08:31' }
     ];
+    const temporaryTasksKey = 'offlineSurveyTemporaryTasks';
+    const tasks = (() => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(temporaryTasksKey));
+        return Array.isArray(stored) ? [...stored, ...defaultTasks] : [...defaultTasks];
+      } catch (error) { return [...defaultTasks]; }
+    })();
     const filterIds = ['taskNo','taskName','taskType','status','workOrderNo','engineer','cargo','location'];
     const state = { filters: {}, sortKey: 'createdAt', sortDirection: 'desc' };
     const selectedIds = new Set();
@@ -494,6 +501,7 @@
       window.clearTimeout(showNotice.timer);
       showNotice.timer = window.setTimeout(() => notice.classList.remove('show'), 3500);
     }
+    const createdTaskNo = new URLSearchParams(window.location.search).get('created');
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add('show');
@@ -559,6 +567,7 @@
       const link = document.createElement('a'); link.href = url; link.download = `检验任务_${new Date().toISOString().slice(0,10)}.csv`; link.click(); URL.revokeObjectURL(url); showToast('任务列表已导出');
     });
     render();
+    if (createdTaskNo) showNotice(`临时任务单「${createdTaskNo}」已创建并加入当前列表`);
   </script>
 </body>
 </html>

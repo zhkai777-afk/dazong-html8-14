@@ -178,11 +178,36 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      flex-wrap: wrap;
+      position: relative;
       padding: 3px 32px 3px 5px;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23aeb5bf' stroke-width='1.7'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 8px center;
     }
+    .multi-select[aria-expanded="true"] { border-color: var(--primary); box-shadow: 0 0 0 3px var(--focus); }
+    .equipment-select-wrap { position: relative; min-width: 0; }
+    .multi-select .tag { border: 0; }
+    .tag-remove { margin: 0 -3px 0 1px; padding: 0; border: 0; color: #7f8da0; background: transparent; cursor: pointer; line-height: 1; }
+    .tag-remove:hover { color: var(--primary); }
+    .multi-placeholder { color: var(--placeholder); }
+    .multi-options {
+      position: absolute;
+      z-index: 10;
+      top: calc(100% + 4px);
+      right: 0;
+      left: 0;
+      max-height: 228px;
+      overflow: auto;
+      padding: 5px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(23, 36, 58, .14);
+    }
+    .multi-option { display: flex; align-items: center; gap: 8px; min-height: 30px; padding: 4px 7px; border-radius: 3px; color: var(--text-soft); cursor: pointer; }
+    .multi-option:hover { background: #f1f5f9; color: var(--primary); }
+    .multi-option input { width: 16px; min-width: 16px; min-height: 16px; margin: 0; accent-color: var(--primary); }
     .tag {
       display: inline-flex;
       align-items: center;
@@ -389,7 +414,7 @@
             <label for="quantity">申报数量/重量</label>
             <div class="input-action">
               <input id="quantity" type="number" min="0" step="0.001" placeholder="申报数量/重量" required>
-              <select id="unit" aria-label="计量单位"><option>MT</option><option>KG</option><option>m³</option></select>
+              <select id="unit" aria-label="计量单位"><option selected>m³</option><option>MT</option><option>KG</option></select>
             </div>
           </div>
 
@@ -435,9 +460,9 @@
             <div class="form-grid">
           <div class="field required">
             <label id="equipmentLabel">检验设备类型</label>
-            <div class="multi-select" role="group" aria-labelledby="equipmentLabel" tabindex="0">
-              <span class="tag">测深钢卷尺 <span aria-hidden="true">×</span></span>
-              <span class="tag">温度计 <span aria-hidden="true">×</span></span>
+            <div class="equipment-select-wrap">
+              <div class="multi-select" id="equipmentSelect" role="combobox" aria-labelledby="equipmentLabel" aria-expanded="false" aria-controls="equipmentOptions" tabindex="0"></div>
+              <div class="multi-options" id="equipmentOptions" role="listbox" aria-label="检验设备类型选项" hidden></div>
             </div>
           </div>
 
@@ -585,7 +610,13 @@
     const staffPickerRows = document.querySelector('#staffPickerRows');
     const staffKeyword = document.querySelector('#staffKeyword');
     const customer = document.querySelector('#customer');
+    const equipmentSelect = document.querySelector('#equipmentSelect');
+    const equipmentOptions = document.querySelector('#equipmentOptions');
+    const inspectionEquipmentTypesKey = 'offlineSurveyInspectionEquipmentTypes';
+    const defaultInspectionEquipmentTypes = ['测深钢卷尺', '温度计', '密度计', '取样器', '气体检测仪'];
+    let selectedEquipmentTypes = ['测深钢卷尺', '温度计'];
     const meetingSourceKey = 'cq_temp_task_meeting_source';
+    const temporaryTasksKey = 'offlineSurveyTemporaryTasks';
     const liquidCapacityWeighingService = '液体商品容量计重';
     const places = [
       { name: '古雷港发码头', type: '码头' },
@@ -598,9 +629,28 @@
       { name: '盘锦港301泊位', type: '泊位' },
       { name: '盘锦港302泊位', type: '泊位' }
     ];
-    const transportOptionsByType = {
-      船舶: ['万铭文明', '恩隆-EN LONG', 'MEGALOHARI', 'NBA VIVA', '安丰09-ANFENG09', '光荣-HY GLORY', '神华502-SHENHUA 502', '基星-BASIC STAR']
-    };
+    const vesselMasterKey = 'offlineSurveyVesselMaster';
+    const defaultVesselMaster = [
+      { vesselName: 'CHANG HANG CANG HAI', vesselNameEn: '' },
+      { vesselName: '长航沧海', vesselNameEn: 'CHANG HANG CANG HAI' },
+      { vesselName: '恒泰红', vesselNameEn: 'HENG TAI HONG' },
+      { vesselName: '罗莎克', vesselNameEn: 'ROSHAK' },
+      { vesselName: '尤里斯', vesselNameEn: 'EUNICE' },
+      { vesselName: '瑞宁2', vesselNameEn: 'RUI NING 2' },
+      { vesselName: '安茂山', vesselNameEn: 'ANMAOSHAN' },
+      { vesselName: '德阳', vesselNameEn: 'KSL DEYANG' }
+    ];
+    function readVesselMaster() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(vesselMasterKey));
+        return Array.isArray(stored) && stored.length ? stored : defaultVesselMaster;
+      } catch (error) { return defaultVesselMaster; }
+    }
+    function vesselOptionLabel(vessel) {
+      return vessel.vesselNameEn && vessel.vesselNameEn !== vessel.vesselName
+        ? `${vessel.vesselName} - ${vessel.vesselNameEn}` : vessel.vesselName;
+    }
+    const transportOptionsByType = {};
     const cargoOptionsByType = {
       原油: ['原油'],
       成品油: ['燃料油', '汽油', '柴油', '煤油'],
@@ -616,6 +666,79 @@
       { name: '张博', login: 'zhangbo81' }
     ];
 
+    function readInspectionEquipmentTypes() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(inspectionEquipmentTypesKey));
+        return Array.isArray(stored) && stored.length ? stored : defaultInspectionEquipmentTypes;
+      } catch (error) { return defaultInspectionEquipmentTypes; }
+    }
+    function renderEquipmentSelect() {
+      const types = readInspectionEquipmentTypes();
+      selectedEquipmentTypes = selectedEquipmentTypes.filter(type => types.includes(type));
+      equipmentSelect.replaceChildren();
+      if (!selectedEquipmentTypes.length) {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'multi-placeholder';
+        placeholder.textContent = '请选择检验设备类型';
+        equipmentSelect.append(placeholder);
+      } else {
+        selectedEquipmentTypes.forEach(type => {
+          const tag = document.createElement('span');
+          tag.className = 'tag';
+          tag.append(document.createTextNode(type));
+          const remove = document.createElement('button');
+          remove.className = 'tag-remove';
+          remove.type = 'button';
+          remove.dataset.removeEquipmentType = type;
+          remove.setAttribute('aria-label', `移除${type}`);
+          remove.textContent = '×';
+          tag.append(remove);
+          equipmentSelect.append(tag);
+        });
+      }
+      equipmentOptions.replaceChildren(...types.map(type => {
+        const option = document.createElement('label');
+        option.className = 'multi-option';
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', String(selectedEquipmentTypes.includes(type)));
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = type;
+        checkbox.checked = selectedEquipmentTypes.includes(type);
+        option.append(checkbox, document.createTextNode(type));
+        return option;
+      }));
+    }
+    function setEquipmentOptionsOpen(open) {
+      equipmentOptions.hidden = !open;
+      equipmentSelect.setAttribute('aria-expanded', String(open));
+    }
+    equipmentSelect.addEventListener('click', event => {
+      const remove = event.target.closest('[data-remove-equipment-type]');
+      if (remove) {
+        selectedEquipmentTypes = selectedEquipmentTypes.filter(type => type !== remove.dataset.removeEquipmentType);
+        renderEquipmentSelect();
+        return;
+      }
+      setEquipmentOptionsOpen(equipmentOptions.hidden);
+    });
+    equipmentSelect.addEventListener('keydown', event => {
+      if (event.key === 'Escape') return setEquipmentOptionsOpen(false);
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setEquipmentOptionsOpen(equipmentOptions.hidden); }
+    });
+    equipmentOptions.addEventListener('change', event => {
+      const checkbox = event.target.closest('input[type="checkbox"]');
+      if (!checkbox) return;
+      selectedEquipmentTypes = checkbox.checked
+        ? [...selectedEquipmentTypes, checkbox.value]
+        : selectedEquipmentTypes.filter(type => type !== checkbox.value);
+      renderEquipmentSelect();
+      setEquipmentOptionsOpen(true);
+    });
+    document.addEventListener('click', event => {
+      if (!event.target.closest('.equipment-select-wrap')) setEquipmentOptionsOpen(false);
+    });
+
     // Shared draft data for the first-meeting page. In the offline prototype,
     // localStorage is the handoff between the temporary task form and the task workbench.
     function readMeetingSource() {
@@ -628,13 +751,17 @@
       try {
         localStorage.setItem(meetingSourceKey, JSON.stringify(Object.assign({}, previous, {
           customerName: customer.value,
-          inspectors: inspectorsFromTask.length ? inspectorsFromTask : previous.inspectors || []
+          inspectors: inspectorsFromTask.length ? inspectorsFromTask : previous.inspectors || [],
+          totalPlan: document.querySelector('#quantity').value,
+          totalPlanUnit: document.querySelector('#unit').value
         })));
       } catch (error) {}
     }
     const savedMeetingSource = readMeetingSource();
     if (savedMeetingSource.customerName) customer.value = savedMeetingSource.customerName;
     customer.addEventListener('input', saveMeetingSource);
+    document.querySelector('#quantity').addEventListener('input', saveMeetingSource);
+    document.querySelector('#unit').addEventListener('change', saveMeetingSource);
     new MutationObserver(saveMeetingSource).observe(rows, { childList: true });
     window.addEventListener('message', event => {
       if (event.data?.type !== 'sync-temp-task-customer') return;
@@ -648,8 +775,11 @@
     });
 
     function updateTransportOptions() {
-      const options = transportOptionsByType[transportType.value] || [];
-      transport.value = '';
+      const previousValue = transport.value;
+      const options = transportType.value === '船舶'
+        ? readVesselMaster().map(vesselOptionLabel)
+        : (transportOptionsByType[transportType.value] || []);
+      transport.value = options.includes(previousValue) ? previousValue : '';
       transportOptions.replaceChildren(...options.map(value => {
         const option = document.createElement('option');
         option.value = value;
@@ -662,6 +792,9 @@
     }
 
     transportType.addEventListener('change', updateTransportOptions);
+    window.addEventListener('storage', event => {
+      if (event.key === vesselMasterKey && transportType.value === '船舶') updateTransportOptions();
+    });
 
     function updateCargoOptions() {
       const options = cargoOptionsByType[cargoType.value.trim()];
@@ -829,24 +962,58 @@
     form.addEventListener('submit', event => {
       event.preventDefault();
       const invalid = [...form.querySelectorAll('[required]')].filter(field => !field.value);
+      if (!selectedEquipmentTypes.length) {
+        equipmentSelect.setAttribute('aria-invalid', 'true');
+        invalid.unshift(equipmentSelect);
+      }
       form.querySelectorAll('[aria-invalid="true"]').forEach(field => field.removeAttribute('aria-invalid'));
       if (invalid.length) {
         invalid.forEach(field => field.setAttribute('aria-invalid', 'true'));
         invalid[0].focus();
         return showToast(`请完善 ${invalid.length} 个必填项`);
       }
-      showToast('临时任务单已确认');
+      const now = new Date();
+      const savedTasks = (() => {
+        try { const stored = JSON.parse(localStorage.getItem(temporaryTasksKey)); return Array.isArray(stored) ? stored : []; } catch (error) { return []; }
+      })();
+      const maxId = savedTasks.reduce((max, task) => Math.max(max, Number(task.id) || 0), 1000);
+      const vesselName = transport.value.trim();
+      const inspectorsFromTask = [...rows.querySelectorAll('tr:not(.empty-row)')].map(row => row.cells[2]?.textContent.trim()).filter(Boolean);
+      const task = {
+        id: Date.now(), taskNo: `LS-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}-${String(maxId + 1).padStart(4, '0')}`,
+        taskName: `${vesselName || '未命名'} ${taskItem.value}`, taskType: taskItem.value, businessType: '临时任务单', status: '待开始', syncStatus: '待上传',
+        workOrderNo: '—', workOrderName: '临时任务单', engineer: service.value, cargo: cargo.value.trim(), location: document.querySelector('#place').value.trim() || '待补充',
+        vessel: vesselName, vesselSnapshot: readVesselMaster().find(vessel => vesselOptionLabel(vessel) === vesselName) || { vesselName },
+        declaredQuantity: document.querySelector('#quantity').value, declaredUnit: document.querySelector('#unit').value,
+        customer: customer.value.trim(), inspectors: inspectorsFromTask, createdAt: now.toLocaleString('zh-CN', { hour12: false }).replaceAll('/', '-').slice(0, 16),
+        formData: {
+          service: service.value, taskItem: taskItem.value, agent: document.querySelector('#agent').value.trim(), contact: document.querySelector('#contact').value.trim(),
+          startDate: document.querySelector('#startDate').value, place: document.querySelector('#place').value.trim(), transportType: transportType.value,
+          transport: vesselName, cargoType: cargoType.value.trim(), cargo: cargo.value.trim(), quantity: document.querySelector('#quantity').value,
+          unit: document.querySelector('#unit').value, equipmentTypes: [...selectedEquipmentTypes], safetyChecklist: document.querySelector('#safetyChecklist').value,
+          shoreStandard: document.querySelector('#shoreStandard').value, sampleStandard: document.querySelector('#sampleStandard').value,
+          shipStandard: document.querySelector('#shipStandard').value, reportTemplate: document.querySelector('#reportTemplate').value,
+          remark: document.querySelector('#remark').value.trim()
+        }
+      };
+      try { localStorage.setItem(temporaryTasksKey, JSON.stringify([task, ...savedTasks])); } catch (error) { return showToast('本机数据保存失败，请检查浏览器存储权限'); }
+      saveMeetingSource();
+      if (window.parent !== window) window.parent.postMessage({ type: 'navigate', title: '检验任务管理', crumb: '项目管理 / 检验任务' }, '*');
+      window.location.href = './检验任务管理.html?created=' + encodeURIComponent(task.taskNo);
     });
 
     form.addEventListener('reset', () => window.setTimeout(() => {
       form.querySelectorAll('[aria-invalid="true"]').forEach(field => field.removeAttribute('aria-invalid'));
       updateTransportOptions();
       updateCargoOptions();
+      selectedEquipmentTypes = ['测深钢卷尺', '温度计'].filter(type => readInspectionEquipmentTypes().includes(type));
+      renderEquipmentSelect();
       showToast('表单已重置');
     }));
 
     updateTransportOptions();
     updateCargoOptions();
+    renderEquipmentSelect();
   </script>
 </body>
 </html>

@@ -7,16 +7,22 @@
   <style>
     :root{--primary:#1e3a5f;--primary-strong:#142b46;--surface:#fff;--background:#eef2f6;--text:#15202f;--secondary:#526071;--border:#d7dee7;--success:#047857;--warning:#a16207;--focus:#2563eb}
     *{box-sizing:border-box} body{margin:0;background:var(--background);color:var(--text);font:14px/1.5 "Segoe UI","Microsoft YaHei UI","PingFang SC",Arial,sans-serif}.skip-link{position:absolute;left:12px;top:-50px;background:#fff;padding:8px;z-index:5}.skip-link:focus{top:12px}.app{width:100%;min-width:0;min-height:100vh}.topbar{height:68px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 24px}.eyebrow{font-size:12px;color:var(--secondary);margin:0 0 2px}.topbar h1{font-size:20px;line-height:28px;margin:0;font-weight:600}.offline{display:flex;gap:8px;align-items:center;color:var(--secondary);font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--success)}main{padding:16px 24px 28px;max-width:none;margin:0}.overview{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;display:grid;grid-template-columns:1.25fr 1fr auto;gap:24px;align-items:center}.overview h2{font-size:16px;margin:0 0 4px}.overview p{margin:0;color:var(--secondary);font-size:12px}.source-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.source-grid div{border-left:1px solid var(--border);padding-left:12px}.source-grid label{display:block;color:var(--secondary);font-size:12px}.source-grid strong{font-variant-numeric:tabular-nums;font-size:14px}.button{height:32px;padding:0 13px;border-radius:4px;border:1px solid var(--border);background:#fff;color:var(--text);font:inherit;cursor:pointer;transition:background-color .16s,color .16s,border-color .16s}.button:hover{border-color:#9cabbc;background:#f5f8fa}.button.primary{background:var(--primary);border-color:var(--primary);color:white}.button.primary:hover{background:var(--primary-strong);border-color:var(--primary-strong)}button:focus-visible,input:focus-visible{outline:3px solid color-mix(in srgb,var(--focus) 30%,transparent);outline-offset:2px}.work-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:12px;margin-top:12px}.card{background:var(--surface);border:1px solid var(--border);border-radius:4px}.card-head{height:44px;padding:0 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}.card-head h2{font-size:16px;margin:0}.card-head span{color:var(--secondary);font-size:12px}.result-table{width:100%;border-collapse:collapse}.result-table th{height:36px;background:#f6f8fa;border-bottom:1px solid var(--border);font-size:12px;color:#39485a;text-align:right;padding:0 16px}.result-table th:first-child{text-align:left}.result-table td{height:44px;padding:0 16px;border-bottom:1px solid #e8edf2;vertical-align:middle}.result-table tr:last-child td{border-bottom:0}.result-table tr:hover{background:#f8fafc}.result-table .unit{font-weight:600}.result-table .en{display:block;font-size:12px;color:var(--secondary);font-weight:400;margin-top:1px}.result-table .number{text-align:right;font-variant-numeric:tabular-nums;font-size:15px}.result-table .number small{color:var(--secondary);font-size:11px;margin-left:4px}.result-table .calculated{color:#075f4a}.empty{text-align:center;color:var(--secondary);padding:54px 12px!important}.legend{border-top:1px solid var(--border);padding:11px 16px;color:var(--secondary);font-size:12px}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#0e8a67;margin-right:5px}.side-body{padding:10px 16px 16px}.notice{display:flex;gap:8px;padding:9px 10px;border:1px solid #d6e5f5;background:#f3f8fd;color:#365675;font-size:12px;margin-bottom:12px}.notice svg{flex:0 0 16px;margin-top:1px}.unit-list{border:0;padding:0;margin:0}.unit-list legend{font-size:12px;color:var(--secondary);margin-bottom:6px}.choice{min-height:40px;border-bottom:1px solid #edf0f3;display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;cursor:pointer}.choice:last-child{border-bottom:0}.choice input{accent-color:var(--primary);width:16px;height:16px;margin:0;cursor:pointer}.choice strong{font-size:13px;font-weight:500}.choice small{display:block;color:var(--secondary);font-size:11px}.choice .short{font-weight:600;font-size:12px;color:#314156;white-space:nowrap}.actions{padding-top:14px;border-top:1px solid var(--border);margin-top:10px;display:flex;gap:8px;justify-content:flex-end}.recalc{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.field label{display:block;font-size:12px;color:var(--secondary);margin-bottom:4px}.field input{width:100%;height:32px;border:1px solid #b8c3d0;border-radius:4px;padding:0 8px;font:inherit;font-variant-numeric:tabular-nums}.status{min-height:20px;color:var(--success);font-size:12px;margin:10px 0 0;opacity:0;transition:opacity .16s}.status.show{opacity:1}@media(max-width:960px){.app{min-width:0}.topbar{padding:0 16px}.topbar .offline span:last-child{display:none}main{padding:12px 16px}.overview{grid-template-columns:1fr;gap:12px}.source-grid div:first-child{border-left:0;padding-left:0}.work-grid{grid-template-columns:1fr}.side-card{order:-1}.result-table td,.result-table th{padding:0 10px}.result-table .en{display:none}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+    /* 单位换算页签：字段口径说明 */
+    .conversion-definition{background:#fff;overflow:hidden}.conversion-definition-table{width:100%;border-collapse:collapse;table-layout:fixed}.conversion-definition-table th,.conversion-definition-table td{height:43px;padding:0 12px;border-bottom:1px solid #edf0f3;text-align:left;color:#1f2937;font-size:13px;white-space:nowrap}.conversion-definition-table th{height:38px;background:#f6f8fa;color:#39485a;font-size:12px;font-weight:700}.conversion-definition-table td:nth-child(2){color:#075f4a;font-weight:650;font-variant-numeric:tabular-nums}.conversion-definition-table .abbr{margin-left:6px;color:var(--secondary);font-size:12px;font-weight:600}.conversion-definition-table th:nth-child(1),.conversion-definition-table td:nth-child(1){width:21%}.conversion-definition-table th:nth-child(2),.conversion-definition-table td:nth-child(2){width:20%}.conversion-definition-table th:nth-child(3),.conversion-definition-table td:nth-child(3){width:15%}.conversion-definition-table th:nth-child(4),.conversion-definition-table td:nth-child(4){width:14%}.conversion-definition-table th:nth-child(5),.conversion-definition-table td:nth-child(5){width:14%}.conversion-definition-table tr:last-child td{border-bottom:0}.card-head-actions{display:flex;gap:8px}.button.compact{height:28px;font-size:12px}.review-panel{display:none;padding:12px 16px;border-top:1px solid var(--border);background:#f8fbfd}.review-panel.show{display:block}.review-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.review-item{padding:10px 12px;border:1px solid #d9e4ed;border-radius:4px;background:#fff}.review-item h3{margin:0 0 6px;font-size:12px}.review-item p{margin:0;color:var(--secondary);font-size:12px;line-height:1.7}.review-item strong{color:var(--text)}.review-item.warning{border-color:#efd7a6;background:#fffaf0}.review-item.warning h3{color:#996500}.result-subhead{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 16px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:#fbfcfd}.result-subhead h3{margin:0;font-size:14px}.result-subhead span{color:var(--secondary);font-size:12px}@media(max-width:960px){.conversion-definition{overflow-x:auto}.conversion-definition-table{min-width:760px}.conversion-definition-table th,.conversion-definition-table td{padding:0 10px}.review-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <a class="skip-link" href="#results">跳到换算结果</a>
   <div class="app">
     <main>
-      <section class="overview" aria-labelledby="summary-title">
-        <div><h2 id="summary-title">当前计算基础</h2><p>根据标准体积、密度与温度系数，换算报告所需的数量单位。</p></div>
-        <div class="source-grid" aria-label="计算参数"><div><label>标准体积</label><strong id="baseVolume">1,894,655.132 m³ @15℃</strong></div><div><label>密度 @15℃</label><strong id="baseDensity">0.8598 t/m³</strong></div><div><label>体积修正系数</label><strong>0.98254</strong></div></div>
-        <button class="button primary" type="button" id="selectAll">全选单位</button>
+      <section class="card quantity-summary-card" aria-labelledby="quantity-field-title">
+        <header class="card-head"><div><h2 id="quantity-field-title">数量计算结果及换算依据</h2><span>计量口径、扣除项与换算结果</span></div></header>
+        <div class="conversion-definition" aria-label="数量字段说明">
+          <table class="conversion-definition-table">
+            <thead><tr><th>字段（缩写）</th><th>数值</th><th>是否含游离水</th><th>是否含S&amp;W</th><th>温度口径</th><th>数量性质</th></tr></thead>
+            <tbody id="fieldDefinitionRows"></tbody>
+          </table>
+        </div>
       </section>
       <div class="work-grid">
         <section class="card" id="results" aria-labelledby="result-title">
@@ -28,7 +34,6 @@
           <header class="card-head"><div><h2 id="unit-title">请选择需要的数量单位</h2><span>Choose QTY Units</span></div></header>
           <div class="side-body"><div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6m0-9h.01"/></svg><span>勾选或取消单位后，结果表会即时刷新；确认后将保存为本报告的显示单位。</span></div>
             <fieldset class="unit-list" id="unitList"><legend>可输出的数量单位</legend></fieldset>
-            <div class="recalc"><div class="field"><label for="volumeInput">标准体积（m³ @15℃）</label><input id="volumeInput" type="number" min="0" step="0.001" value="1894655.132"></div><div class="field"><label for="densityInput">密度（t/m³ @15℃）</label><input id="densityInput" type="number" min="0" step="0.0001" value="0.8598"></div></div>
             <div class="actions"><button class="button" type="button" id="clearAll">清空</button><button class="button primary" type="button" id="confirm">确认选择</button></div><p class="status" id="status" role="status" aria-live="polite">已保存数量单位，结果已重新计算。</p>
           </div>
         </aside>
@@ -49,28 +54,37 @@
     ];
     const $ = id => document.getElementById(id);
     const quantityUnitStorageKey = 'offlineSurveyQuantityUnits';
+    const calculationBasis = { volume: 1894655.132, density: 0.8598, freeWater: 0, sandWater: 0.025 };
     let savedQuantitySettings = {};
     try { savedQuantitySettings = JSON.parse(localStorage.getItem(quantityUnitStorageKey)) || {}; } catch (_) {}
     const selected = new Set(Array.isArray(savedQuantitySettings.units) && savedQuantitySettings.units.length ? savedQuantitySettings.units : ['bbl60','m315','mtair','ltair']);
-    if (Number.isFinite(savedQuantitySettings.volume)) $('volumeInput').value = savedQuantitySettings.volume;
-    if (Number.isFinite(savedQuantitySettings.density)) $('densityInput').value = savedQuantitySettings.density;
     const format = (n, digits=3) => new Intl.NumberFormat('zh-CN',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(n);
-    function values(unit, volume, density){
-      const netVolume = volume * 0.99975, mass = volume * density, netMass = netVolume * density;
+    function values(unit, volume, density, netVolume){
+      const mass = volume * density, netMass = netVolume * density;
       const handlers = {mass:[mass,netMass],longTon:[mass/1.0160469088,netMass/1.0160469088],observed:[volume/0.98254*6.28981077,netVolume/0.98254*6.28981077],m320:[volume*1.0072,netVolume*1.0072],m330:[volume*1.0251,netVolume*1.0251],vacuum:[mass*1.0011,netMass*1.0011],vacLong:[mass*1.0011/1.0160469088,netMass*1.0011/1.0160469088]};
       return handlers[unit.factor] || [volume*unit.factor,netVolume*unit.factor];
     }
     function render(){
-      const volume = Number($('volumeInput').value) || 0, density = Number($('densityInput').value) || 0;
-      $('baseVolume').textContent = `${format(volume)} m³ @15℃`; $('baseDensity').textContent = `${density.toFixed(4)} t/m³`;
+      const { volume, density, freeWater, sandWater } = calculationBasis;
+      const netVolume = volume * (1 - sandWater / 100), vcf = 0.98254;
+      const fieldRows = [
+        ['总观测体积', 'TOV', '是', '是', '现场温度', '体积', `${format(volume / vcf + freeWater)} m³`],
+        ['毛观测体积', 'GOV', '否', '是', '现场温度', '体积', `${format(volume / vcf)} m³`],
+        ['毛标准体积', 'GSV', '否', '是', '标准温度', '体积', `${format(volume)} m³ @15℃`],
+        ['毛标准质量', 'GSM', '否', '是', '标准密度', '真空中质量', `${format(volume * density * 1.0011)} t`],
+        ['毛标准重量', 'GSW', '否', '是', '标准密度', '空气中重量', `${format(volume * density)} t`],
+        ['净标准体积', 'NSV', '否', '否', '标准温度', '体积', `${format(netVolume)} m³ @15℃`],
+        ['净标准质量', 'NSM', '否', '否', '标准密度', '真空中质量', `${format(netVolume * density * 1.0011)} t`],
+        ['净标准重量', 'NSW', '否', '否', '标准密度', '空气中重量', `${format(netVolume * density)} t`]
+      ];
+      $('fieldDefinitionRows').innerHTML = fieldRows.map(row => `<tr><td><strong>${row[0]}</strong><span class="abbr">${row[1]}</span></td><td>${row[6]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td>${row[5]}</td></tr>`).join('');
       const list = $('unitList'); list.innerHTML = '<legend>可输出的数量单位</legend>' + units.map(u => `<label class="choice"><input type="checkbox" value="${u.id}" ${selected.has(u.id)?'checked':''} aria-label="选择${u.cn}"><span><strong>${u.cn}</strong><small>${u.en}</small></span><span class="short">${u.short}</span></label>`).join('');
       list.querySelectorAll('input').forEach(input => input.addEventListener('change', e => {e.target.checked ? selected.add(e.target.value) : selected.delete(e.target.value); persist(); render();}));
       const chosen = units.filter(u => selected.has(u.id)); $('resultCount').textContent = `已选 ${chosen.length} 个单位`;
-      $('resultRows').innerHTML = chosen.length ? chosen.map(u => {const [gross,net]=values(u,volume,density);return `<tr><td class="unit">${u.cn}<span class="en">${u.en}</span></td><td class="number calculated">${format(gross)}<small>${u.short}</small></td><td class="number calculated">${format(net)}<small>${u.short}</small></td></tr>`}).join('') : '<tr><td class="empty" colspan="3">尚未选择数量单位，请在右侧勾选至少一个单位。</td></tr>';
+      $('resultRows').innerHTML = chosen.length ? chosen.map(u => {const [gross,net]=values(u,volume,density,netVolume);return `<tr><td class="unit">${u.cn}<span class="en">${u.en}</span></td><td class="number calculated">${format(gross)}<small>${u.short}</small></td><td class="number calculated">${format(net)}<small>${u.short}</small></td></tr>`}).join('') : '<tr><td class="empty" colspan="3">尚未选择数量单位，请在右侧勾选至少一个单位。</td></tr>';
     }
-    function persist() { localStorage.setItem(quantityUnitStorageKey, JSON.stringify({ units: [...selected], volume: Number($('volumeInput').value) || 0, density: Number($('densityInput').value) || 0 })); }
-    $('selectAll').addEventListener('click',()=>{units.forEach(u=>selected.add(u.id));persist();render()}); $('clearAll').addEventListener('click',()=>{selected.clear();persist();render()});
-    $('volumeInput').addEventListener('input',()=>{persist();render()}); $('densityInput').addEventListener('input',()=>{persist();render()});
+    function persist() { localStorage.setItem(quantityUnitStorageKey, JSON.stringify({ units: [...selected] })); }
+    $('clearAll').addEventListener('click',()=>{selected.clear();persist();render()});
     $('confirm').addEventListener('click',()=>{persist();$('status').classList.add('show');window.setTimeout(()=>$('status').classList.remove('show'),3500)});
     window.addEventListener('storage', event => { if (event.key === quantityUnitStorageKey) window.location.reload(); });
     render();

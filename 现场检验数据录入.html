@@ -719,10 +719,10 @@ function renderStepNav(){
     var active = state.currentStep===s.id?'active':'';
     var done = (statuses[s.id]==='COMPLETED')?'done':'';
     var meta='';
-    if(s.id==='meeting'){ var sub=0; FM_FLAT.forEach(function(it){ if(state.fmItems[it.id].status==='SUBMITTED') sub++; }); meta='<span class="step-meta">子项 '+sub+'/23</span>'; }
+    if(s.id==='meeting'){ meta=''; }
     else if(s.children){ meta='<span class="step-meta">'+s.children.map(function(child){return child.name;}).join(' · ')+'</span>'; }
     else if(statuses[s.id]==='COMPLETED'){ meta='<span class="step-meta">已完成</span>'; }
-    else if(statuses[s.id]==='IN_PROGRESS'){ meta='<span class="step-meta">进行中</span>'; }
+    else if(statuses[s.id]==='IN_PROGRESS'){ meta=''; }
     else { meta='<span class="step-meta">待处理</span>'; }
     var noInner = statuses[s.id]==='COMPLETED'? '<span style="display:flex;width:14px;height:14px">'+ICON.check+'</span>' : s.no;
     html+='<div class="step-item '+active+' '+done+'" data-step="'+s.id+'"><div class="step-no">'+noInner+'</div><div class="step-main"><div class="step-name">'+esc(s.name)+'</div><div class="en" style="font-size:10px">'+esc(s.en)+'</div>'+meta+'</div></div>';
@@ -930,38 +930,6 @@ function recordTargetFields(catalog,record){
     '<div id="recordVesselFields"'+(target==='shore'?' hidden':'')+'><div class="field"><label class="lbl">船舶 <span class="req">*</span></label><select id="recordVessel" class="control">'+vesselOptions+'</select></div><div class="field"><label class="lbl">船舱 <span class="req">*</span></label><div class="record-target-options" id="recordCompartmentOptions">'+compartmentOptions+'</div><div class="hint">可选择本条记录涉及的一个或多个船舱。</div></div></div>'+
     '<div id="recordShoreFields"'+(target==='vessel'?' hidden':'')+'><div class="field"><label class="lbl">岸罐 <span class="req">*</span></label><div class="record-target-options">'+tankOptions+'</div><div class="hint">请选择本条记录涉及的具体岸罐。</div></div></div>';
 }
-function recordTargetMatches(left,right){
-  if(!left||!right||left.measurementTarget!==right.measurementTarget) return false;
-  if(left.measurementTarget==='vessel'){
-    if(left.vessel!==right.vessel) return false;
-    var leftCompartments=(left.compartments||[]).slice().sort();
-    var rightCompartments=(right.compartments||[]).slice().sort();
-    return leftCompartments.join('|')===rightCompartments.join('|');
-  }
-  var leftTanks=(left.shoreTanks||[]).slice().sort();
-  var rightTanks=(right.shoreTanks||[]).slice().sort();
-  return leftTanks.join('|')===rightTanks.join('|');
-}
-function frontGaugeCandidates(details,excludeId){
-  var candidates=[];
-  ['pre','during','post'].forEach(function(phase){
-    ensureInspectionRecordState(phase).forEach(function(record){
-      if(record.id!==excludeId && record.measurementTiming==='front' && recordTargetMatches(record,details)) candidates.push({phase:phase,record:record});
-    });
-  });
-  return candidates;
-}
-function frontGaugeOption(candidate){
-  var record=candidate.record;
-  var target=record.measurementTarget==='shore' ? '岸罐：'+(record.shoreTanks||[]).join('、') : '船舶：'+record.vessel+'；船舱：'+(record.compartments||[]).join('、');
-  return '<option value="'+esc(record.id)+'">'+esc(phaseLabel(candidate.phase)+' · '+record.name+'（'+target+'）')+'</option>';
-}
-function measurementTimingFields(phase,record){
-  if(phase!=='during') return '';
-  var timing=record.measurementTiming||'front';
-  return '<div class="field"><label class="lbl" for="recordMeasurementTiming">数据类型 <span class="req">*</span></label><select id="recordMeasurementTiming" class="control"><option value="front"'+(timing==='front'?' selected':'')+'>前尺数据</option><option value="rear"'+(timing==='rear'?' selected':'')+'>后尺数据</option></select><div class="hint">后尺数据须关联一条计量对象完全一致的前尺数据。</div></div>'+
-    '<div class="field" id="recordFrontReferenceWrap"'+(timing==='rear'?'':' hidden')+'><label class="lbl" for="recordFrontReference">对应前尺数据 <span class="req">*</span></label><select id="recordFrontReference" class="control"></select><div class="hint" id="recordFrontReferenceHint"></div></div>';
-}
 function openInspectionRecordModal(phase,mode){
   var editing=mode==='edit';
   var records=ensureInspectionRecordState(phase);
@@ -974,7 +942,6 @@ function openInspectionRecordModal(phase,mode){
   openModal(editing?'编辑检验记录':'添加检验记录',
     '<div class="field"><label class="lbl" for="recordModalName">记录名称 <span class="req">*</span></label><input id="recordModalName" class="control" maxlength="40" value="'+esc(editing&&current?current.name:'')+'" placeholder="例如：卸前船舶计量" autofocus></div>'+
     recordTargetFields(catalog,targetRecord)+
-    measurementTimingFields(phase,targetRecord)+
     '<div class="field"><label class="lbl" for="recordCargo">货物 <span class="req">*</span></label><select id="recordCargo" class="control">'+cargoes.map(function(name){return '<option value="'+esc(name)+'"'+(name===selectedCargo?' selected':'')+'>'+esc(name)+'</option>';}).join('')+'</select><div class="hint">仅显示当前任务单中已选择的货物。</div></div>',
     (editing&&current?'<button type="button" class="btn btn-danger" data-delete-record>删除记录</button>':'')+'<button type="button" class="btn" data-cancel-record>取消</button><button type="button" class="btn btn-primary" data-save-record>'+ (editing?'保存修改':'添加记录') +'</button>',
     {onOpen:function(){
@@ -984,33 +951,9 @@ function openInspectionRecordModal(phase,mode){
         var vesselName=$('#recordVessel').value;
         var vessel=catalog.vessels.filter(function(item){return item.name===vesselName;})[0];
         $('#recordCompartmentOptions').innerHTML=(vessel?vessel.compartments:[]).map(function(name){return '<label class="record-target-option"><input type="checkbox" value="'+esc(name)+'" data-record-compartment> '+esc(name)+'</label>';}).join('') || '<span class="hint">该船舶暂无可选船舱。</span>';
-        $all('[data-record-compartment]').forEach(function(input){ input.addEventListener('change',refreshFrontReferences); });
-        refreshFrontReferences();
       }
-      function selectedTargetDetails(){
-        var target=$('#recordTargetType').value;
-        return {measurementTarget:target, vessel:target==='vessel'?$('#recordVessel').value:'', compartments:$all('[data-record-compartment]:checked').map(function(item){return item.value;}), shoreTanks:$all('[data-record-shore-tank]:checked').map(function(item){return item.value;})};
-      }
-      function refreshFrontReferences(){
-        var timing=$('#recordMeasurementTiming');
-        if(!timing) return;
-        var wrap=$('#recordFrontReferenceWrap');
-        var select=$('#recordFrontReference');
-        var hint=$('#recordFrontReferenceHint');
-        var isRear=timing.value==='rear';
-        wrap.hidden=!isRear;
-        if(!isRear) return;
-        var candidates=frontGaugeCandidates(selectedTargetDetails(), current&&current.id);
-        var selected=editing&&current?current.frontRecordId:'';
-        select.innerHTML='<option value="">请选择对应的前尺数据</option>'+candidates.map(frontGaugeOption).join('');
-        if(candidates.some(function(candidate){return candidate.record.id===selected;})) select.value=selected;
-        hint.textContent=candidates.length ? '仅显示作业前、作业中、作业后的同一计量对象前尺数据。' : '未找到计量对象完全一致的前尺数据，请先添加前尺记录。';
-      }
-      $('#recordTargetType').addEventListener('change',function(){ var isVessel=this.value==='vessel'; $('#recordVesselFields').hidden=!isVessel; $('#recordShoreFields').hidden=isVessel; refreshFrontReferences(); });
+      $('#recordTargetType').addEventListener('change',function(){ var isVessel=this.value==='vessel'; $('#recordVesselFields').hidden=!isVessel; $('#recordShoreFields').hidden=isVessel; });
       $('#recordVessel').addEventListener('change',updateCompartments);
-      $('#recordMeasurementTiming') && $('#recordMeasurementTiming').addEventListener('change',refreshFrontReferences);
-      $all('[data-record-compartment],[data-record-shore-tank]').forEach(function(input){ input.addEventListener('change',refreshFrontReferences); });
-      refreshFrontReferences();
       $('[data-save-record]').addEventListener('click',function(){
         var name=input.value.trim(); if(!name){toast('请输入检验记录名称','warn');input.focus();return;}
         if(records.some(function(item){return item.name===name && (!current||item.id!==current.id);})){toast('该检验记录名称已存在','warn');input.focus();return;}
@@ -1020,14 +963,7 @@ function openInspectionRecordModal(phase,mode){
         var shoreTanks=$all('[data-record-shore-tank]:checked').map(function(item){return item.value;});
         if(target==='vessel'&&!compartments.length){toast('请选择至少一个船舱','warn');return;}
         if(target==='shore'&&!shoreTanks.length){toast('请选择至少一个岸罐','warn');return;}
-        var timing=$('#recordMeasurementTiming') ? $('#recordMeasurementTiming').value : '';
-        var frontRecordId='';
-        if(timing==='rear'){
-          frontRecordId=$('#recordFrontReference').value;
-          var front=frontGaugeCandidates({measurementTarget:target,vessel:vessel,compartments:compartments,shoreTanks:shoreTanks},current&&current.id).filter(function(candidate){return candidate.record.id===frontRecordId;})[0];
-          if(!front){ toast('后尺数据必须选择计量对象完全一致的前尺数据','warn'); return; }
-        }
-        var details={measurementTarget:target,vessel:vessel,compartments:compartments,shoreTanks:shoreTanks,cargo:$('#recordCargo').value,measurementTiming:timing,frontRecordId:frontRecordId};
+        var details={measurementTarget:target,vessel:vessel,compartments:compartments,shoreTanks:shoreTanks,cargo:$('#recordCargo').value};
         if(editing&&current){Object.assign(current,{name:name},details);toast('检验记录已更新','success');}
         else { var item=Object.assign({id:phase+'-'+Date.now(),name:name,currentView:'impact',reports:[]},details); records.push(item); state.activeInspectionRecord[phase]=item.id; toast('已添加 '+name,'success'); }
         scheduleSave();closeModal();renderAll();
