@@ -353,7 +353,7 @@ tbody select { height: 28px; padding: 0 6px; border: 1px solid var(--border); bo
 .template-chip { min-height: 38px; padding: 0 11px; display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 5px; background: white; color: var(--text-secondary); font-size: 10px; white-space: nowrap; }
 
 /* ===== Ullage (step 03) ===== */
-.metric-row.ullage-metrics { margin-top: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.metric-row.ullage-metrics { margin-top: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .ullage-table-card .table-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--border); background: var(--surface-muted); font-size: 10px; color: var(--text-secondary); }
 .ullage-table-scroll { overflow-x: auto; }
 .ullage-table { min-width: 1560px; }

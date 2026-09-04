@@ -146,6 +146,20 @@
     @media (max-width: 800px) { .shore-entry-layout { display: block; } .tank-navigator, .current-tank-result { margin-bottom: 12px; } .tank-list { max-height: 220px; } .current-tank-result { display: block; } .current-tank-result dl { border-right: 0; border-bottom: 1px solid var(--border); } .shore-quantity-overview .optional-unit { display: none; } }
     .shore-actions { align-items: center; padding: 0 14px; margin-bottom: 14px; }
     .tank-edit-btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 5px; background: #fff; color: var(--primary); font-size: 12px; font-weight: 650; cursor: pointer; }
+    dialog.tank-basic-dialog { width: min(960px, calc(100vw - 48px)); max-height: calc(100vh - 48px); padding: 0; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 18px 50px rgba(15, 35, 60, .22); }
+    dialog.tank-basic-dialog::backdrop { background: rgba(20, 34, 52, .36); }
+    .tank-basic-dialog header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 1px solid var(--border); }
+    .tank-basic-dialog h3 { margin: 0; font-size: 16px; }
+    .tank-basic-dialog header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+    .tank-basic-dialog .dialog-close { min-width: 36px; min-height: 36px; padding: 0; border: 1px solid var(--border); border-radius: 5px; color: var(--text); background: #fff; font-size: 20px; line-height: 1; cursor: pointer; }
+    .tank-basic-dialog .dialog-body { max-height: calc(100vh - 188px); padding: 18px 20px 20px; overflow: auto; }
+    .tank-basic-group + .tank-basic-group { margin-top: 18px; }
+    .tank-basic-group h4 { margin: 0 0 10px; color: var(--primary-strong); font-size: 14px; }
+    .tank-basic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid #cfd9e5; border-left: 1px solid #cfd9e5; }
+    .tank-basic-grid .raw-field { min-height: 76px; padding: 10px 12px; border-right: 1px solid #cfd9e5; border-bottom: 1px solid #cfd9e5; }
+    .tank-basic-grid .raw-field span { min-height: 14px; }
+    .tank-basic-dialog footer { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border); }
+    .tank-basic-dialog footer button { min-height: 36px; padding: 0 14px; border: 1px solid var(--primary); border-radius: 5px; color: #fff; background: var(--primary); font-size: 13px; font-weight: 700; cursor: pointer; }
     dialog.tank-dialog { width: min(480px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 18px 50px rgba(15, 35, 60, .22); }
     dialog.tank-dialog::backdrop { background: rgba(20, 34, 52, .36); }
     .tank-dialog header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); }
@@ -280,6 +294,12 @@
       </form>
     </dialog>
 
+    <dialog class="tank-basic-dialog" id="rawTankBasicDialog" aria-labelledby="rawTankBasicTitle">
+      <header><div><h3 id="rawTankBasicTitle">岸罐基本信息</h3><p id="rawTankBasicDesc">按“证书与设备、检定、罐体容量、浮顶修正”分类维护。</p></div><button type="button" class="dialog-close" id="closeRawTankBasic" aria-label="关闭岸罐基本信息">×</button></header>
+      <div class="dialog-body" id="rawTankBasicContent"></div>
+      <footer><button type="button" id="completeRawTankBasic">完成</button></footer>
+    </dialog>
+
     <dialog class="sample-reference-dialog" id="sampleReferenceDialog" aria-labelledby="sampleReferenceTitle">
       <header>
         <div><h3 id="sampleReferenceTitle">样品类型中英对照表</h3><p>用于选择“样品类别”时核对术语。</p></div>
@@ -392,10 +412,15 @@
         const water = Number(source.waterHeight) || 0;
         const temperature = Number(source.oilTemp) || 0;
         rawRecords[key] = {
-          basic: { meteringStatus: "在用", referenceBoardPosition: "", calibrationReferenceTemp: 20, calibrationDueDate: "", insulated: "是", referenceHeight: source.referenceHeight || 0, nonMeterUpper: source.nonMeasUpper || 0, nonMeterLower: source.nonMeasLower || 0 },
+          basic: { certificate: "", id: row.tank, applicant: "", device: "", model: "", cycle: "", date: "", agency: "", valid: "", uncertainty: "", place: "", insulated: "否", wallMaterial: "", reference: source.referenceHeight || 0, safe: "", volume: "", bottomDeadVolume: "", gauge: "", nonMeterUpper: source.nonMeasUpper || 0, nonMeterLower: source.nonMeasLower || 0, floatMass: source.floatingRoofWeight || 0, tilt: "", expansion: "" },
           data: { measurementNode: phase === "pre" ? "卸货前" : "卸货后", date: source.date || "", time: source.time || "", remoteAtgLevel: liquid, remoteAtgTemp: temperature, actualReferenceHeight: source.observedReferenceHeight || 0, liquidMethod: "人工检尺", waterMethod: "人工测量", liquidReadings: [liquid, liquid, liquid], waterReadings: [water, water, water], temperatureReadings: [temperature, temperature, temperature] },
         };
       }
+      const basic = rawRecords[key].basic;
+      const legacyBasicKeys = { id: "equipmentId", device: "deviceName", date: "calibrationDate", agency: "calibrationAgency", valid: "validDate", place: "calibrationPlace", reference: "referenceHeight", safe: "safeHeight", volume: "nominalVolume", gauge: "gaugeHeight", floatStart: "floatingRoofStart", floatEnd: "floatingRoofEnd", floatMass: "floatingRoofMass" };
+      Object.entries(legacyBasicKeys).forEach(([current, legacy]) => { if (basic[current] === undefined && basic[legacy] !== undefined) basic[current] = basic[legacy]; });
+      if (basic.nonMeterUpper === undefined && basic.floatStart !== undefined) basic.nonMeterUpper = basic.floatStart;
+      if (basic.nonMeterLower === undefined && basic.floatEnd !== undefined) basic.nonMeterLower = basic.floatEnd;
       return rawRecords[key];
     }
 
@@ -421,24 +446,10 @@
         return `<section class="raw-reading-group${isCriticalLevel ? " has-critical-level" : ""}"><header><h4>${title}<span>${unit}</span></h4><span class="raw-average-value">平均 ${average} ${unit}</span></header>${warning}${method}${inputs}<button type="button" class="raw-add-reading" data-add-raw-reading="${group}" data-raw-id="${row.id}">＋ 添加一次测量</button></section>`;
       };
       const rawNav = shoreReadings.map((item) => `<button type="button" data-raw-tank-id="${item.id}" aria-current="${item.id === selectedTankId}"><strong>${item.tank}</strong></button>`).join("");
-      $("rawRecordContent").innerHTML = `<div class="raw-entry-layout"><aside class="tank-navigator" aria-label="岸罐原始记录列表"><header><strong>岸罐列表</strong><small>选择岸罐后录入原始记录</small></header><div class="tank-list">${rawNav}</div><button type="button" class="add-tank" id="rawAddTankBtn">＋ 新增岸罐</button></aside><section class="raw-record-card"><header class="raw-record-header"><div><strong>${row.tank} · ${activeRawPhase === "pre" ? "前尺" : "后尺"}原始记录</strong><small>原始测量数据会保留多次读数，并自动计算平均值。</small></div><div class="raw-record-actions"><div class="raw-record-switch" role="group" aria-label="原始记录时点"><button type="button" data-raw-phase-switch="pre" aria-pressed="${activeRawPhase === "pre"}">前尺</button><button type="button" data-raw-phase-switch="post" aria-pressed="${activeRawPhase === "post"}">后尺</button></div><button type="button" class="tank-edit-btn" id="rawEditTankBtn">编辑岸罐信息</button></div></header><section class="raw-section"><h3>储罐基本信息</h3><div class="raw-field-grid">${field("计量笔状态", "meteringStatus", record.basic.meteringStatus, "", "text", "basic", ["在用", "停用", "待校验"])}${field("计量基准板的位置", "referenceBoardPosition", record.basic.referenceBoardPosition)}${field("标定参照温度", "calibrationReferenceTemp", record.basic.calibrationReferenceTemp, "℃", "number")}${field("标定到期日期", "calibrationDueDate", record.basic.calibrationDueDate, "", "date")}${field("是否为保温罐", "insulated", record.basic.insulated, "", "text", "basic", ["是", "否"])}${field("参照高度", "referenceHeight", record.basic.referenceHeight, "m", "number")}${field("非计量区间上限", "nonMeterUpper", record.basic.nonMeterUpper, "m", "number")}${field("非计量区间下限", "nonMeterLower", record.basic.nonMeterLower, "m", "number")}</div></section><section class="raw-section"><h3>计量数据</h3><div class="raw-field-grid">${field("日期", "date", record.data.date, "", "date", "data")}${field("时间", "time", record.data.time, "", "time", "data")}</div></section><section class="raw-section"><h3>远程计量设备读数（ATG）</h3><div class="raw-field-grid">${field("货物液位", "remoteAtgLevel", record.data.remoteAtgLevel, "实高 · m", "number", "data")}${field("温度（平均温度）", "remoteAtgTemp", record.data.remoteAtgTemp, "℃", "number", "data")}</div></section><section class="raw-section"><h3>手工计量数据</h3><div class="raw-field-grid">${field("实测参照高度", "actualReferenceHeight", record.data.actualReferenceHeight, "m", "number", "data")}</div><div class="raw-reading-grid">${readingGroup("货物液位（液体高度）", "m", "liquidReadings", "liquidMethod", record.data.liquidMethod, ["人工检尺", "手工测深"])}${readingGroup("游离水", "m", "waterReadings", "waterMethod", record.data.waterMethod, ["人工测量", "试水膏"])}${readingGroup("温度", "℃", "temperatureReadings", null, null, null)}</div></section></section></div>`;
-      const rawBasicGrid = $("rawRecordContent").querySelector(".raw-section .raw-field-grid");
-      rawBasicGrid.insertAdjacentHTML("beforeend", field("浮顶重量（空气中）", "floatingRoofWeight", row.open.floatingRoofWeight, "MT", "number", "basic"));
-      rawBasicGrid.querySelector('[data-raw-field="floatingRoofWeight"]').addEventListener("change", (event) => {
-        const value = event.target.value === "" ? 0 : Number(event.target.value);
-        row.open.floatingRoofWeight = value;
-        row.close.floatingRoofWeight = value;
-        renderEntry();
-        renderRawRecords();
-        flash("浮顶重量已更新，浮顶修正将自动重算");
-      });
+      $("rawRecordContent").innerHTML = `<div class="raw-entry-layout"><aside class="tank-navigator" aria-label="岸罐原始记录列表"><header><strong>岸罐列表</strong><small>选择岸罐后录入原始记录</small></header><div class="tank-list">${rawNav}</div><button type="button" class="add-tank" id="rawAddTankBtn">＋ 新增岸罐</button></aside><section class="raw-record-card"><header class="raw-record-header"><div><strong>${row.tank} · ${activeRawPhase === "pre" ? "前尺" : "后尺"}原始记录</strong><small>原始测量数据会保留多次读数，并自动计算平均值。</small></div><div class="raw-record-actions"><div class="raw-record-switch" role="group" aria-label="原始记录时点"><button type="button" data-raw-phase-switch="pre" aria-pressed="${activeRawPhase === "pre"}">前尺</button><button type="button" data-raw-phase-switch="post" aria-pressed="${activeRawPhase === "post"}">后尺</button></div><button type="button" class="tank-edit-btn" id="rawBasicInfoBtn">储罐基本信息</button></div></header><section class="raw-section"><h3>计量数据</h3><div class="raw-field-grid">${field("日期", "date", record.data.date, "", "date", "data")}${field("时间", "time", record.data.time, "", "time", "data")}</div></section><section class="raw-section"><h3>远程计量设备读数（ATG）</h3><div class="raw-field-grid">${field("货物液位", "remoteAtgLevel", record.data.remoteAtgLevel, "实高 · m", "number", "data")}${field("温度（平均温度）", "remoteAtgTemp", record.data.remoteAtgTemp, "℃", "number", "data")}</div></section><section class="raw-section"><h3>手工计量数据</h3><div class="raw-field-grid">${field("实测参照高度", "actualReferenceHeight", record.data.actualReferenceHeight, "m", "number", "data")}</div><div class="raw-reading-grid">${readingGroup("货物液位（液体高度）", "m", "liquidReadings", "liquidMethod", record.data.liquidMethod, ["人工检尺", "手工测深"])}${readingGroup("游离水", "m", "waterReadings", "waterMethod", record.data.waterMethod, ["人工测量", "试水膏"])}${readingGroup("温度", "℃", "temperatureReadings", null, null, null)}</div></section></section></div>`;
       $("rawRecordContent").querySelectorAll("[data-raw-tank-id]").forEach((button) => button.addEventListener("click", () => { selectedTankId = Number(button.dataset.rawTankId); renderRawRecords(); }));
       $("rawAddTankBtn").addEventListener("click", openAddTankDialog);
-      $("rawEditTankBtn").addEventListener("click", () => {
-        $("editTankName").value = row.tank;
-        $("editTankType").value = row.assetType;
-        $("editTankDialog").showModal();
-      });
+      $("rawBasicInfoBtn").addEventListener("click", () => openRawTankBasicDialog(row));
       $("rawRecordContent").querySelectorAll("[data-add-raw-reading]").forEach((button) => button.addEventListener("click", () => {
         const active = shoreReadings.find((item) => item.id === Number(button.dataset.rawId));
         if (!active) return;
@@ -453,6 +464,34 @@
         readings.splice(Number(button.dataset.rawIndex), 1);
         renderRawRecords();
       }));
+    }
+
+    function openRawTankBasicDialog(row) {
+      const record = rawRecordFor(row);
+      const field = (label, key, value, unit = "", type = "text", choices = null) => `<label class="raw-field">${label}<span>${unit}</span>${choices ? `<select data-raw-basic-field="${key}" data-raw-basic-id="${row.id}" aria-label="${label}">${optionList(choices, value)}</select>` : `<input type="${type}" value="${escapeHTML(value)}" data-raw-basic-field="${key}" data-raw-basic-id="${row.id}" aria-label="${label}">`}</label>`;
+      $("rawTankBasicTitle").textContent = `岸罐基本信息 · ${row.tank}`;
+      $("rawTankBasicDesc").textContent = "按“证书与设备、检定、罐体容量、浮顶修正”分类维护；本次作业补充的计量状态和非计量区间将在岸罐原始记录中填写。";
+      $("rawTankBasicContent").innerHTML = `<section class="tank-basic-group"><h4>证书与设备识别</h4><div class="tank-basic-grid">${field("证书编号", "certificate", record.basic.certificate)}${field("设备编号", "id", record.basic.id)}${field("申检单位", "applicant", record.basic.applicant)}${field("器具名称", "device", record.basic.device)}${field("型号规格", "model", record.basic.model)}</div></section><section class="tank-basic-group"><h4>检定与有效期</h4><div class="tank-basic-grid">${field("检定周期", "cycle", record.basic.cycle)}${field("检定日期", "date", record.basic.date, "", "date")}${field("检定单位", "agency", record.basic.agency)}${field("有效日期", "valid", record.basic.valid, "", "date")}${field("不确定度", "uncertainty", record.basic.uncertainty)}${field("检定地点", "place", record.basic.place)}</div></section><section class="tank-basic-group"><h4>罐体与容量参数</h4><div class="tank-basic-grid">${field("是否为保温罐", "insulated", record.basic.insulated, "", "text", ["是", "否"])}${field("管壁材质", "wallMaterial", record.basic.wallMaterial)}${field("参照高度", "reference", record.basic.reference, "m", "number")}${field("安全高度", "safe", record.basic.safe, "m", "number")}${field("标称容积", "volume", record.basic.volume, "m³", "number")}${field("罐底死量", "bottomDeadVolume", record.basic.bottomDeadVolume, "m³", "number")}${field("液面计高度", "gauge", record.basic.gauge, "m", "number")}</div></section><section class="tank-basic-group"><h4>非计量区间与修正参数</h4><div class="tank-basic-grid">${field("非计量区间上限", "nonMeterUpper", record.basic.nonMeterUpper, "m", "number")}${field("非计量区间下限", "nonMeterLower", record.basic.nonMeterLower, "m", "number")}${field("浮顶质量", "floatMass", record.basic.floatMass, "MT", "number")}${field("倾斜率", "tilt", record.basic.tilt)}${field("线膨胀系数", "expansion", record.basic.expansion)}</div></section>`;
+      $("rawTankBasicContent").querySelectorAll("[data-raw-basic-field]").forEach((input) => input.addEventListener("change", () => {
+        const target = rawRecordFor(row).basic;
+        const key = input.dataset.rawBasicField;
+        const value = input.type === "number" ? (input.value === "" ? 0 : Number(input.value)) : input.value;
+        target[key] = value;
+        if (key === "reference") {
+          row.open.referenceHeight = value;
+          row.close.referenceHeight = value;
+        }
+        if (key === "floatMass") {
+          row.open.floatingRoofWeight = value;
+          row.close.floatingRoofWeight = value;
+        }
+        if (key === "nonMeterUpper" || key === "nonMeterLower") {
+          row.open[key === "nonMeterUpper" ? "nonMeasUpper" : "nonMeasLower"] = value;
+          row.close[key === "nonMeterUpper" ? "nonMeasUpper" : "nonMeasLower"] = value;
+        }
+        flash("储罐基本信息已更新");
+      }));
+      $("rawTankBasicDialog").showModal();
     }
 
     function renderWorkspaceTab() {
@@ -717,6 +756,8 @@
     const saveState = $("saveState");
     function flash(m) { saveState.textContent = m; setTimeout(() => { saveState.textContent = "草稿已保存"; }, 1800); }
     $("closeSampleReference").addEventListener("click", () => $("sampleReferenceDialog").close());
+    $("closeRawTankBasic").addEventListener("click", () => $("rawTankBasicDialog").close());
+    $("completeRawTankBasic").addEventListener("click", () => $("rawTankBasicDialog").close());
     document.querySelectorAll('input[name="tankSource"]').forEach((input) => input.addEventListener("change", () => {
       const manual = document.querySelector('input[name="tankSource"]:checked').value === "manual";
       $("masterTankField").hidden = manual;
